@@ -1,0 +1,142 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+  <meta charset="UTF-8">  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+  <title>RIT Game | Partition Games</title>  
+  
+  <!-- Console-style monospace fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">  
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>  
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;800&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">  
+  
+  <!-- RIT Game-Specific Stylesheet (Self-contained) -->
+  <link rel="stylesheet" href="../../assets/css/unified_game_styles.css">  
+    <link rel="stylesheet" href="../../assets/css/game-modern.css">
+</head>  
+<body>  
+  <!-- Unified Header from index.html -->
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <div class="header-left">
+          <div class="logo-section">
+            <a href="../../index.html" class="logo">partition-games</a>
+            <span class="game-title"> /RIT</span>
+          </div>
+        </div>
+        
+        <div class="header-center">
+          <div class="game-title-section">
+            <h1>RIT</h1>
+          </div>
+          <div class="status-container">
+            <p id="status-label">Loading...</p>
+            <div id="ai-thinking-indicator">
+              <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="header-right">
+          <nav>
+            <!-- RIT specific controls integrated into the nav -->
+            <button id="help-btn" class="nav-button">? help</button>
+            <button id="cycle-theme-btn" class="nav-button" title="Click or Scroll to change theme">[tiles: 🔥]</button>
+            <!-- Global theme toggle -->
+            <button id="theme-toggle" class="theme-toggle nav-button" aria-label="Toggle theme">
+              <!-- Content is populated by script.js -->
+            </button>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <!-- Game Card -->
+      <div id="game-card" data-tile-theme="grass">
+        <div id="board-area"></div>
+      </div>
+
+      <button id="new-game-btn" class="fixed-new-game-btn">$ new game</button>
+    </div>
+  </main>
+
+  <!-- setup modal -->  
+  <div id="setup-modal-backdrop" class="modal-backdrop">  
+    <div class="modal">  
+      <div class="modal-header">
+        <h2>Game Setup</h2>
+        <button id="help-btn-modal" class="icon-button" aria-label="Help">[?]</button>
+      </div>
+      <p>Enter the partition of the initial Young-diagram.</p>  
+
+      <label for="rows-input">Row Lengths</label>  
+      <input id="rows-input" type="text" value="5 4 2 1" placeholder="e.g., 5 4 2 1">  
+
+      <hr>
+
+      <label for="partition-type-select">Or, generate a partition:</label>
+      <div class="input-group">
+        <select id="partition-type-select" class="partition-type-dropdown">
+          <option value="random">random</option>
+          <option value="staircase">staircase</option>
+          <option value="rectangle">rectangle</option>
+          <option value="square">square</option>
+          <option value="hook">hook</option>
+          <option value="triangle">triangle</option>
+        </select>
+        <input type="number" id="partition-number-input" placeholder="e.g., 25">
+        <button id="generate-partition-btn">generate</button>
+      </div>
+      <hr>
+      <label for="ai-select">Computer Player</label>
+      <select id="ai-select">
+        <option value="B">Bob (Starts Second)</option>
+        <option value="A">Alice (Starts First)</option>
+        <option value="None">None (Two Human Players)</option>
+      </select>
+      <label for="difficulty-slider">AI Difficulty: <span id="difficulty-label">Medium (50)</span></label>
+      <div class="slider-container">
+        <input type="range" id="difficulty-slider" min="1" max="100" value="50" class="difficulty-range">
+      </div>
+      <hr>
+      <button id="start-game-btn" class="modal-btn"> >> start game</button>
+    </div>  
+  </div>  
+
+  <!-- game-over modal -->  
+  <div id="game-over-modal-backdrop" class="modal-backdrop">  
+    <div class="modal">  
+      <h2>Game Over</h2>  
+      <p id="game-over-message">Player X wins!</p>  
+      <button id="download-btn" class="icon-button" aria-label="Download Game" title="Download Game History" style="margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/></svg> Download
+      </button>
+      <button id="play-again-btn" class="modal-btn">play again</button>  
+    </div>  
+  </div>  
+
+  <!-- help popover -->  
+  <div id="help-popover">  
+    <h3>How to Play</h3>  
+    <p>RIT is a Young-diagram game where players take turns removing cells from a partition.</p>  
+    <ul>  
+      <li>Click on a cell to remove it and all cells to its right and below</li>  
+      <li>The player who removes the last cell wins</li>  
+      <li>You can only remove cells that are not isolated</li>  
+    </ul>  
+  </div>  
+
+  
+
+  <!-- Scripts -->  
+  <script src="../../config.js"></script>
+  <script src="../../assets/js/script.js"></script>
+  <script src="../../assets/js/database-utils.js"></script>
+  <script src="rit_script.js"></script>  
+    <script src="../../assets/js/game-shell.js"></script>
+</body>  
+</html>  

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Partition Games - Report Generator</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="report.css" />
+  <link rel="icon" href="data:," />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+</head>
+<body>
+  <header>
+    <h1>Partition Games - Report Generator</h1>
+    <p class="intro">
+      Analyze game states for supported games. Paste partitions as space-separated integers, one state per line.
+    </p>
+  </header>
+
+  <main>
+    <div class="controls-row">
+      <div class="select-group">
+        <label for="game-select">Game</label>
+        <select id="game-select">
+          <option value="Corner" selected>Corner</option>
+          <option value="LCTR">LCTR</option>
+          <option value="CRIM">CRIM</option>
+        </select>
+      </div>
+      <div class="select-group">
+        <label for="game-mode-select">Mode</label>
+        <select id="game-mode-select">
+          <option value="normal" selected>Normal</option>
+          <option value="misere">Misere</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="input-container">
+      <label for="game-states-input">Enter Game States (one per line)</label>
+      <textarea id="game-states-input" rows="8" placeholder="5 4 4 2&#10;3 2 1&#10;4 4"></textarea>
+      <button id="generate-report-btn">Generate Analysis Report</button>
+    </div>
+
+    <div id="report-container"></div>
+
+    <div id="chart-wrapper" class="report-card" style="display: none;">
+      <canvas id="g-number-chart"></canvas>
+    </div>
+  </main>
+
+  <script>
+    window.UNIFIED_REPORT = true;
+  </script>
+  <script src="corner_report.js"></script>
+  <script src="lctr_report.js"></script>
+  <script src="crim_report.js"></script>
+  <script src="report.js"></script>
+</body>
+</html>
+

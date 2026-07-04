@@ -1,0 +1,83 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+<meta charset="UTF-8">  
+<title>RIT</title>  
+
+<script>  
+window.MathJax = {  
+  tex: {  
+    inlineMath: [['$', '$'], ['\$', '\$']],  // enable $…$  and  $ … $  
+    processEscapes: true                       // let \$ print a literal $  
+  },  
+  svg: { fontCache: 'global' }                 // use SVG output; chtml also fine  
+};  
+</script> 
+
+  
+<!-- 1. MathJax -->  
+<script id="MathJax-script" async  
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">  
+</script>  
+  
+<!-- 2. Minimal styling ---------------------------------------------->  
+<style>  
+body          { font-family: "Arial", Times, serif;  
+                margin: 2em 8%; line-height: 1.35;}  
+h1            { text-align: center; margin-bottom: 0.3em;}  
+/* mdframed imitation */  
+.gamebox      { border: 3px solid #6a37a8; border-radius: 10px;  
+                padding: 1.0em 1.3em; position: relative;  
+                background: #f9f6ff; margin: 1.7em 0 1.5em 0;}  
+.gamebox:before{ content:"Game statement";  
+                 position:absolute; top:-0.9em; left:1em;  
+                 background:#f9f6ff; padding:0 0.4em;  
+                 color:#6a37a8; font-weight:bold;}  
+figcaption    { text-align: center; font-style: italic;  
+                margin-top: 0.3em;}  
+ul.moves      { list-style-type: none; padding-left: 0;}  
+ul.moves > li { margin: 1.4em 0;}  
+span.label    { font-weight: bold;}  
+/* bibliography */  
+.bibitem      { text-indent:-1.6em; padding-left:1.6em;  
+                margin-bottom:0.45em;}  
+</style>  
+</head>  
+<body>  
+  
+<!-- ----------------------------DOCUMENT BODY-------------------------->  
+<h1>Impartial Row Terminus (RIT)</h1>
+<h2 style="text-align: center;"> Integer Parition Combinatorial Game </h2>
+  
+<div class="gamebox">  
+  Let $n$ be a positive integer; and $(a^{a'}, b^{b'}, c^{c'}, \ldots, i^{i'})$ be an ordered partition for $n$. 
+  In RIT, only a certain type of vertical move is allowed: some cells from a row $r_i$ may be deleted, if the length of changed $r_i \geq$ length of $r_{i + 1}$. However, if $i + 1$ deems to be the last row of the young diagram, this condition would require to be ignored.
+  The JavaScript program backing the interactive web-version aids from memoised Sprague-Grundy value and several data structure algorithms.  
+</div>  
+  
+  
+<h2 id="moves">Moves</h2>  
+<p>Following the description above, a visual description of possible moves are given below:</p>  
+  
+<ul class="moves">  
+  <li>  
+    <span class="label">(a) Regular Cell Removal: </span>  
+    <figure style="text-align:center;">  
+      <img src="figure1.png" alt="Left column removal" style="width:50%;">  
+    </figure>  
+  </li>  
+  
+  <li>  
+    <span class="label">(b) Exception (only applies to the last row): </span>  
+    <figure style="text-align:center;">  
+      <img src="figure2.png" alt="Row removal" style="width:50%;">  
+    </figure>  
+  </li>  
+</ul>  
+  
+<h2>More</h2>  
+
+		Some research are already waiting on publication approval - please contact <a href=https://www.rhodes.edu/bio/eric-gottlieb>Prof. Gottlieb</a> for related queries. Many thanks to <a href=khada-27@rhodes.edu>Dawood Khatana</a> for sharing the pre-print of the research they have done on RIT.  
+  
+</body>  
+</html>  

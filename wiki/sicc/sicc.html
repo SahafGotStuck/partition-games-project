@@ -1,0 +1,80 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+<meta charset="UTF-8">  
+<title>SICC</title>  
+
+<script>  
+window.MathJax = {  
+  tex: {  
+    inlineMath: [['$', '$'], ['\$', '\$']],  // enable $…$  and  $ … $  
+    processEscapes: true                       // let \$ print a literal $  
+  },  
+  svg: { fontCache: 'global' }                 // use SVG output; chtml also fine  
+};  
+</script> 
+
+  
+<!-- 1. MathJax -->  
+<script id="MathJax-script" async  
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">  
+</script>  
+  
+<!-- 2. Minimal styling ---------------------------------------------->  
+<style>  
+body          { font-family: "Arial", Times, serif;  
+                margin: 2em 8%; line-height: 1.35;}  
+h1            { text-align: center; margin-bottom: 0.3em;}  
+/* mdframed imitation */  
+.gamebox      { border: 3px solid #6a37a8; border-radius: 10px;  
+                padding: 1.0em 1.3em; position: relative;  
+                background: #f9f6ff; margin: 1.7em 0 1.5em 0;}  
+.gamebox:before{ content:"Game statement";  
+                 position:absolute; top:-0.9em; left:1em;  
+                 background:#f9f6ff; padding:0 0.4em;  
+                 color:#6a37a8; font-weight:bold;}  
+figcaption    { text-align: center; font-style: italic;  
+                margin-top: 0.3em;}  
+ul.moves      { list-style-type: none; padding-left: 0;}  
+ul.moves > li { margin: 1.4em 0;}  
+span.label    { font-weight: bold;}  
+/* bibliography */  
+.bibitem      { text-indent:-1.6em; padding-left:1.6em;  
+                margin-bottom:0.45em;}  
+</style>  
+</head>  
+<body>  
+  
+<!-- ----------------------------DOCUMENT BODY-------------------------->  
+<h1>Stirct Impartial Continuous Corner (SICC)</h1>
+<h2 style="text-align: center;"> Partizan Integer Partition Combinatorial Game </h2>  
+  
+<div class="gamebox">  
+    SICC is a variant of Corner game, where the board is a Young diagram, and the players can only remove a nonempty set of consecutive corners that include either the top right corner or the bottom left corner (or both). Like other games,he player who cannot make a legal move loses the game.     
+</div>  
+  
+  
+<h2 id="moves">Moves</h2>  
+<p></p>  
+  
+<ul class="moves">  
+   
+  <li>  
+    <span class="label"></span>  
+    <figure style="text-align:center;">  
+      <img src="figure1.png" alt="Left column removal" style="width:27%;">  
+    <figcaption>Figure&nbsp;1&nbsp;—&nbsp;A Move in SICC</figcaption>  
+    </figure>  
+  </li>
+</ul>  
+  
+
+
+<h2>More</h2>
+
+<p>
+  	Some research are already waiting on publication approval - please contact <a href=https://www.rhodes.edu/bio/eric-gottlieb>Prof. Gottlieb</a> for related queries.
+</p>
+
+</body>  
+</html> 

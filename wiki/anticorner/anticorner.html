@@ -1,0 +1,85 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+<meta charset="UTF-8">  
+<title>LCTR</title>  
+
+<script>  
+window.MathJax = {  
+  tex: {  
+    inlineMath: [['$', '$'], ['\$', '\$']],  // enable $…$  and  $ … $  
+    processEscapes: true                       // let \$ print a literal $  
+  },  
+  svg: { fontCache: 'global' }                 // use SVG output; chtml also fine  
+};  
+</script> 
+
+  
+<!-- 1. MathJax -->  
+<script id="MathJax-script" async  
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">  
+</script>  
+  
+<!-- 2. Minimal styling ---------------------------------------------->  
+<style>  
+body          { font-family: "Arial", Times, serif;  
+                margin: 2em 8%; line-height: 1.35;}  
+h1            { text-align: center; margin-bottom: 0.3em;}  
+/* mdframed imitation */  
+.gamebox      { border: 3px solid #6a37a8; border-radius: 10px;  
+                padding: 1.0em 1.3em; position: relative;  
+                background: #f9f6ff; margin: 1.7em 0 1.5em 0;}  
+.gamebox:before{ content:"Game statement";  
+                 position:absolute; top:-0.9em; left:1em;  
+                 background:#f9f6ff; padding:0 0.4em;  
+                 color:#6a37a8; font-weight:bold;}  
+figcaption    { text-align: center; font-style: italic;  
+                margin-top: 0.3em;}  
+ul.moves      { list-style-type: none; padding-left: 0;}  
+ul.moves > li { margin: 1.4em 0;}  
+span.label    { font-weight: bold;}  
+/* bibliography */  
+.bibitem      { text-indent:-1.6em; padding-left:1.6em;  
+                margin-bottom:0.45em;}  
+</style>  
+</head>  
+<body>  
+  
+<!-- ----------------------------DOCUMENT BODY-------------------------->  
+<h1>Anti-corner</h1>
+<h2 style="text-align: center;"> Integer Parition Combinatorial Game </h2>
+  
+<div class="gamebox">  
+    Let $\left( \lambda_1, \lambda_2, \lambda_3, \ldots, \lambda_n \right)$ be a parition of $n$, where $\lambda_1 \geq \lambda_2 \geq \cdots \lambda_n > 0$. The game centers around "Anti-corners": in each move, an Anti-corner $(i, j)$ needs to be selected, and upon selection the hook associated to that cell would get deleted. 
+
+    An <i>Anti-corner</i> belongs to one of the followings: 
+
+    <ol>
+      <li> <i>Degenerate Anti-corners:</i> Only two specific cell consists this set &mdash; the most top-right cell and the most bottom-left cell.</li>
+      <li> <i>Proper Anti-corners</i>: An proper anticorner is a square in the Young diagram that sticks out at a “dip’’ in the outline: it has no square directly to its right and no square directly below it, so you can delete that square together with everything to its right in the same row and everything below it in the same column and still be left with a valid partition shape.</li>
+    </ol> 
+    Alike previous games, Anti-corner is played between two players; each gets one move at a time; and the one who makes the last move wins.  
+</div>  
+  
+  
+<h2 id="moves">Moves</h2>  
+<p>A visual decription of how a Young diagram looks in the actual game play is given below:</p>  
+  
+<ul class="moves">  
+  <li>  
+    <span class="label"></span>  
+    <figure style="text-align:center;">  
+      <img src="anticornerfigure1.png" alt="Left column removal" style="width:27%;">  
+    <figcaption>Figure&nbsp;1&nbsp;—&nbsp; In their move, the players gets to select one of the red cells</figcaption>  
+    </figure>  
+  </li> 
+  The hook of the chosen cell $\left( i, j \right)$ gets deleted; for instance, in Figure 1, choosing $(3, 4)$ tranforms the partition $\left(6, 6, 6, 4, 3, 3, 1, 1, 1 \right)$ to $\left(6, 6, 3, 3, 3, 3, 1, 1, 1 \right)$.
+  
+</ul>  
+  
+<h2>More</h2>  
+
+	Some research are already waiting on publication approval - please contact <a href=https://www.rhodes.edu/bio/eric-gottlieb>Prof. Gottlieb</a> for related queries.
+  
+</body>  
+</html>  

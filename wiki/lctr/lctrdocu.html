@@ -1,0 +1,106 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+<meta charset="UTF-8">  
+<title>LCTR</title>  
+
+<script>  
+window.MathJax = {  
+  tex: {  
+    inlineMath: [['$', '$'], ['\$', '\$']],  // enable $…$  and  $ … $  
+    processEscapes: true                       // let \$ print a literal $  
+  },  
+  svg: { fontCache: 'global' }                 // use SVG output; chtml also fine  
+};  
+</script> 
+
+  
+<!-- 1. MathJax -->  
+<script id="MathJax-script" async  
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">  
+</script>  
+  
+<!-- 2. Minimal styling ---------------------------------------------->  
+<style>  
+body          { font-family: "Arial", Times, serif;  
+                margin: 2em 8%; line-height: 1.35;}  
+h1            { text-align: center; margin-bottom: 0.3em;}  
+/* mdframed imitation */  
+.gamebox      { border: 3px solid #6a37a8; border-radius: 10px;  
+                padding: 1.0em 1.3em; position: relative;  
+                background: #f9f6ff; margin: 1.7em 0 1.5em 0;}  
+.gamebox:before{ content:"Game statement";  
+                 position:absolute; top:-0.9em; left:1em;  
+                 background:#f9f6ff; padding:0 0.4em;  
+                 color:#6a37a8; font-weight:bold;}  
+figcaption    { text-align: center; font-style: italic;  
+                margin-top: 0.3em;}  
+ul.moves      { list-style-type: none; padding-left: 0;}  
+ul.moves > li { margin: 1.4em 0;}  
+span.label    { font-weight: bold;}  
+/* bibliography */  
+.bibitem      { text-indent:-1.6em; padding-left:1.6em;  
+                margin-bottom:0.45em;}  
+</style>  
+</head>  
+<body>  
+  
+<!-- ----------------------------DOCUMENT BODY-------------------------->  
+<h1>Left Column Top Row (LCTR)</h1>
+<h2 style="text-align: center;"> Integer Parition Combinatorial Game </h2>
+  
+<div class="gamebox">  
+Given an integer partition of $ n $, we consider the impartial combinatorial game <em>LCTR</em> in which moves consist of removing either the left column or  
+top row of its Young diagram.<sup>[1]</sup> The program was written in JavaScript with aid of memoised Sprague–Grundy values.  
+</div>  
+  
+<p>  
+$9 = 5 + 2 + 2 + 1$ ; Thus, the partition $(5, 2^2, 1)\to 9$ is represented by the Young diagram  
+in Figure&nbsp;1:  
+</p>  
+  
+<figure style="text-align:center;">  
+    <img src="lctrfigure1.png" alt="Young diagram of (5,2^2,1)" style="width:30%;">  
+    <figcaption>Figure&nbsp;1&nbsp;—&nbsp;Young diagram of $(5,2^2,1)$</figcaption>  
+</figure>  
+  
+<h2 id="moves">Moves</h2>  
+<p>There are two types of move, which both the players can perform (which makes the game
+an impartial one).</p>  
+  
+<ul class="moves">  
+  <li>  
+    <span class="label">(a) Left-column removal</span>  
+    <figure style="text-align:center;">  
+      <img src="lctrfigure3.png" alt="Left column removal" style="width:60%;">  
+    </figure>  
+  </li>  
+  
+  <li>  
+    <span class="label">(b) Top-row removal</span>  
+    <figure style="text-align:center;">  
+        
+      <img src="lctrfigure2.png" alt="Top row removal" style="width:50%;">  
+    </figure>  
+  </li>  
+</ul>  
+  
+<h2>Relevant Researches</h2>  
+  
+<div class="bibitem">  
+[1] Eric Gottlieb, Matjaž Krnc, and Peter Muršič.  
+“Sprague–Grundy values and complexity for <span style="font-variant:small-caps;">LCTR</span>”.  
+<i>Discrete Applied Mathematics</i>, 346:154–169, 2024.  
+Elsevier. <br>  
+arXiv:&nbsp;2207.05599 [math.CO]  
+</div>  
+  
+<div class="bibitem">  
+[2] Eric Gottlieb, Jelena Ilić, and Matjaž Krnc.  
+“Some results on <span style="font-variant:small-caps;">LCTR</span>, an impartial game on partitions”.  
+<i>Involve, a Journal of Mathematics</i>, 16(3):529–546, 2023.  
+Mathematical Sciences Publishers.  
+</div>  
+  
+</body>  
+</html>  

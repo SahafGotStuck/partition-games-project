@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRIM Game | Partition Games</title>
+    
+    <!-- Console-style monospace fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;800&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- CRIM Game-Specific Stylesheet -->
+    <link rel="stylesheet" href="../../assets/css/unified_game_styles.css">
+    <link rel="stylesheet" href="../../assets/css/game-modern.css">
+    <!-- Shared analysis styles -->
+    <link rel="stylesheet" href="../../assets/data/analysis-mode/analysis_style.css">
+</head>
+
+<body>
+    <!-- Unified Header from index.html -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo-section">
+                        <a href="../../index.html" class="logo">partition-games</a>
+                        <span class="game-title"> /CRIM</span>
+                    </div>
+                </div>
+                
+                <div class="header-center">
+                    <div class="game-title-section">
+                        <h1>CRIM</h1>
+                    </div>
+                    <div class="status-container">
+                        <p id="status-label">Loading...</p>
+                        <div id="ai-thinking-indicator">
+                            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="header-right">
+                    <nav>
+                        <!-- CRIM specific controls integrated into the nav -->
+                        <button id="help-btn" class="nav-button">? help</button>
+                        <button id="cycle-theme-btn" class="nav-button" title="Click or Scroll to change theme">[tiles: 🔥]</button>
+                        <button id="undo-btn" class="nav-button" aria-label="Undo Move" style="display: none;" title="Undo Move">↶ undo</button>
+                        <button id="download-btn" class="nav-button" aria-label="Download Game" style="display: none;" title="Download Game History">↓ download</button>
+                        <!-- Global theme toggle -->
+                        <button id="theme-toggle" class="theme-toggle nav-button" aria-label="Toggle theme">
+                            <!-- Content is populated by script.js -->
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <!-- Game Card -->
+            <div id="game-card" data-tile-theme="grass">
+                <div id="board-area"></div>
+                <div id="analysis-container"></div>
+            </div>
+
+            <button id="analysis-mode-toggle" class="analysis-toggle-btn nav-button" aria-label="Toggle Analysis Mode">☝️🤓 [analysis-mode]</button>
+            <button id="undo-btn" class="secondary-button" style="display:none; position:absolute; bottom:20px; right:20px;">Undo</button>
+
+            <button id="new-game-btn" class="fixed-new-game-btn">$ new game</button>
+        </div>
+    </main>
+
+    <!-- Modals and Popovers -->
+    <div id="setup-modal-backdrop" class="modal-backdrop">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Game Setup</h2>
+                <button id="help-btn-modal" class="icon-button" aria-label="Help">[?]</button>
+            </div>
+            <p>Enter a board configuration manually, or generate one randomly.</p>
+            <label for="rows-input">Row Lengths</label>
+            <input type="text" id="rows-input" value="5 4 4 2" placeholder="e.g., 5 4 4 2">
+            <hr>
+            <label for="game-mode-select">Game Mode</label>
+            <select id="game-mode-select">
+                <option value="normal" selected>Normal (last move wins)</option>
+                <option value="misere">Misere (last move loses)</option>
+            </select>
+            <hr>
+            <label for="partition-type-select">Or, generate a partition:</label>
+            <div class="input-group">
+                <select id="partition-type-select" class="partition-type-dropdown">
+                    <option value="random">random</option>
+                    <option value="staircase">staircase</option>
+                    <option value="square">square</option>
+                    <option value="hook">hook</option>
+                </select>
+                <input type="number" id="partition-number-input" placeholder="e.g., 25">
+                <button id="generate-partition-btn">generate</button>
+            </div>
+            <hr>
+            <label for="ai-select">Computer Player</label>
+            <select id="ai-select">
+                <option value="B">Bob (Starts Second)</option>
+                <option value="A">Alice (Starts First)</option>
+                <option value="None">None (Two Human Players)</option>
+            </select>
+            <label for="difficulty-slider">AI Difficulty: <span id="difficulty-label">Medium (50)</span></label>
+            <div class="slider-container">
+                <input type="range" id="difficulty-slider" min="1" max="100" value="50" class="difficulty-range">
+            </div>
+            <button id="start-game-btn" class="modal-btn"> >> start game</button>
+        </div>
+    </div>
+    
+    <div id="game-over-modal-backdrop" class="modal-backdrop">
+        <div class="modal">
+            <h2 id="game-over-title">Game Over</h2>
+            <p id="game-over-message">Player X wins!</p>
+            <div class="modal-button-group" style="display:flex; gap:10px; justify-content:center; margin-bottom:12px;">
+            <button id="download-btn-modal" class="icon-button" aria-label="Download Game" title="Download Game History" style="display: flex; align-items: center; justify-content: center;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/></svg> Download
+            </button>
+            <button id="report-btn-modal" class="icon-button" aria-label="Game Report" title="Generate Game Report" style="display:flex; align-items:center; justify-content:center;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2M18 20H6V4H13V9H18V20M8 12H16V14H8V12M8 16H16V18H8V16Z"/></svg>
+                Game Report
+            </button>
+            </div>
+            <button id="play-again-btn" class="modal-btn">Play Again</button>
+        </div>
+    </div>
+
+    <div id="help-popover">
+        <h3>How to Play</h3>
+        <p>On your turn, you can choose one of two moves:</p>
+        <ul>
+            <li>Remove any <strong>single row</strong> of squares.</li>
+            <li>Remove the <strong>entire leftmost column</strong> of squares.</li>
+        </ul>
+        <p><strong>Click</strong> on the number labels (grey bars) to select a specific row or column.</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../../config.js"></script>
+    <script src="../../assets/js/script.js"></script>
+    <script src="../../assets/js/database-utils.js"></script>
+    <script src="../../assets/data/analysis-mode/crim_analysis.js"></script>
+    <script src="crim_script.js"></script>
+    <script src="../../assets/js/game-shell.js"></script>
+</body>
+</html>

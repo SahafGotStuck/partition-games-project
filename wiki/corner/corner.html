@@ -1,0 +1,77 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+<meta charset="UTF-8">  
+<title>LCTR</title>  
+
+<script>  
+window.MathJax = {  
+  tex: {  
+    inlineMath: [['$', '$'], ['\$', '\$']],  // enable $…$  and  $ … $  
+    processEscapes: true                       // let \$ print a literal $  
+  },  
+  svg: { fontCache: 'global' }                 // use SVG output; chtml also fine  
+};  
+</script> 
+
+  
+<!-- 1. MathJax -->  
+<script id="MathJax-script" async  
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">  
+</script>  
+  
+<!-- 2. Minimal styling ---------------------------------------------->  
+<style>  
+body          { font-family: "Arial", Times, serif;  
+                margin: 2em 8%; line-height: 1.35;}  
+h1            { text-align: center; margin-bottom: 0.3em;}  
+/* mdframed imitation */  
+.gamebox      { border: 3px solid #6a37a8; border-radius: 10px;  
+                padding: 1.0em 1.3em; position: relative;  
+                background: #f9f6ff; margin: 1.7em 0 1.5em 0;}  
+.gamebox:before{ content:"Game statement";  
+                 position:absolute; top:-0.9em; left:1em;  
+                 background:#f9f6ff; padding:0 0.4em;  
+                 color:#6a37a8; font-weight:bold;}  
+figcaption    { text-align: center; font-style: italic;  
+                margin-top: 0.3em;}  
+ul.moves      { list-style-type: none; padding-left: 0;}  
+ul.moves > li { margin: 1.4em 0;}  
+span.label    { font-weight: bold;}  
+/* bibliography */  
+.bibitem      { text-indent:-1.6em; padding-left:1.6em;  
+                margin-bottom:0.45em;}  
+</style>  
+</head>  
+<body>  
+  
+<!-- ----------------------------DOCUMENT BODY-------------------------->  
+<h1>Corner</h1>
+<h2 style="text-align: center;"> Integer Parition Combinatorial Game </h2>
+  
+<div class="gamebox">  
+    Let $[r_1, r_2, r_3, \ldots, r_i]$ be an integer parition of a positive integer $n$ in descending order, where $\forall x \in \left(1, 2, \ldots, i\right), r_x \geq 1$. <b>Corner</b> is designed to be played between two players, where the game board will be a <a href=https://en.wikipedia.org/wiki/Young_tableau>Young diagram</a>, representing a partition with previously documented properties. When it's their turn, the player will remove a subset of last cells the rows; however, in case of consecutive rows of same length, the subset may only include the last cell of the final row with such property. The player who makes the last move wins.     
+</div>  
+  
+  
+<h2 id="moves">Moves</h2>  
+<p>The play, if their turn, can select a subset of the highlighted cells from the diagram;</p>  
+  
+<ul class="moves">  
+  <li>  
+    <span class="label"></span>  
+    <figure style="text-align:center;">  
+      <img src="cornerfigure1.png" alt="Left column removal" style="width:27%;">  
+    <figcaption>Figure&nbsp;1&nbsp;—&nbsp;A move in Corner</figcaption>  
+    </figure>  
+  </li> 
+  For instance, in Figure 1 - the player may decide to delete all the highlighted cells, and end up with changing the partition from $\left( 6, 4, 3, 3, 2, 1 \right)$ to $\left( 5, 3, 3, 2 \right)$.
+
+</ul>  
+  
+<h2>More</h2>  
+
+		Some research are already waiting on publication approval - please contact <a href=https://www.rhodes.edu/bio/eric-gottlieb>Prof. Gottlieb</a> for related queries.
+  
+</body>  
+</html>  

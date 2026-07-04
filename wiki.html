@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation | Partition Games</title>
+    
+    <!-- Console-style monospace fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- MathJax Configuration -->
+    <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        processEscapes: true,
+        processEnvironments: true
+      },
+      options: {
+        skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+      }
+    };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+    
+    <style>
+        :root {
+            --orange: #FF6B35;
+            --orange-light: #FF8757;
+            --orange-dark: #E55A2B;
+            --white: #FFFFFF;
+            --off-white: #FAFAFA;
+            --gray-light: #F5F5F5;
+            --gray: #666666;
+            --gray-dark: #333333;
+            --black: #000000;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'JetBrains Mono', 'Source Code Pro', 'Monaco', 'Menlo', monospace;
+            background-color: var(--white);
+            color: var(--gray-dark);
+            line-height: 1.6;
+            font-size: 14px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        header {
+            border-bottom: 1px solid var(--gray-light);
+            padding: 20px 0;
+            background-color: var(--white);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--orange);
+            text-decoration: none;
+        }
+        
+        .logo::before {
+            content: "~/";
+            color: var(--gray);
+        }
+        
+        .back-link {
+            color: var(--gray-dark);
+            text-decoration: none;
+            font-weight: 400;
+            transition: color 0.2s ease;
+        }
+        
+        .back-link:hover {
+            color: var(--orange);
+        }
+        
+        .back-link::before {
+            content: "← ";
+            color: var(--gray);
+        }
+        
+        /* Main Content */
+        main {
+            padding: 60px 0;
+        }
+        
+        .page-title {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .page-title h1 {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--orange);
+            margin-bottom: 10px;
+        }
+        
+        .page-title h1::before {
+            content: "# ";
+            color: var(--gray);
+        }
+        
+        .page-title p {
+            font-size: 16px;
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Games Grid */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .game-card {
+            border: 1px solid var(--gray-light);
+            background-color: var(--off-white);
+            padding: 25px;
+            transition: border-color 0.2s ease, background-color 0.2s ease;
+        }
+        
+        .game-card:hover {
+            border-color: var(--orange-light);
+            background-color: var(--white);
+        }
+        
+        .game-card h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--orange);
+            margin-bottom: 15px;
+        }
+        
+        .game-card h2::before {
+            content: "## ";
+            color: var(--gray);
+        }
+        
+        .game-card p {
+            color: var(--gray);
+            margin-bottom: 20px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .doc-link {
+            display: inline-block;
+            background-color: var(--orange);
+            color: var(--white);
+            text-decoration: none;
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .doc-link:hover {
+            background-color: var(--orange-dark);
+        }
+        
+        .doc-link::before {
+            content: "$ ";
+        }
+        
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--gray-light);
+            padding: 30px 0;
+            background-color: var(--off-white);
+            margin-top: 60px;
+        }
+        
+        .footer-content {
+            text-align: center;
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .page-title h1 {
+                font-size: 24px;
+            }
+            
+            .games-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="assets/css/site-modern.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">partition-games</a>
+                <a href="index.html" class="back-link">back to home</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="page-title">
+                <h1>Documentation</h1>
+                <p>Comprehensive guides and rules for all partition games.</p>
+            </div>
+
+            <div class="games-grid">
+                <div class="game-card">
+                    <h2>LCTR</h2>
+                    <p>When it's their turn, the user can remove either the left column, or the top row.</p>
+                    <a class="doc-link" href="wiki/lctr/lctrdocu.html">read docs</a>
+                </div>
+
+                <div class="game-card">
+                    <h2>CRIM</h2>
+                    <p>The user may remove any row or column - but the two divided parts would get merged after each move. </p>
+                    <a class="doc-link" href="wiki/crim/crim.html">read docs</a>
+                </div>
+
+                <div class="game-card">
+                    <h2>CRIS</h2>
+                    <p>Moves are same as CRIM, but no merging in this case. Fragments parts will be independent, meaning a move in one dividend wouldn't impact others.</p>
+                    <a class="doc-link" href="wiki/cris/crisdocu.html">read docs</a>
+                </div>
+
+                <div class="game-card">
+                    <h2>RIT</h2>
+                    <p>Some cells of a row can be removed as a move as long as it has same or more number of cells than the row below it.</p>
+                    <a class="doc-link" href="wiki/rit/rit.html">read docs</a>
+                </div>
+
+                <div class="game-card">
+                    <h2>Corner</h2>
+                    <p>In each move, last cell of every row is removed; however, in case of consecutive rows with equal length, the player removes a cell only from the <em>last</em> row with identical length.</p>
+                    <a class="doc-link" href="wiki/corner/corner.html">read docs</a>
+                </div>
+
+                <div class="game-card">
+                    <h2>Sato-Welter</h2>
+                    <p>After selection of a cell $(i, j)$, the analogous hook to that cell is removed, and the divided parts — if there are any — are merged.</p>
+                    <a class="doc-link" href="wiki/Sato-Walter/satowalter.html">read docs</a>
+                </div>
+
+                <div class="game-card">
+                    <h2>AntiCorner</h2>
+                    <p>Moves take place just like Sato-Welter; however, the user chooses an <i>Anti-corner</i>, instead of a random cell.</p>
+                    <a class="doc-link" href="wiki/anticorner/anticorner.html">read docs</a>
+                </div>
+
+                <div class="game-card">
+                    <h2>Continuous Corner</h2>
+                    <p>A Corner variant where players can only select consecutive ranges of corner pieces, creating strategic depth through constrained moves.</p>
+                    <a class="doc-link" href="wiki/continuous_corner/continuous_corner.html">read docs</a>
+                </div>
+
+                <div class="game-card">
+                    <h2>CRPM</h2>
+                    <p>Partizan version of CRIM where Player A can only remove rows and Player B can only remove columns. Asymmetric strategic gameplay with complementary constraints.</p>
+                    <a class="doc-link" href="wiki/crpm/crpm.html">read docs</a>
+                </div>
+
+                <div class="game-card">
+                    <h2>CRPS</h2>
+                    <p>Partizan CRIS variant with independent fragments. Player A controls rows, Player B controls columns, creating strategic asymmetry in fragment management and positional evaluation.</p>
+                    <a class="doc-link" href="wiki/crps/crps.html">read docs</a>
+                </div>
+
+                            <div class="game-card">
+                <h2>CRIT</h2>
+                                    <p>Enhanced RIT with dual movement options. Players choose between row moves and column moves each turn, dramatically expanding strategic possibilities in Young diagram manipulation.</p>
+                <a class="doc-link" href="wiki/crit/crit.html">read docs</a>
+            </div>
+
+            <div class="game-card">
+                <h2>Corner King</h2>
+                <p>Royal enhanced Corner with special king powers and magical abilities. Capture corner pieces to gain Double Strike and Royal Decree powers for strategic domination and extended tactical control.</p>
+                <a class="doc-link" href="wiki/corner_king/corner_king.html">read docs</a>
+            </div>
+
+
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                © 2024 Partition Games — Rhodes College
+            </div>
+        </div>
+    </footer>
+    <script src="assets/js/site-shell.js"></script>
+</body>
+</html>

@@ -1,0 +1,1176 @@
+/* ==========================================================================
+   Unified Game Styles - Complete Standalone Styles
+   This file contains all styles needed for all partition games.
+   ========================================================================== */
+
+/* ==========================================================================
+   1. CSS Custom Properties & Theme Variables
+   ========================================================================== */
+
+:root {
+    --orange: #FF6B35;
+    --orange-light: #FF8757;
+    --orange-dark: #E55A2B;
+    --white: #FFFFFF;
+    --off-white: #FAFAFA;
+    --gray-light: #F5F5F5;
+    --gray: #666666;
+    --gray-dark: #333333;
+    --black: #000000;
+    
+    /* Game-specific variables */
+    --removing-color: #f56565;
+    --winning-color: #48bb78;
+    --selected-color: #ffa600;
+    --selectable-opacity: 0.8;
+    --anticorner-bg: #ff6b6b;
+    --anticorner-border: #e03131;
+}
+
+/* Dark mode color scheme */
+[data-theme="dark"] {
+    --orange: #FF7A47;
+    --orange-light: #FF9166;
+    --orange-dark: #FF5722;
+    --white: #1a1a1a;
+    --off-white: #222222;
+    --gray-light: #2a2a2a;
+    --gray: #a0a0a0;
+    --gray-dark: #e5e5e5;
+    --black: #ffffff;
+}
+
+/* ==========================================================================
+   2. Global Reset & Base Styles
+   ========================================================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'JetBrains Mono', 'Source Code Pro', 'Monaco', 'Menlo', monospace;
+    background-color: var(--white);
+    color: var(--gray-dark);
+    line-height: 1.6;
+    font-size: 14px;
+    min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
+}
+
+/* Smooth transitions for theme switching */
+body, 
+.container,
+header,
+#game-card,
+footer {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* ==========================================================================
+   3. Header Styles
+   ========================================================================== */
+
+header {
+    padding: 0px 30px;
+    background-color: var(--white);
+}
+
+.header-content {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+}
+
+.header-left {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.header-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+    gap: 8px;
+}
+
+.header-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.logo-section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.logo {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--orange);
+    text-decoration: none;
+}
+
+.logo::before {
+    content: "~/";
+    color: var(--gray);
+}
+
+.game-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--gray-dark);
+}
+
+/* Header Game Title Section */
+.header-center .game-title-section {
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.header-center .game-title-section h1 {
+    font-size: 36px;
+    font-weight: 700; 
+    letter-spacing: -0.02em;
+    color: var(--orange);
+    margin: 0;
+}
+
+.header-center .game-title-section ::before {
+    content: "< ";
+    font-weight: 500;
+    color: var(--gray-dark);
+}
+
+.header-center .game-title-section ::after {
+    content: " >";
+    font-weight: 500;
+    color: var(--gray-dark);
+}
+
+/* Header Status Container */
+.header-center .status-container { 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    gap: 8px; 
+    margin-bottom: 0; 
+}
+
+.header-center #status-label { 
+    min-height: auto; 
+    margin: 0; 
+    font-size: 16px; 
+    font-weight: 500; 
+    color: var(--gray); 
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.header-center #status-label.exiting { 
+    opacity: 0; 
+    transform: translateY(-5px); 
+}
+
+/* Status label for CRIS */
+.status-container p {
+    color: var(--gray);
+    font-size: 14px;
+    font-weight: 400;
+    margin: 0;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: nowrap;
+}
+
+nav a {
+    color: var(--gray-dark);
+    text-decoration: none;
+    font-weight: 400;
+    font-size: 14px;
+    transition: color 0.2s ease;
+}
+
+nav a:hover {
+    color: var(--orange);
+}
+
+.nav-button {
+    background: none;
+    border: none;
+    color: var(--gray-dark);
+    text-decoration: none;
+    font-weight: 400;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    transition: color 0.2s ease;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
+}
+
+.nav-button:hover {
+    color: var(--orange);
+}
+
+/* Theme toggle button */
+.theme-toggle {
+    font-family: 'JetBrains Mono', 'Source Code Pro', 'Monaco', 'Menlo', monospace;
+    font-weight: 500;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.theme-icon {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    transition: stroke 0.3s ease;
+}
+
+/* Alternative theme switcher for games that use the switch style */
+.theme-switcher {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.theme-switcher .theme-icon {
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--gray);
+    transition: 0.3s;
+    border-radius: 20px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: var(--white);
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--orange);
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+.slider.round {
+    border-radius: 20px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* ==========================================================================
+   4. Main Content & Layout
+   ========================================================================== */
+
+main {
+    padding: 20px 20px;
+}
+
+/* ==========================================================================
+   5. Footer Styles
+   ========================================================================== */
+
+footer {
+    border-top: 1px solid var(--gray-light);
+    padding: 30px 0;
+    background-color: var(--off-white);
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: var(--gray);
+}
+
+.footer-links {
+    display: flex;
+    gap: 20px;
+}
+
+.footer-links a {
+    color: var(--gray);
+    text-decoration: none;
+}
+
+.footer-links a:hover {
+    color: var(--orange);
+}
+
+/* ==========================================================================
+   6. Game-Specific Tile Themes
+   ========================================================================== */
+
+/* Terminal Tile Themes - These variables define the colors for the game tiles. */
+[data-tile-theme="grass"] {
+    --tile-bg: var(--off-white);
+    --tile-border: var(--orange);
+    --tile-shadow: var(--orange-dark);
+    --anticorner-bg: #ff6b6b;
+    --anticorner-border: #e03131;
+}
+[data-tile-theme="stone"] {
+    --tile-bg: var(--off-white);
+    --tile-border: var(--gray);
+    --tile-shadow: var(--gray-dark);
+    --anticorner-bg: #ff6b6b;
+    --anticorner-border: #e03131;
+}
+[data-tile-theme="ice"] {
+    --tile-bg: var(--off-white);
+    --tile-border: #7dd3fc;
+    --tile-shadow: #0ea5e9;
+    --anticorner-bg: #ff6b6b;
+    --anticorner-border: #e03131;
+}
+
+/* ==========================================================================
+   7. Keyframe Animations
+   ========================================================================== */
+
+@keyframes thinking-dot {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1.0); }
+}
+
+@keyframes modal-entry { 
+    from { opacity: 0; transform: scale(0.95) translateY(-10px); } 
+    to { opacity: 1; transform: scale(1) translateY(0); } 
+}
+
+@keyframes anticorner-glow {
+    from {
+        box-shadow: 0 0 8px rgba(255, 107, 107, 0.6);
+    }
+    to {
+        box-shadow: 0 0 12px rgba(255, 107, 107, 0.9);
+    }
+}
+
+/* ==========================================================================
+   8. Layout & Game-Specific Containers
+   ========================================================================== */
+
+#game-card { 
+    position: relative; 
+    width: fit-content;
+    min-width: 480px; 
+    margin: 40px auto; /* Center the game card with some margin */
+    padding: 25px; 
+    box-sizing: border-box; 
+    background-color: var(--white); 
+    text-align: center; 
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+#board-area {
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   9. Header Controls Styling
+   ========================================================================== */
+
+/* Group for label and select dropdown in the nav */
+.nav-control-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-label {
+    color: var(--gray);
+    font-size: 14px;
+}
+
+.nav-select {
+    background-color: var(--white);
+    border: 1px solid var(--gray-light);
+    color: var(--gray-dark);
+    font-family: inherit;
+    font-size: 14px;
+    padding: 4px 8px;
+    transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .nav-select {
+    background-color: var(--off-white);
+    border-color: var(--gray-dark);
+}
+
+.nav-select:hover {
+    border-color: var(--orange);
+}
+
+.nav-select:focus {
+    outline: none;
+    border-color: var(--orange);
+    box-shadow: 0 0 0 2px rgba(255, 107, 53, 0.2);
+}
+
+/* ==========================================================================
+   10. Game Components (Board, Tiles, Modals)
+   ========================================================================== */
+
+/* Game Area, Tiles, AI Indicator */
+#board-area { 
+    position: relative; 
+    min-height: 480px; 
+    min-width: 480px; 
+    margin: 0 auto;
+    overflow: hidden;     /* optional: keeps huge coords from enlarging page */
+    will-change: transform;   /* hint for the compositor */
+}
+
+#board-area.clickable { cursor: pointer; }
+
+/* Tiles (used by all games) */
+.tile { 
+    position: absolute; 
+    z-index: 2; 
+    box-sizing: border-box; 
+    background: var(--tile-bg); 
+    border: 2px solid var(--tile-border); 
+    border-right-color: var(--tile-shadow); 
+    border-bottom-color: var(--tile-shadow); 
+    image-rendering: pixelated; 
+    pointer-events: none; 
+    
+    /* NEW — trimmed transition list: */
+    transition: background-color 0.3s ease,
+                border-color     0.3s ease,
+                transform        0.3s ease;
+    /* no "all", no "top", no "left" */
+    
+    contain: layout paint style; /* optimization hint */
+}
+
+.tile,
+.label-cell{
+    position: absolute;
+}
+
+.tile.highlighted { 
+    transform: scale(1.05); 
+    box-shadow: inset 0 0 0 3px var(--orange); 
+}
+
+.tile.removing { 
+    opacity: 0; 
+    transform: scale(0.2) rotate(45deg); 
+    transition-duration: 0.4s; 
+}
+
+.tile.selected {
+    box-shadow: inset 0 0 0 4px var(--selected-color);
+    z-index: 10;
+}
+
+.tile.selectable {
+    pointer-events: auto;
+    cursor: pointer;
+    opacity: var(--selectable-opacity);
+}
+
+.tile.selectable:hover {
+    transform: scale(1.05);
+}
+
+.tile.empty {
+    background: transparent;
+    border: none;
+    pointer-events: none;
+}
+
+/* Starting Corner Styling (for SCC game) */
+.tile.starting-corner {
+    border: 3px solid var(--orange);
+    background-color: var(--orange-light);
+    box-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
+}
+
+.tile.starting-corner:hover {
+    border-color: var(--orange-dark);
+    background-color: var(--orange);
+}
+
+/* Starting corner when selected - ensure selection border is visible */
+.tile.starting-corner.selected {
+    border: 3px solid var(--orange);
+    background-color: var(--orange-light);
+    box-shadow: 0 0 10px rgba(255, 107, 53, 0.5), inset 0 0 0 4px var(--selected-color);
+    z-index: 10;
+}
+
+/* Anticorner specific tiles */
+.tile.anticorner {
+    background: var(--anticorner-bg) !important;
+    border-color: var(--anticorner-border) !important;
+    border-right-color: var(--anticorner-border) !important;
+    border-bottom-color: var(--anticorner-border) !important;
+    pointer-events: auto;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(255, 106, 0, 0.885);
+    animation: anticorner-glow 2s ease-in-out infinite alternate;
+}
+
+.tile.anticorner:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 12px rgba(255, 128, 9, 0.88), inset 0 0 0 3px var(--orange);
+}
+
+/* Tile that will be removed (preview) */
+.tile.will-remove {
+    background: rgba(255, 107, 107, 0.3) !important;
+    border-color: rgba(224, 49, 49, 0.5) !important;
+    border-right-color: rgba(224, 49, 49, 0.5) !important;
+    border-bottom-color: rgba(224, 49, 49, 0.5) !important;
+    opacity: 0.7;
+}
+
+/* Label cells for CRIM, CRPM, CRIS, Sato-Welter games */
+.label-cell {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gray-light);
+    color: var(--gray-dark);
+    font-family: 'JetBrains Mono', 'Source Code Pro', 'Monaco', 'Menlo', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s ease, transform 0.15s ease, color 0.2s ease;
+}
+
+.label-cell:hover {
+    background: var(--orange);
+    color: var(--white);
+    transform: translateY(-2px);
+}
+
+.label-cell.row-win {
+    background: #ff6b6b !important;
+    color: var(--white);
+}
+
+.label-cell.col-win {
+    background: #ffe600fc !important;
+    color: var(--white);
+}
+
+.label-cell.highlighted {
+    background: var(--orange) !important;
+    color: var(--white);
+}
+
+[data-theme="dark"] .label-cell.highlighted {
+    background: var(--orange-dark) !important;
+}
+
+.label-cell.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.label-cell.disabled:hover {
+    background: var(--gray-light);
+    color: var(--gray-dark);
+    transform: none;
+}
+
+#ai-thinking-indicator { display: none; }
+#ai-thinking-indicator.thinking { display: inline-flex; }
+#ai-thinking-indicator .dot { 
+    width: 6px; 
+    height: 6px; 
+    background-color: var(--gray); 
+    border-radius: 50%; 
+    margin: 0 2px; 
+    animation: thinking-dot 1.4s infinite ease-in-out both; 
+}
+#ai-thinking-indicator .dot:nth-child(1) { animation-delay: -0.32s; }
+#ai-thinking-indicator .dot:nth-child(2) { animation-delay: -0.16s; }
+
+/* ==========================================================================
+   11. Selection Controls (Corner, Continuous Corner games)
+   ========================================================================== */
+
+.selection-controls {
+    display: flex;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: column;
+    gap: 8px;
+    z-index: 1100;
+}
+
+.confirm-btn {
+    content: 'confirm';
+    background-color: var(--orange);
+    color: var(--white);
+    border: none;
+    padding: 8px 16px;
+    font-family: 'JetBrains Mono', 'Source Code Pro', 'Monaco', 'Menlo', monospace;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 200px;
+    flex-shrink: 0;
+}
+
+.confirm-btn:hover:not(:disabled) {
+    background-color: var(--orange-dark);
+}
+
+.confirm-btn:disabled {
+    background-color: var(--gray);
+    color: var(--gray-light);
+    cursor: not-allowed;
+}
+
+.clear-btn {
+    background-color: var(--gray-light);
+    color: var(--gray-dark);
+    border: 1px solid var(--gray);
+    padding: 8px 16px;
+    font-family: 'JetBrains Mono', 'Source Code Pro', 'Monaco', 'Menlo', monospace;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 200px;
+    flex-shrink: 0;
+}
+
+.clear-btn:hover {
+    background-color: var(--gray);
+    color: var(--white);
+}
+
+/* ==========================================================================
+   12. Modals, Popovers, and Buttons
+   ========================================================================== */
+
+.modal-backdrop { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    z-index: 1000; 
+    display: flex; 
+    align-items: flex-start; 
+    justify-content: center; 
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0, 0, 0, 0.6); 
+    backdrop-filter: blur(4px); 
+    opacity: 0; 
+    visibility: hidden; 
+    transition: opacity 0.3s ease; 
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 40px 0;
+}
+
+.modal-backdrop.visible { opacity: 1; visibility: visible; }
+
+.modal { 
+    display: flex; 
+    flex-direction: column; 
+    width: 90%; 
+    max-width: 400px; 
+    padding: 24px 28px; 
+    gap: 16px; 
+    background: var(--white); 
+    border: 1px solid var(--gray-light); 
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1); 
+    opacity: 0;
+    font-family: 'JetBrains Mono', 'Source Code Pro', 'Monaco', 'Menlo', monospace;
+    text-transform: lowercase;
+    margin: auto;
+    flex-shrink: 0;
+}
+
+.modal-backdrop.visible .modal { 
+    animation: modal-entry 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; 
+}
+
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: -10px; }
+.modal-header h2 { margin: 0; font-size: 18px; }
+.modal hr { width: 100%; border: none; border-top: 1px solid var(--gray-light); margin: 0; }
+.modal h2, #help-popover h3 { margin: 0 0 10px 0; font-weight: 600; color: var(--gray-dark); }
+.modal p, #help-popover p, #help-popover li { font-size: 13px; line-height: 1.6; color: var(--gray); }
+.modal p { margin: 0; text-align: left; }
+.modal label { font-weight: 500; font-size: 13px; color: var(--gray); text-align: left; }
+
+.modal input, .modal select { 
+    width: 100%; 
+    padding: 8px 12px; 
+    box-sizing: border-box; 
+    font-size: 14px; 
+    font-family: inherit;
+    color: var(--gray-dark); 
+    background: var(--off-white); 
+    border: 1px solid var(--gray-light); 
+    transition: all 0.2s ease; 
+}
+
+.modal input:focus, .modal select:focus { 
+    outline: none; 
+    border-color: var(--orange); 
+    background-color: var(--white);
+}
+
+.modal-btn { 
+    font-family: 'JetBrains Mono', 'Source Code Pro', 'Monaco', 'Menlo', monospace;
+    text-transform: lowercase;
+    width: 100%; 
+    margin-top: 8px; 
+    color: var(--white); 
+    background-color: var(--orange);
+    border: none;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.modal-btn:hover { background-color: var(--orange-dark); }
+
+.secondary-button {
+    font-family: 'JetBrains Mono', 'Source Code Pro', 'Monaco', 'Menlo', monospace;
+    text-transform: lowercase;
+    width: 100%;
+    margin-bottom: 8px;
+    color: var(--gray-dark);
+    background-color: var(--gray-light);
+    border: 1px solid var(--gray);
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.secondary-button:hover { 
+    background-color: var(--gray); 
+    color: var(--white);
+}
+
+.input-group { display: flex; gap: 8px; font-family: 'JetBrains Mono', 'Source Code Pro', 'Monaco', 'Menlo', monospace; text-transform: lowercase; align-items: center; }
+.input-group input { flex-basis: 80px; flex-shrink: 0; flex-grow: 0; min-width: 60px; font-family: 'JetBrains Mono', 'Source Code Pro', 'Monaco', 'Menlo', monospace; }
+.input-group button { flex-grow: 1; font-size: 14px; font-family: 'JetBrains Mono', 'Source Code Pro', 'Monaco', 'Menlo', monospace; }
+.input-group select { flex-shrink: 0; width: auto; font-size: 14px; font-family: 'JetBrains Mono', 'Source Code Pro', 'Monaco', 'Menlo', monospace; }
+.partition-number-hint { font-size: 12px; opacity: 0.65; white-space: nowrap; flex-shrink: 0; text-transform: none; }
+
+.slider-container { width: 100%; display: flex; align-items: center; }
+.difficulty-range { width: 100%; }
+
+#difficulty-label {
+    font-size: 13px;
+    color: var(--gray);
+    margin-right: 8px;
+}
+
+.icon-button {
+    font-size: 14px;
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    padding: 4px; 
+    background: transparent; 
+    border: none; 
+    border-radius: 99px; 
+    color: var(--gray);
+    cursor: pointer;
+    font-family: 'JetBrains Mono', 'Source Code Pro', 'Monaco', 'Menlo', monospace;
+    text-transform: lowercase;
+    transition: color 0.2s ease;
+}
+
+.icon-button:hover { 
+    color: var(--orange); 
+    background-color: var(--gray-light); 
+}
+
+.icon-button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.icon-button:disabled:hover {
+    color: var(--gray);
+    background-color: transparent;
+}
+
+#help-popover { 
+    position: fixed; 
+    top: 65px; 
+    right: 20px; 
+    z-index: 1001; 
+    width: 280px; 
+    padding: 16px 20px; 
+    background: var(--white); 
+    border: 1px solid var(--gray-light); 
+    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); 
+    opacity: 0; 
+    visibility: hidden; 
+    pointer-events: none; 
+    transform: translateY(-10px) scale(0.95); 
+    transition: all 0.2s ease-out; 
+}
+
+#help-popover.visible { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+#help-popover p { margin: 0 0 10px 0; }
+#help-popover ul { margin: 0 0 10px 0; padding-left: 20px; }
+#help-popover li { margin-bottom: 5px; }
+
+
+
+.fixed-new-game-btn {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 1100;
+    background-color: var(--orange);
+    color: var(--white);
+    text-decoration: none;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'JetBrains Mono', 'Source Code Pro', 'Monaco', 'Menlo', monospace;
+}
+
+.fixed-new-game-btn:hover {
+    background-color: var(--orange-dark);
+}
+
+/* ==========================================================================
+   13. Authentication & Multiplayer Modal Styles (LCTR)
+   ========================================================================== */
+
+.hidden {
+    display: none !important;
+}
+
+#auth-message {
+    font-size: 13px;
+    padding: 8px;
+    border-radius: 4px;
+    margin: 10px 0;
+}
+
+#auth-message.error {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+}
+
+#auth-message.success {
+    background-color: #e8f5e8;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+/* Stack auth inputs vertically in multiplayer login/register */
+#auth-section .input-group {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+}
+
+#auth-section .input-group input {
+    flex: 0 1 auto;
+    min-width: 0;
+    width: 100%;
+}
+
+[data-theme="dark"] #auth-message.error {
+    background-color: #3d2a2a;
+    color: #ff6b6b;
+    border: 1px solid #5d4037;
+}
+
+[data-theme="dark"] #auth-message.success {
+    background-color: #2a3d2a;
+    color: #4caf50;
+    border: 1px solid #388e3c;
+}
+
+#connection-status {
+    font-size: 13px;
+    border-radius: 4px;
+}
+
+#connection-status.connected {
+    background-color: #e8f5e8;
+    color: #2e7d32;
+    border: 1px solid #c8e6c9;
+}
+
+#connection-status.disconnected {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ffcdd2;
+}
+
+#connection-status.waiting {
+    background-color: #fff8e1;
+    color: #f57c00;
+    border: 1px solid #ffecb3;
+}
+
+[data-theme="dark"] #connection-status.connected {
+    background-color: #2a3d2a;
+    color: #4caf50;
+    border: 1px solid #388e3c;
+}
+
+[data-theme="dark"] #connection-status.disconnected {
+    background-color: #3d2a2a;
+    color: #ff6b6b;
+    border: 1px solid #5d4037;
+}
+
+[data-theme="dark"] #connection-status.waiting {
+    background-color: #3d3d2a;
+    color: #ffc107;
+    border: 1px solid #ff8f00;
+}
+
+#user-profile-section {
+    background-color: var(--gray-light);
+    border-color: var(--gray) !important;
+}
+
+[data-theme="dark"] #user-profile-section {
+    background-color: var(--gray-light);
+    border-color: var(--gray) !important;
+}
+
+/* ==========================================================================
+   14. Responsive Design
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .header-content {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .header-left {
+        order: 1;
+        justify-content: flex-start;
+    }
+    
+    .header-center {
+        order: 2;
+    }
+    
+    .header-right {
+        order: 3;
+        justify-content: flex-end;
+    }
+    
+    .header-center .game-title-section h1 {
+        font-size: 28px;
+    }
+    
+    .footer-content {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+    
+    #game-card {
+        min-width: 320px;
+        margin: 20px auto;
+        padding: 20px;
+    }
+    
+    #board-area {
+        min-width: 320px;
+        min-height: 320px;
+    }
+    
+    .fixed-new-game-btn {
+        bottom: 20px;
+        right: 20px;
+        padding: 10px 16px;
+        font-size: 12px;
+    }
+    
+    .modal {
+        padding: 20px;
+        width: 95%;
+    }
+    
+    .modal-header h2 {
+        font-size: 20px;
+    }
+    
+    #help-popover {
+        width: 95%;
+        padding: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        padding: 0 15px;
+    }
+    
+    .logo {
+        font-size: 16px;
+    }
+    
+    .game-title {
+        font-size: 16px;
+    }
+    
+    .header-center .game-title-section h1 {
+        font-size: 28px;
+    }
+    
+    nav {
+        gap: 8px;
+    }
+    
+    .nav-button {
+        font-size: 11px;
+        padding: 5px 8px;
+    }
+    
+    .modal {
+        padding: 15px;
+    }
+    
+    .input-group {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .input-group button {
+        padding: 8px 12px;
+    }
+} 
+/* ============================================================
+   3D BLOCK TILES — depth + motion upgrade (Partition Games 3D)
+   Visual-only; positions/sizes still come from inline styles,
+   so all 12 game engines keep working untouched.
+   ============================================================ */
+.tile {
+    border-radius: 3px;
+    transition: background-color 0.3s ease,
+                border-color     0.3s ease,
+                transform        0.22s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow       0.22s ease;
+    box-shadow:
+        1.5px 1.5px 0 var(--tile-shadow),
+        3px   3px   0 var(--tile-shadow),
+        4px   7px   12px -4px rgba(0, 0, 0, 0.35);
+}
+
+/* subtle top-light face so the cube reads as solid */
+.tile::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 2px;
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 55%);
+    pointer-events: none;
+}
+[data-theme="dark"] .tile::after {
+    background: linear-gradient(150deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0) 55%);
+}
+
+/* lift selectable blocks on hover for a tactile, 3D feel */
+.tile.selectable:hover {
+    transform: translateY(-4px) scale(1.04);
+    box-shadow:
+        2px 4px 0 var(--tile-shadow),
+        4px 8px 0 var(--tile-shadow),
+        7px 16px 22px -6px rgba(0, 0, 0, 0.45);
+    z-index: 8;
+}
+
+/* dimensional removal: the block topples and falls away */
+.tile.removing {
+    opacity: 0;
+    transform: perspective(420px) rotateX(72deg) translateY(26px) scale(0.45);
+    transition-duration: 0.45s;
+    box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tile { transition-duration: 0.01ms; }
+}
+
+/* empty/placeholder cells stay flat */
+.tile.empty {
+    box-shadow: none !important;
+}
+.tile.empty::after { display: none; }

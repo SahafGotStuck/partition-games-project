@@ -1,0 +1,146 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+  <meta charset="UTF-8">  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+  <title>CRIT – Column-Row RIT Game</title>  
+  
+  <!-- Google fonts --> 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;800&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+ 
+  
+  <!-- Styles -->  
+  <link rel="stylesheet" href="../../assets/css/unified_game_styles.css">  
+    <link rel="stylesheet" href="../../assets/css/game-modern.css">
+</head>  
+<body>  
+  <!-- starry background -->  
+  <div id="stars-small"></div>  
+  <div id="stars-medium"></div>  
+  <div id="stars-large"></div>  
+  
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <div class="header-left">
+          <div class="logo-section">
+            <a href="../../index.html" class="logo">partition-games</a>
+            <span class="game-title"> /CRIT</span>
+          </div>
+        </div>
+        <div class="header-center">
+          <div class="game-title-section">
+            <h1>CRIT</h1>
+          </div>
+          <div class="status-container">
+            <p id="status-label">Loading...</p>
+            <div id="ai-thinking-indicator">
+              <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+          </div>
+        </div>
+        <div class="header-right">
+          <nav>
+            <button id="help-btn" class="nav-button">? help</button>
+            <button id="undo-btn" class="nav-button" aria-label="Undo Move" style="display: none;" title="Undo Move">↶ undo</button>
+            <button id="download-btn" class="nav-button" aria-label="Download Game" style="display: none;" title="Download Game History">↓ download</button>
+            <button id="theme-toggle" class="theme-toggle nav-button" aria-label="Toggle theme"></button>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div id="game-card" data-tile-theme="grass">
+        <canvas id="game-canvas"></canvas>
+      </div>
+      <button id="new-game-btn" class="fixed-new-game-btn">$ new game</button>
+    </div>
+  </main>
+  
+  <!-- setup modal -->  
+  <div id="setup-modal-backdrop" class="modal-backdrop">  
+    <div class="modal">  
+      <div class="modal-header">
+        <h2>Game Setup</h2>
+        <button id="help-btn-modal" class="icon-button" aria-label="Help">[?]</button>
+      </div>
+      <p>Enter the partition of the initial Young-diagram.</p>  
+
+      <label for="rows-input">Row Lengths</label>  
+      <input id="rows-input" type="text" value="5 4 2 1" placeholder="e.g., 5 4 2 1">  
+
+      <hr>
+
+      <label for="partition-type-select">Or, generate a partition:</label>
+      <div class="input-group">
+        <select id="partition-type-select" class="partition-type-dropdown">
+          <option value="random">random</option>
+          <option value="staircase">staircase</option>
+          <option value="rectangle">rectangle</option>
+          <option value="square">square</option>
+          <option value="hook">hook</option>
+          <option value="triangle">triangle</option>
+        </select>
+        <input type="number" id="partition-number-input" placeholder="e.g., 25">
+        <button id="generate-partition-btn">generate</button>
+      </div>
+      
+      <hr>
+
+      <label for="ai-select">Computer Player</label>  
+      <select id="ai-select">  
+        <option value="B">Bob (Starts Second)</option>  
+        <option value="A">Alice (Starts First)</option>  
+        <option value="None">None (Two Human Players)</option>  
+      </select>  
+
+      <label for="difficulty-slider">AI Difficulty: <span id="difficulty-label">Medium (50)</span></label>
+      <div class="slider-container">
+        <input type="range" id="difficulty-slider" min="1" max="100" value="50" class="difficulty-range">
+      </div>  
+
+      <button id="start-game-btn" class="modal-btn"> >> start game</button>  
+    </div>  
+  </div>  
+  
+  <!-- game-over modal -->  
+  <div id="game-over-modal-backdrop" class="modal-backdrop">  
+    <div class="modal">  
+      <h2 id="game-over-title">Game Over</h2>  
+      <p id="game-over-message">Player X wins!</p>  
+      <button id="download-btn-modal" class="icon-button" aria-label="Download Game" title="Download Game History" style="margin-bottom: 12px; display: flex; align-items: center; justify-content: center;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/></svg> Download
+      </button>
+      <button id="play-again-btn" class="modal-btn">Play Again</button>  
+    </div>  
+  </div>  
+  
+  <!-- help pop-over -->  
+  <div id="help-popover">  
+    <h3>How to Play</h3>  
+    <p>• The diagram is a left-justified stack of rows (a Young diagram).<br>  
+       • On your turn, choose to make either a <strong>row move</strong> or <strong>column move</strong>:<br>
+       • <strong>Row Move:</strong> Pick any row whose length is at least the length of the row directly underneath. Remove one or more blocks from the right end, leaving at least one block behind.<br>
+       • <strong>Column Move:</strong> Pick any column whose height is at least the height of the column directly to its right. Remove one or more blocks from the bottom, leaving at least one block behind.<br>
+       • The player that removes the last remaining block anywhere on the board wins.</p>  
+  </div>  
+  
+  <!-- UI sounds (royalty-free) -->  
+  <audio id="sound-hover"  src="https://assets.mixkit.co/sfx/preview/mixkit-video-game-mystery-alert-234.mp3" preload="auto"></audio>  
+  <audio id="sound-remove" src="https://assets.mixkit.co/sfx/preview/mixkit-click-error-1110.mp3" preload="auto"></audio>  
+  <audio id="sound-win"    src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-bonus-alert-767.mp3" preload="auto"></audio>  
+  <audio id="sound-click"  src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3" preload="auto"></audio>  
+  
+    <!-- logic -->
+  <script src="../../config.js"></script>
+  <script src="../../assets/js/script.js"></script>
+  <script src="../../assets/js/database-utils.js"></script>
+  <script src="crit_script.js"></script>  
+    <script src="../../assets/js/game-shell.js"></script>
+</body>  
+</html> 

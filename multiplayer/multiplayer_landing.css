@@ -1,0 +1,304 @@
+/* Multiplayer Landing Page Specific Styles */
+
+.auth-status-section {
+    margin: 30px 0;
+    padding: 20px;
+    background-color: var(--gray-light);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.auth-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.auth-button {
+    background-color: var(--orange);
+    color: var(--white);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.auth-button:hover {
+    background-color: var(--orange-dark);
+}
+
+.user-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-stats {
+    display: flex;
+    gap: 20px;
+    font-size: 12px;
+    color: var(--gray);
+}
+
+.logout-button {
+    background-color: var(--gray);
+    color: var(--white);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.logout-button:hover {
+    background-color: var(--gray-dark);
+}
+
+.multiplayer-btn {
+    background-color: var(--orange);
+    color: var(--white);
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.multiplayer-btn:hover {
+    background-color: var(--orange-dark);
+    transform: translateY(-1px);
+}
+
+.multiplayer-btn:disabled {
+    background-color: var(--gray);
+    cursor: not-allowed;
+    transform: none;
+}
+
+.multiplayer-info {
+    margin: 40px 0;
+    padding: 30px;
+    background-color: var(--gray-light);
+    border-radius: 8px;
+}
+
+.multiplayer-info h3 {
+    margin-bottom: 20px;
+    color: var(--orange);
+}
+
+.multiplayer-info ol {
+    padding-left: 20px;
+}
+
+.multiplayer-info li {
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background-color: var(--white);
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 20px 0 20px;
+    border-bottom: 1px solid var(--gray-light);
+    padding-bottom: 15px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: var(--orange);
+    font-size: 18px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: var(--gray);
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+.close-btn:hover {
+    background-color: var(--gray-light);
+    color: var(--gray-dark);
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-weight: 500;
+    color: var(--gray-dark);
+    font-size: 14px;
+}
+
+.form-group input {
+    padding: 12px;
+    border: 1px solid var(--gray-light);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    background-color: var(--white);
+    color: var(--gray-dark);
+    transition: border-color 0.2s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--orange);
+}
+
+.auth-submit-btn {
+    background-color: var(--orange);
+    color: var(--white);
+    border: none;
+    padding: 12px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.auth-submit-btn:hover {
+    background-color: var(--orange-dark);
+}
+
+.form-switch {
+    text-align: center;
+    font-size: 14px;
+    color: var(--gray);
+}
+
+.link-button {
+    background: none;
+    border: none;
+    color: var(--orange);
+    text-decoration: underline;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0;
+}
+
+.link-button:hover {
+    color: var(--orange-dark);
+}
+
+.auth-message {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.auth-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.auth-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 95%;
+        margin: 20px;
+    }
+    
+    .modal-header {
+        padding: 15px 15px 0 15px;
+    }
+    
+    .modal-body {
+        padding: 15px;
+    }
+    
+    .games-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Dark mode adjustments */
+[data-theme="dark"] .modal-content {
+    background-color: var(--white);
+}
+
+[data-theme="dark"] .form-group input {
+    background-color: var(--white);
+    color: var(--gray-dark);
+    border-color: var(--gray);
+}
+
+[data-theme="dark"] .close-btn:hover {
+    background-color: var(--gray);
+    color: var(--white);
+}

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partition Games — Combinatorial Games in 3D | Rhodes College</title>
+    <meta name="description" content="Explore 12 combinatorial partition games rendered as interactive 3D block structures. A research project in combinatorial game theory at Rhodes College.">
+
+    <!-- Fonts: distinctive display + signature mono + refined body -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=JetBrains+Mono:wght@400;500;600;700&family=Inter+Tight:ital,wght@0,300..700;1,300..600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="assets/css/landing.css">
+
+    <!-- Three.js for the interactive 3D hero -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+</head>
+
+<body>
+    <!-- Atmospheric background layers -->
+    <div class="bg-layer bg-grid" aria-hidden="true"></div>
+    <div class="bg-layer bg-aurora" aria-hidden="true"></div>
+    <div class="bg-layer bg-grain" aria-hidden="true"></div>
+
+    <!-- Scroll-driven 3D model (fixed, travels through the whole page) -->
+    <canvas id="hero-canvas" aria-hidden="true"></canvas>
+
+    <!-- Header -->
+    <header id="site-header">
+        <div class="container header-inner">
+            <a href="index.html" class="brand">
+                <span class="brand-mark" aria-hidden="true">
+                    <span class="cube"><i></i><i></i><i></i></span>
+                </span>
+                <span class="brand-text">partition<span class="brand-accent">games</span></span>
+            </a>
+
+            <nav class="main-nav" aria-label="Primary">
+                <button id="about-btn" class="nav-link nav-button" aria-expanded="false" aria-haspopup="true">about</button>
+                <!-- nav items are rendered from assets/js/nav.config.js -->
+                <span data-nav class="nav-config"></span>
+                <button id="theme-toggle" class="theme-toggle nav-button" aria-label="Toggle theme"></button>
+            </nav>
+
+            <button id="menu-toggle" class="menu-toggle" aria-label="Open menu" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+
+            <div id="about-popover" class="about-popover hidden">
+                <button id="close-about" class="close-btn" aria-label="Close">&times;</button>
+                <h3>about</h3>
+                <p><strong>Rhodes College Summer Fellowship '25</strong></p>
+                <p>An interactive playground for combinatorial game theory, developed under the supervision of
+                <a href="https://www.rhodes.edu/bio/eric-gottlieb" target="_blank" rel="noopener">Professor Eric Gottlieb</a>.
+                Each game turns abstract integer partitions into something you can see, touch, and play.</p>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- HERO -->
+        <section class="hero" id="hero">
+            <div class="container hero-inner">
+                <div class="hero-copy">
+                    <p class="eyebrow reveal" data-reveal>
+                        <span class="eyebrow-dot"></span>combinatorial game theory · rhodes college
+                    </p>
+                    <h1 class="hero-title">
+                        <span class="reveal" data-reveal data-delay="1">partition</span>
+                        <span class="reveal hero-title-accent" data-reveal data-delay="2">games</span>
+                    </h1>
+                    <p class="hero-lede reveal" data-reveal data-delay="3">
+                        Twelve mathematical games where integer partitions become
+                        <em>physical block structures</em> you take apart, one move at a time.
+                    </p>
+                    <div class="hero-actions reveal" data-reveal data-delay="4">
+                        <a href="#games" class="btn btn-primary">
+                            <span>explore the games</span>
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                        </a>
+                        <a href="multiplayer/multiplayer_landing.html" class="btn btn-ghost">play multiplayer</a>
+                    </div>
+                    <dl class="hero-stats reveal" data-reveal data-delay="5">
+                        <div><dt>12</dt><dd>games</dd></div>
+                        <div><dt>2</dt><dd>families</dd></div>
+                        <div><dt>∞</dt><dd>positions</dd></div>
+                    </dl>
+                </div>
+            </div>
+            <a href="#games" class="scroll-cue" aria-label="Scroll to games">
+                <span></span>
+            </a>
+        </section>
+
+        <!-- GAMES -->
+        <section class="games-section" id="games">
+            <div class="container">
+                <header class="section-head">
+                    <p class="section-index reveal" data-reveal>01 — the collection</p>
+                    <h2 class="section-title reveal" data-reveal data-delay="1">choose your game</h2>
+                    <p class="section-sub reveal" data-reveal data-delay="2">
+                        Each game is a different rule for breaking a partition apart. Hover a card to feel the depth — then play.
+                    </p>
+                    <div class="filter-bar reveal" data-reveal data-delay="3" role="tablist" aria-label="Filter games">
+                        <button class="filter-chip is-active" data-filter="all" role="tab" aria-selected="true">all <span>19</span></button>
+                        <button class="filter-chip" data-filter="impartial" role="tab" aria-selected="false">impartial <span>10</span></button>
+                        <button class="filter-chip" data-filter="partizan" role="tab" aria-selected="false">partizan <span>2</span></button>
+                        <button class="filter-chip" data-filter="chess" role="tab" aria-selected="false">iChess <span>7</span></button>
+                    </div>
+                </header>
+
+                <div class="games-grid" id="games-grid">
+                    <!-- Impartial -->
+                    <article class="game-card" data-category="impartial" data-partition="3 2 1" data-reveal>
+                        <div class="card-glow"></div>
+                        <div class="card-top">
+                            <span class="card-tag">impartial</span>
+                            <div class="card-shape" aria-hidden="true"></div>
+                        </div>
+                        <h3>LCTR</h3>
+                        <p class="card-full">Left Column, Top Row</p>
+                        <p class="card-desc">Remove the left column or the top row. A classic impartial game with a Sprague–Grundy AI.</p>
+                        <div class="card-actions">
+                            <a href="games/lctr/lctr_page.html" class="play-link">play<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                            <a href="wiki/lctr/lctrdocu.html" class="rules-link">rules</a>
+                        </div>
+                    </article>
+
+                    <article class="game-card" data-category="impartial" data-partition="3 3" data-reveal>
+                        <div class="card-glow"></div>
+                        <div class="card-top"><span class="card-tag">impartial</span><div class="card-shape" aria-hidden="true"></div></div>
+                        <h3>CRIM</h3>
+                        <p class="card-full">Column Row Immediate Merge</p>
+                        <p class="card-desc">Remove any row or column; the remaining fragments merge back together after the move.</p>
+                        <div class="card-actions">
+                            <a href="games/crim/crim_page.html" class="play-link">play<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                            <a href="wiki/crim/crim.html" class="rules-link">rules</a>
+                        </div>
+                    </article>
+
+                    <article class="game-card" data-category="impartial" data-partition="3 3 1" data-reveal>
+                        <div class="card-glow"></div>
+                        <div class="card-top"><span class="card-tag">impartial</span><div class="card-shape" aria-hidden="true"></div></div>
+                        <h3>CRIS</h3>
+                        <p class="card-full">Column Row Independent Splits</p>
+                        <p class="card-desc">Same moves as CRIM, but the fragments stay separated and play on as independent boards.</p>
+                        <div class="card-actions">
+                            <a href="games/cris/cris_page.html" class="play-link">play<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                            <a href="wiki/cris/crisdocu.html" class="rules-link">rules</a>
+                        </div>
+                    </article>
+
+                    <article class="game-card" data-category="impartial" data-partition="4 1 1" data-reveal>
+                        <div class="card-glow"></div>
+                        <div class="card-top"><span class="card-tag">impartial</span><div class="card-shape" aria-hidden="true"></div></div>
+                        <h3>Sato-Welter</h3>
+                        <p class="card-full">The hook game</p>
+                        <p class="card-desc">Remove an L-shaped hook rooted at any square, clearing everything below and to its right.</p>
+                        <div class="card-actions">
+                            <a href="games/sato-welter/sato_welter_page.html" class="play-link">play<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                            <a href="wiki/Sato-Walter/satowalter.html" class="rules-link">rules</a>
+                        </div>
+                    </article>
+
+                    <article class="game-card" data-category="impartial" data-partition="4 3 2" data-reveal>
+                        <div class="card-glow"></div>
+                        <div class="card-top"><span class="card-tag">impartial</span><div class="card-shape" aria-hidden="true"></div></div>
+                        <h3>RIT</h3>
+                        <p class="card-full">Row Inequality Theorem</p>
+                        <p class="card-desc">Trim squares from the end of any row, provided the result is still a valid Young diagram.</p>
+                        <div class="card-actions">
+                            <a href="games/rit/rit_page.html" class="play-link">play<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                            <a href="wiki/rit/rit.html" class="rules-link">rules</a>
+                        </div>
+                    </article>
+
+                    <article class="game-card" data-category="impartial" data-partition="3 3 2" data-reveal>
+                        <div class="card-glow"></div>
+                        <div class="card-top"><span class="card-tag">impartial</span><div class="card-shape" aria-hidden="true"></div></div>
+                        <h3>Corner</h3>
+                        <p class="card-full">Corner removal</p>
+                        <p class="card-desc">Remove any nonempty set of corners — squares that end both a row and a column.</p>
+                        <div class="card-actions">
+                            <a href="games/corner/corner_page.html" class="play-link">play<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                            <a href="wiki/corner/corner.html" class="rules-link">rules</a>
+                        </div>
+                    </article>
+
+                    <article class="game-card" data-category="impartial" data-partition="4 2 2" data-reveal>
+                        <div class="card-glow"></div>
+                        <div class="card-top"><span class="card-tag">impartial</span><div class="card-shape" aria-hidden="true"></div></div>
+                        <h3>AntiCorner</h3>
+                        <p class="card-full">Anticorner removal</p>
+                        <p class="card-desc">Remove the rightmost column, bottom row, or an L of squares connecting two adjacent corners.</p>
+                        <div class="card-actions">
+                            <a href="games/anticorners/anticorners_page.html" class="play-link">play<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                            <a href="wiki/anticorner/anticorner.html" class="rules-link">rules</a>
+                        </div>
+                    </article>
+
+                    <article class="game-card" data-category="impartial" data-partition="4 3 1" data-reveal>
+                        <div class="card-glow"></div>
+                        <div class="card-top"><span class="card-tag">impartial</span><div class="card-shape" aria-hidden="true"></div></div>
+                        <h3>Consecutive Corner</h3>
+                        <p class="card-full">Continuous corners</p>
+                        <p class="card-desc">Remove any nonempty set of consecutive corners in a single connected sweep.</p>
+                        <div class="card-actions">
+                            <a href="games/continuous-corner/continuous_corner_page.html" class="play-link">play<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                            <a href="wiki/continuous_corner/continuous_corner.html" class="rules-link">rules</a>
+                        </div>
+                    </article>
+
+                    <article class="game-card" data-category="impartial" data-partition="4 4 2" data-reveal>
+                        <div class="card-glow"></div>
+                        <div class="card-top"><span class="card-tag">impartial</span><div class="card-shape" aria-hidden="true"></div></div>
+                        <h3>CRIT</h3>
+                        <p class="card-full">Column Row Inequality Theorem</p>
+                        <p class="card-desc">RIT with teeth — trim the terminus of any row or column while keeping a valid diagram.</p>
+                        <div class="card-actions">
+                            <a href="games/crit/crit_page.html" class="play-link">play<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                            <a href="wiki/crit/crit.html" class="rules-link">rules</a>
+                        </div>
+                    </article>
+
+                    <article class="game-card" data-category="impartial" data-partition="3 3 3" data-reveal>
+                        <div class="card-glow"></div>
+                        <div class="card-top"><span class="card-tag">impartial</span><div class="card-shape" aria-hidden="true"></div></div>
+                        <h3>SICC</h3>
+                        <p class="card-full">Strict Continuous Corner</p>
+                        <p class="card-desc">Consecutive corners that must include the top-right or bottom-left corner of the diagram.</p>
+                        <div class="card-actions">
+                            <a href="games/scc/scc_page.html" class="play-link">play<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                            <a href="wiki/sicc/sicc.html" class="rules-link">rules</a>
+                        </div>
+                    </article>
+
+                    <!-- Partizan -->
+                    <article class="game-card is-partizan" data-category="partizan" data-partition="4 2" data-reveal>
+                        <div class="card-glow"></div>
+                        <div class="card-top"><span class="card-tag">partizan</span><div class="card-shape" aria-hidden="true"></div></div>
+                        <h3>CRPM</h3>
+                        <p class="card-full">Column Row Partizan Merge</p>
+                        <p class="card-desc">Player A removes rows, Player B removes columns. The partizan twin of CRIM — fragments merge.</p>
+                        <div class="card-actions">
+                            <a href="games/crpm/crpm_page.html" class="play-link">play<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                            <a href="wiki/crpm/crpm.html" class="rules-link">rules</a>
+                        </div>
+                    </article>
+
+                    <article class="game-card is-partizan" data-category="partizan" data-partition="3 2 2" data-reveal>
+                        <div class="card-glow"></div>
+                        <div class="card-top"><span class="card-tag">partizan</span><div class="card-shape" aria-hidden="true"></div></div>
+                        <h3>CRPS</h3>
+                        <p class="card-full">Column Row Partizan Splits</p>
+                        <p class="card-desc">Player A controls rows, Player B controls columns — and the fragments play on separately.</p>
+                        <div class="card-actions">
+                            <a href="games/crps/crps_page.html" class="play-link">play<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                            <a href="wiki/crps/crps.html" class="rules-link">rules</a>
+                        </div>
+                    </article>
+
+                    <!-- iChess — impartial chess games (arXiv:2501.14640) -->
+                    <article class="game-card" data-category="chess" data-reveal>
+                        <div class="card-glow"></div>
+                        <div class="card-top"><span class="card-tag">iChess</span><div class="card-piece" aria-hidden="true">♜</div></div>
+                        <h3>Rook</h3>
+                        <p class="card-full">Two-pile Nim</p>
+                        <p class="card-desc">Slide the rook left or down toward the corner. Equivalent to Nim — Grundy value is column XOR row.</p>
+                        <div class="card-actions">
+                            <a href="games/rook/rook_page.html" class="play-link">play<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                        </div>
+                    </article>
+
+                    <article class="game-card" data-category="chess" data-reveal>
+                        <div class="card-glow"></div>
+                        <div class="card-top"><span class="card-tag">iChess</span><div class="card-piece" aria-hidden="true">♝</div></div>
+                        <h3>Bishop</h3>
+                        <p class="card-full">One-pile Nim</p>
+                        <p class="card-desc">A lone bishop rides one diagonal toward the corner — a single Nim heap of size min(column, row).</p>
+                        <div class="card-actions">
+                            <a href="games/bishop/bishop_page.html" class="play-link">play<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                        </div>
+                    </article>
+
+                    <article class="game-card" data-category="chess" data-reveal>
+                        <div class="card-glow"></div>
+                        <div class="card-top"><span class="card-tag">iChess</span><div class="card-piece" aria-hidden="true">♛</div></div>
+                        <h3>Queen</h3>
+                        <p class="card-full">Wythoff's game</p>
+                        <p class="card-desc">Rook + bishop moves toward the corner — exactly Wythoff's game, with golden-ratio losing positions.</p>
+                        <div class="card-actions">
+                            <a href="games/queen/queen_page.html" class="play-link">play<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                        </div>
+                    </article>
+
+                    <article class="game-card" data-category="chess" data-reveal>
+                        <div class="card-glow"></div>
+                        <div class="card-top"><span class="card-tag">iChess</span><div class="card-piece" aria-hidden="true">♚</div></div>
+                        <h3>King</h3>
+                        <p class="card-full">One-step corner game</p>
+                        <p class="card-desc">The king steps one square left, down, or down-left. Safe squares are where both coordinates are even.</p>
+                        <div class="card-actions">
+                            <a href="games/king/king_page.html" class="play-link">play<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                        </div>
+                    </article>
+
+                    <article class="game-card" data-category="chess" data-reveal>
+                        <div class="card-glow"></div>
+                        <div class="card-top"><span class="card-tag">iChess</span><div class="card-piece" aria-hidden="true">♞</div></div>
+                        <h3>Knight</h3>
+                        <p class="card-full">Corner the Knight</p>
+                        <p class="card-desc">L-shaped leaps that close on the corner. No closed form — perfect play via memoised Grundy values.</p>
+                        <div class="card-actions">
+                            <a href="games/knight/knight_page.html" class="play-link">play<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                        </div>
+                    </article>
+
+                    <article class="game-card" data-category="chess" data-reveal>
+                        <div class="card-glow"></div>
+                        <div class="card-top"><span class="card-tag">iChess</span><div class="card-piece" aria-hidden="true">♟</div></div>
+                        <h3>Pawn</h3>
+                        <p class="card-full">Marching game</p>
+                        <p class="card-desc">The pawn drops one rank each move (straight or diagonal). Control the row parity to win.</p>
+                        <div class="card-actions">
+                            <a href="games/pawn/pawn_page.html" class="play-link">play<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                        </div>
+                    </article>
+
+                    <article class="game-card" data-category="chess" data-reveal>
+                        <div class="card-glow"></div>
+                        <div class="card-top"><span class="card-tag">iChess</span><div class="card-piece" aria-hidden="true">✦</div></div>
+                        <h3>General</h3>
+                        <p class="card-full">King + Knight</p>
+                        <p class="card-desc">A king that can also leap like a knight — a richer combined game solved by memoised recursion.</p>
+                        <div class="card-actions">
+                            <a href="games/general/general_page.html" class="play-link">play<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- MULTIPLAYER -->
+        <section class="mp-section" id="multiplayer">
+            <div class="container mp-inner">
+                <div class="mp-copy reveal" data-reveal>
+                    <p class="section-index">02 — head to head</p>
+                    <h2 class="section-title">play a friend in real time</h2>
+                    <p class="section-sub">Spin up a room, share the code, and battle over the same board from anywhere. Live for <strong>Corner</strong> and <strong>LCTR</strong>, with more on the way.</p>
+                    <a href="multiplayer/multiplayer_landing.html" class="btn btn-primary">
+                        <span>start a match</span>
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                    </a>
+                </div>
+                <div class="mp-visual reveal" data-reveal data-delay="2" aria-hidden="true">
+                    <div class="mp-room">
+                        <div class="mp-room-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span> room · <strong>PG-3D7</strong></div>
+                        <div class="mp-room-body">
+                            <div class="mp-player"><span class="avatar a">A</span> alice<span class="badge">your move</span></div>
+                            <div class="mp-mini-board" data-partition="4 3 2"></div>
+                            <div class="mp-player"><span class="avatar b">B</span> bob<span class="badge ghost">waiting</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESEARCH -->
+        <section class="research-section" id="research">
+            <div class="container research-inner reveal" data-reveal>
+                <p class="section-index">03 — the why</p>
+                <h2 class="section-title">built for research, made for play</h2>
+                <p class="section-sub">
+                    Partition Games supports ongoing work in combinatorial game theory at Rhodes College — turning
+                    Sprague–Grundy values, minimax search, and partition arithmetic into something anyone can explore.
+                    Developed by <strong>Soumitro</strong> and <strong>Aayan</strong> under the Summer Fellowship&nbsp;'25,
+                    supervised by Prof.&nbsp;Eric Gottlieb.
+                </p>
+                <div class="research-links">
+                    <a href="wiki.html" class="btn btn-ghost">read the wiki</a>
+                    <a href="developers.html" class="btn btn-ghost">meet the team</a>
+                    <a href="docs/papers/" class="btn btn-ghost">research papers</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer id="site-footer">
+        <div class="container footer-inner">
+            <div class="footer-brand">
+                <span class="brand-text">partition<span class="brand-accent">games</span></span>
+                <p>© 2026 Partition Games — Rhodes College. Released under the MIT License.</p>
+            </div>
+            <nav class="footer-links" aria-label="Footer">
+                <a href="wiki.html">documentation</a>
+                <a href="developers.html">developers</a>
+                <a href="multiplayer/multiplayer_landing.html">multiplayer</a>
+                <a href="https://github.com/albatrossfake06-star/Partition-Games-3D" target="_blank" rel="noopener">source</a>
+            </nav>
+        </div>
+    </footer>
+
+    <script src="assets/js/nav.config.js"></script>
+    <script src="assets/js/site-nav.js"></script>
+    <script type="module" src="assets/js/landing.js"></script>
+</body>
+</html>

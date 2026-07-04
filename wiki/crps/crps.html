@@ -1,0 +1,94 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+<meta charset="UTF-8">  
+<title>CRPM</title>  
+
+<script>  
+window.MathJax = {  
+  tex: {  
+    inlineMath: [['$', '$'], ['\$', '\$']],  // enable $…$  and  $ … $  
+    processEscapes: true                       // let \$ print a literal $  
+  },  
+  svg: { fontCache: 'global' }                 // use SVG output; chtml also fine  
+};  
+</script> 
+
+  
+<!-- 1. MathJax -->  
+<script id="MathJax-script" async  
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">  
+</script>  
+  
+<!-- 2. Minimal styling ---------------------------------------------->  
+<style>  
+body          { font-family: "Arial", Times, serif;  
+                margin: 2em 8%; line-height: 1.35;}  
+h1            { text-align: center; margin-bottom: 0.3em;}  
+/* mdframed imitation */  
+.gamebox      { border: 3px solid #6a37a8; border-radius: 10px;  
+                padding: 1.0em 1.3em; position: relative;  
+                background: #f9f6ff; margin: 1.7em 0 1.5em 0;}  
+.gamebox:before{ content:"Game statement";  
+                 position:absolute; top:-0.9em; left:1em;  
+                 background:#f9f6ff; padding:0 0.4em;  
+                 color:#6a37a8; font-weight:bold;}  
+figcaption    { text-align: center; font-style: italic;  
+                margin-top: 0.3em;}  
+ul.moves      { list-style-type: none; padding-left: 0;}  
+ul.moves > li { margin: 1.4em 0;}  
+span.label    { font-weight: bold;}  
+/* bibliography */  
+.bibitem      { text-indent:-1.6em; padding-left:1.6em;  
+                margin-bottom:0.45em;}  
+</style>  
+</head>  
+<body>  
+  
+<!-- ----------------------------DOCUMENT BODY-------------------------->  
+<h1>Column Row Partizan Split (CRPS)</h1>
+<h2 style="text-align: center;"> Partizan Integer Partition Combinatorial Game </h2>  
+  
+<div class="gamebox">  
+    Let $[r_1, r_2, r_3, \ldots, r_i]$ be an integer partition of a positive integer $n$ in descending order, where $\forall x \in \left(1, 2, \ldots, i\right), r_x \geq 1$. <b>CRPS</b> (Columnar-Row Partition Moves) is a partizan variant of the CRIM game designed to be played between two players with <strong>asymmetric move sets</strong>.
+    
+    <ul>
+        <li><strong>Player A (Rows):</strong> Can only remove entire rows from the partition.</li>
+        <li><strong>Player B (Columns):</strong> Can only remove entire columns from the partition.</li>
+    </ul>
+    
+    Like CRIS, there is no merge that happens after each move. However, unlike CRIS's impartial nature, CRPS creates strategic asymmetry where each player must consider their opponent's limited but potentially powerful move options.
+
+    The player who cannot make a legal move loses the game.     
+</div>  
+  
+  
+<h2 id="moves">Moves</h2>  
+<p>CRPS introduces partisan gameplay with player-specific restrictions:</p>  
+  
+<ul class="moves">  
+   
+  <li>  
+    <span class="label"></span>  
+    <figure style="text-align:center;">  
+      <img src="figure1.png" alt="Left column removal" style="width:60%;">  
+    <figcaption>Figure&nbsp;1&nbsp;—&nbsp;Game Board in CRPS</figcaption>  
+    </figure>  
+  </li>
+  
+  
+  <p>
+    Player A can select any of the R# in their move; whereas Player B, if it's their turn, can choose any C#. After each move, the fragments - if there are any - are separated.
+  </p>
+</ul>  
+  
+
+
+<h2>More</h2>
+
+<p>
+  		Some research are already waiting on publication approval - please contact <a href=https://www.rhodes.edu/bio/eric-gottlieb>Prof. Gottlieb</a> for related queries.
+</p>
+
+</body>  
+</html> 

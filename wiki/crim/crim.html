@@ -1,0 +1,81 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+<meta charset="UTF-8">  
+<title>CRIM</title>  
+
+<script>  
+window.MathJax = {  
+  tex: {  
+    inlineMath: [['$', '$'], ['\$', '\$']],  // enable $…$  and  $ … $  
+    processEscapes: true                       // let \$ print a literal $  
+  },  
+  svg: { fontCache: 'global' }                 // use SVG output; chtml also fine  
+};  
+</script> 
+
+  
+<!-- 1. MathJax -->  
+<script id="MathJax-script" async  
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">  
+</script>  
+  
+<!-- 2. Minimal styling ---------------------------------------------->  
+<style>  
+body          { font-family: "Arial", Times, serif;  
+                margin: 2em 8%; line-height: 1.35;}  
+h1            { text-align: center; margin-bottom: 0.3em;}  
+/* mdframed imitation */  
+.gamebox      { border: 3px solid #6a37a8; border-radius: 10px;  
+                padding: 1.0em 1.3em; position: relative;  
+                background: #f9f6ff; margin: 1.7em 0 1.5em 0;}  
+.gamebox:before{ content:"Game statement";  
+                 position:absolute; top:-0.9em; left:1em;  
+                 background:#f9f6ff; padding:0 0.4em;  
+                 color:#6a37a8; font-weight:bold;}  
+figcaption    { text-align: center; font-style: italic;  
+                margin-top: 0.3em;}  
+ul.moves      { list-style-type: none; padding-left: 0;}  
+ul.moves > li { margin: 1.4em 0;}  
+span.label    { font-weight: bold;}  
+/* bibliography */  
+.bibitem      { text-indent:-1.6em; padding-left:1.6em;  
+                margin-bottom:0.45em;}  
+</style>  
+</head>  
+<body>  
+  
+<!-- ----------------------------DOCUMENT BODY-------------------------->  
+<h1>Column Row Impartial Merge (CRIM)</h1>
+<h2 style="text-align: center;"> Integer Parition Combinatorial Game </h2>
+  
+<div class="gamebox">  
+    Let $n$ be a positive integer, and $ \left( a^{a'}, b^{b'}, \ldots, i^{i'} \right)$ be an integer partiton of $n$ where $a > b > \cdots > i$. CRIM, too, is an impartial game --- where the partition is visually presented with an <a href=https://en.wikipedia.org/wiki/Young_tableau>Young diagram</a> --- and users may delete any row or column remaining in the board. However, unless it's a top row or left column, there will be a merge after each move. Contrary to CRIS, there will be no fragment, or independent parts, meaning users will use one certain diagram throughout the game. The user who makes the final move wins. The game was written in JavaScript; and memoised Sprague-Grundy value were used to induce perfect play.  
+</div>  
+  
+  
+<h2 id="moves">Moves</h2>  
+<p>Following the description above, the moves work as below:</p>  
+  
+<ul class="moves">  
+  <li>  
+    <span class="label">(a) Column removal</span>  
+    <figure style="text-align:center;">  
+      <img src="crimfigure1.png" alt="Left column removal" style="width:60%;">  
+    </figure>  
+  </li>  
+  
+  <li>  
+    <span class="label">(b) Row removal</span>  
+    <figure style="text-align:center;">  
+      <img src="crimfigure2.png" alt="Row removal" style="width:50%;">  
+    </figure>  
+  </li>  
+</ul>  
+  
+<h2>More</h2>  
+
+		Some research are already waiting on publication approval - please contact <a href=https://www.rhodes.edu/bio/eric-gottlieb>Prof. Gottlieb</a> for related queries.
+  
+</body>  
+</html>  

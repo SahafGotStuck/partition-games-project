@@ -1,0 +1,171 @@
+/* ============================================================
+   iChess — board, pieces, panel, modals
+   Pairs with game-modern.css (shared --pg-* tokens, header, bg,
+   .pg-card, glass modals, buttons). This file owns everything
+   chess-specific + the modal base layout (chess pages don't load
+   the partition unified_game_styles.css).
+   ============================================================ */
+
+/* ---- layout ---- */
+.ic-wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 372px;
+    gap: 26px;
+    align-items: start;
+}
+.ic-stage {
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 66vh;
+    border: 1px solid var(--pg-stroke);
+    border-radius: 22px;
+    background: radial-gradient(120% 80% at 50% 0%, var(--pg-surface), transparent 60%), var(--pg-bg-2);
+    padding: 28px;
+    overflow: hidden;
+}
+.ic-stage::after {
+    content: ""; position: absolute; left: 50%; bottom: 6%;
+    width: 64%; height: 130px; transform: translateX(-50%);
+    background: radial-gradient(ellipse at center, color-mix(in srgb, var(--pg-orange) 24%, transparent), transparent 70%);
+    filter: blur(28px); pointer-events: none;
+}
+
+/* ---- board ---- */
+.ic-board {
+    --w: 8; --h: 8;
+    position: relative; z-index: 1;
+    width: min(100%, calc(66vh * var(--w) / var(--h)));
+    aspect-ratio: var(--w) / var(--h);
+    display: grid;
+    grid-template-columns: repeat(var(--w), 1fr);
+    grid-template-rows: repeat(var(--h), 1fr);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid var(--pg-stroke-2);
+    box-shadow: 0 30px 70px -30px rgba(0,0,0,0.6);
+    container-type: size;
+}
+.ic-sq {
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+    transition: background-color .2s ease;
+}
+.ic-sq.light,
+.ic-sq.dark  { background: color-mix(in srgb, var(--pg-orange) 7%, var(--pg-surface-2)); box-shadow: inset 0 0 0 1px var(--pg-stroke-2); }
+[data-theme="dark"] .ic-sq.light,
+[data-theme="dark"] .ic-sq.dark  { background: rgba(255,255,255,0.04); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.06); }
+
+/* target corner marker */
+.ic-sq.corner::after {
+    content: ""; position: absolute; inset: 24%;
+    border: 2px dashed color-mix(in srgb, var(--pg-cyan) 60%, transparent);
+    border-radius: 6px;
+}
+
+/* legal-move hint */
+.ic-sq.move { cursor: pointer; }
+.ic-sq.move::before {
+    content: ""; position: absolute; width: 26cqmin; height: 26cqmin;
+    max-width: 34%; max-height: 34%;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--pg-cyan) 55%, transparent);
+    box-shadow: 0 0 14px color-mix(in srgb, var(--pg-cyan) 50%, transparent);
+    transition: transform .15s ease;
+}
+.ic-sq.move:hover::before { transform: scale(1.35); }
+.ic-sq.move:hover { background: color-mix(in srgb, var(--pg-cyan) 16%, transparent); }
+/* analysis: winning destination */
+.ic-sq.win::before {
+    background: color-mix(in srgb, var(--pg-orange) 70%, transparent);
+    box-shadow: 0 0 16px color-mix(in srgb, var(--pg-orange) 60%, transparent);
+}
+.ic-sq.from { background: color-mix(in srgb, var(--pg-orange) 22%, transparent) !important; box-shadow: inset 0 0 0 2px var(--pg-orange); }
+
+/* cells outside the partition: hold their grid slot but render nothing */
+.ic-sq.empty { background: transparent !important; pointer-events: none; }
+.ic-sq.empty::before, .ic-sq.empty::after { display: none; }
+
+/* ---- piece ---- */
+.ic-piece {
+    position: relative; z-index: 2;
+    font-size: calc(86cqmin / var(--w));
+    line-height: 1;
+    color: #fff;
+    text-shadow: 0 2px 0 rgba(0,0,0,.35), 0 8px 16px rgba(0,0,0,.55);
+    filter: drop-shadow(0 0 10px color-mix(in srgb, var(--pg-orange) 45%, transparent));
+    transition: transform .26s cubic-bezier(.22,1,.36,1);
+    pointer-events: none;
+    user-select: none;
+    animation: icPop .3s cubic-bezier(.22,1,.36,1);
+}
+@keyframes icPop { from { transform: scale(.6); opacity: 0; } }
+
+/* ---- side panel ---- */
+.ic-panel { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 92px; }
+.ic-hero { display: flex; align-items: center; gap: 16px; }
+.ic-glyph {
+    width: 60px; height: 60px; flex: none;
+    display: grid; place-items: center;
+    font-size: 38px; color: #fff;
+    border-radius: 14px;
+    background: linear-gradient(140deg, var(--pg-orange), var(--pg-orange-deep));
+    box-shadow: 0 10px 26px -10px color-mix(in srgb, var(--pg-orange) 70%, transparent);
+}
+.ic-piece-name { font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; color: var(--pg-text); }
+.ic-tagline { font-family: var(--font-body); font-size: 13px; color: var(--pg-muted); margin-top: 2px; }
+
+.ic-turn { display: flex; align-items: center; gap: 9px; font-family: var(--font-mono); font-size: 13px; color: var(--pg-text); margin-bottom: 14px; }
+.ic-turn .pip { width: 9px; height: 9px; border-radius: 50%; background: var(--pg-orange); box-shadow: 0 0 0 4px color-mix(in srgb, var(--pg-orange) 22%, transparent); }
+.ic-turn.cpu .pip { background: var(--pg-cyan); box-shadow: 0 0 0 4px color-mix(in srgb, var(--pg-cyan) 22%, transparent); }
+
+.ic-stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.ic-stat { text-align: center; }
+.ic-stat .v { font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; color: var(--pg-text); }
+.ic-stat .k { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--pg-dim); margin-top: 3px; }
+
+.ic-log { display: flex; flex-direction: column; gap: 6px; max-height: 150px; overflow-y: auto; margin-top: 12px; }
+.ic-log:empty::after { content: "no moves yet."; font-family: var(--font-mono); font-size: 11.5px; color: var(--pg-dim); }
+.ic-log-item { display: flex; align-items: center; gap: 9px; font-family: var(--font-mono); font-size: 11.5px; color: var(--pg-muted); padding: 6px 9px; border-radius: 9px; background: var(--pg-surface); border: 1px solid var(--pg-stroke); animation: icIn .3s ease; }
+.ic-log-item .tag { font-size: 9px; letter-spacing: .1em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; }
+.ic-log-item .tag.you { color: var(--pg-orange); background: color-mix(in srgb, var(--pg-orange) 16%, transparent); }
+.ic-log-item .tag.cpu { color: var(--pg-cyan); background: color-mix(in srgb, var(--pg-cyan) 16%, transparent); }
+@keyframes icIn { from { opacity: 0; transform: translateX(8px); } }
+
+.ic-new { width: 100%; }
+#ic-analysis.on { color: var(--pg-cyan) !important; }
+
+/* ---- modal base (chess pages don't load unified_game_styles.css) ---- */
+.modal-backdrop {
+    position: fixed; inset: 0; z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    background: color-mix(in srgb, #000 55%, transparent);
+    backdrop-filter: blur(6px);
+    opacity: 0; visibility: hidden; transition: opacity .25s ease, visibility .25s ease;
+    padding: 20px;
+}
+.modal-backdrop.visible { opacity: 1; visibility: visible; }
+.modal {
+    width: 100%; max-width: 420px;
+    display: flex; flex-direction: column; gap: 12px;
+    padding: 26px;
+    text-align: left;
+}
+.modal-header { display: flex; align-items: center; justify-content: space-between; }
+.modal h2 { font-size: 1.3rem; }
+.modal p { font-size: 13px; }
+.modal label { font-family: var(--font-mono); font-size: 12px; color: var(--pg-muted); margin-top: 4px; }
+.input-group { display: flex; gap: 8px; }
+.input-group select, .modal select {
+    flex: 1; padding: 9px 12px; border-radius: 10px;
+    background: var(--pg-surface); color: var(--pg-text);
+    border: 1px solid var(--pg-stroke); font-family: var(--font-mono); font-size: 13px;
+}
+.ic-range { width: 100%; accent-color: var(--pg-orange); }
+
+/* ---- responsive ---- */
+@media (max-width: 980px) {
+    .ic-wrap { grid-template-columns: 1fr; }
+    .ic-panel { position: static; }
+    .ic-stage { min-height: auto; }
+    .ic-board { width: min(86vw, 520px); }
+}

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplayer Games | Partition Games</title>
+    
+    <!-- Console-style monospace fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Inter Tight font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <!-- MathJax for LaTeX rendering -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            svg: {
+                fontCache: 'global'
+            }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js">
+    </script>
+
+    <!-- Stylesheet -->  
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="multiplayer_landing.css">
+    <link rel="stylesheet" href="../assets/css/site-modern.css">
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="../index.html" class="logo">partition-games</a>
+                <nav>
+                    <a href="../index.html">home</a>
+                    <a href="multiplayer_landing.html" class="active">multiplayer</a>
+                    <a href="../developers.html">developers</a>
+                    <a href="../wiki.html">wiki</a>
+                    <a href="https://github.com/labibibnmuzahid/Partition-Games" target="_blank">github</a>
+                    <button id="theme-toggle" class="theme-toggle nav-button" aria-label="Toggle theme">
+                        <svg class="theme-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="12" cy="12" r="5"/>
+                            <line x1="12" y1="1" x2="12" y2="3"/>
+                            <line x1="12" y1="21" x2="12" y2="23"/>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                            <line x1="1" y1="12" x2="3" y2="12"/>
+                            <line x1="21" y1="12" x2="23" y2="12"/>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                        </svg>
+                        [dark]
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="hero">
+                <h1>multiplayer games</h1>
+                <p class="hero-quote">challenge friends in real-time combinatorial games</p>
+            </div>
+
+            <div class="auth-status-section">
+                <div id="auth-status" class="auth-status">
+                    <span id="auth-status-text">Please log in to play multiplayer games</span>
+                    <button id="auth-btn" class="auth-button">login / register</button>
+                </div>
+                <div id="user-profile" class="user-profile hidden">
+                    <span id="user-display-name"></span>
+                    <div class="user-stats">
+                        <span id="user-wins-display"></span>
+                        <span id="user-losses-display"></span>
+                        <span id="user-winrate-display"></span>
+                    </div>
+                    <button id="logout-btn" class="logout-button">logout</button>
+                </div>
+            </div>
+
+            <h2 class="section-title">available multiplayer games</h2>
+            
+            <div class="games-grid">
+                <div class="game-card">
+                    <h3>LCTR</h3>
+                    <p>When it's their turn, the user can remove either the left column, or the top row.</p>
+                    <div class="game-buttons">
+                        <button id="lctr-multiplayer-btn" class="play-button multiplayer-btn" data-game="lctr">play multiplayer</button>
+                        <a href="../wiki/lctr/lctrdocu.html" class="rules-link">rules</a>
+                    </div>
+                </div>
+
+                <div class="game-card">
+                    <h3>Corner</h3>
+                    <p>Players take turns removing corners from a partition, with the last player to make a move winning.</p>
+                    <div class="game-buttons">
+                        <button id="corner-multiplayer-btn" class="play-button multiplayer-btn" data-game="corner">play multiplayer</button>
+                        <a href="../wiki/corner/corner.html" class="rules-link">rules</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="multiplayer-info">
+                <h3>How to play multiplayer:</h3>
+                <ol>
+                    <li>Log in or create an account</li>
+                    <li>Choose a game from above</li>
+                    <li>Create a new game or join an existing one using a room code</li>
+                    <li>Share the room code with your friend</li>
+                    <li>Start playing in real-time!</li>
+                </ol>
+            </div>
+        </div>
+    </main>
+
+    <!-- Authentication Modal -->
+    <div id="auth-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Login</h2>
+                <button id="close-modal" class="close-btn">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="login-username">Username</label>
+                        <input type="text" id="login-username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" name="password" required>
+                    </div>
+                    <button type="submit" class="auth-submit-btn">Login</button>
+                    <div class="form-switch">
+                        <span>Don't have an account? </span>
+                        <button type="button" id="show-register-btn" class="link-button">Register</button>
+                    </div>
+                </form>
+
+                <!-- Register Form -->
+                <form id="register-form" class="auth-form hidden">
+                    <div class="form-group">
+                        <label for="register-username">Username</label>
+                        <input type="text" id="register-username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Password</label>
+                        <input type="password" id="register-password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="register-confirm-password">Confirm Password</label>
+                        <input type="password" id="register-confirm-password" name="confirm-password" required>
+                    </div>
+                    <button type="submit" class="auth-submit-btn">Register</button>
+                    <div class="form-switch">
+                        <span>Already have an account? </span>
+                        <button type="button" id="show-login-btn" class="link-button">Login</button>
+                    </div>
+                </form>
+
+                <div id="auth-message" class="auth-message"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../config.js"></script>
+    <script src="multiplayer_landing.js"></script>
+    <script src="../assets/js/site-shell.js"></script>
+</body>
+</html>

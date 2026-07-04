@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Continuous Corner Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/unified_game_styles.css">
+    <link rel="stylesheet" href="../../assets/css/game-modern.css">
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo-section">
+                    <a href="../../index.html" class="logo">partition-games</a>
+                    <span class="game-title"> /continuous-corner</span>
+                </div>
+            </div>
+            <div class="header-center">
+                <div class="game-title-section">
+                    <h1>continuous corner</h1>
+                </div>
+                <div class="status-container">
+                    <p id="status-label">loading...</p>
+                    <div id="ai-thinking-indicator">
+                        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <nav>
+                    <button id="help-btn" class="nav-button">? help</button>
+                    <button id="cycle-theme-btn" class="nav-button" title="Click to change tile theme">[tiles: 🌱]</button>
+                    <button id="theme-toggle" class="theme-toggle nav-button" aria-label="Toggle theme"></button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div id="game-card" data-tile-theme="grass">
+            <!-- board container -->
+            <div id="board-area"></div>
+            
+            <!-- Selection Control Buttons -->
+            <div id="selection-controls" class="selection-controls" style="display: none;">
+                <button id="confirm-selection-btn" class="selection-button confirm-btn" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                    confirm
+                </button>
+                <button id="clear-selection-btn" class="selection-button clear-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                        <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                    </svg>
+                    clear selection
+                </button>
+            </div>
+        </div>
+
+        <button id="new-game-btn" class="fixed-new-game-btn">new game</button>
+    </main>
+</div>
+
+<div id="setup-modal-backdrop" class="modal-backdrop">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>game setup</h2>
+            <button id="help-btn-modal" class="icon-button" aria-label="help">help</button>
+        </div>
+        <hr>
+        <p>enter a board configuration manually, or generate one randomly.</p>
+        
+        <label for="rows-input">row lengths</label>
+        <input type="text" id="rows-input" value="5 4 4 2" placeholder="e.g., 5 4 4 2">
+        
+        <hr>
+
+        <label for="partition-type-select">or, generate a partition:</label>
+        <div class="input-group">
+            <select id="partition-type-select" class="partition-type-dropdown">
+                <option value="random">random</option>
+                <option value="staircase">staircase</option>
+                <option value="square">square</option>
+                <option value="hook">hook</option>
+            </select>
+            <input type="number" id="partition-number-input" placeholder="e.g., 25">
+            <button id="generate-partition-btn" class="modal-btn">generate</button>
+        </div>
+        
+        <hr>
+
+        <label for="ai-select">computer player</label>
+        <select id="ai-select">
+            <option value="B">player b (starts second)</option>
+            <option value="A">player a (starts first)</option>
+            <option value="None">none (two human players)</option>
+        </select>
+
+        <label for="difficulty-slider">ai difficulty: <span id="difficulty-label">medium</span></label>
+        <div class="slider-container">
+            <input type="range" id="difficulty-slider" min="1" max="3" value="2" step="1" class="difficulty-range">
+        </div>
+        
+        <button id="start-game-btn" class="modal-btn">start game</button>
+    </div>
+</div>
+
+<div id="game-over-modal-backdrop" class="modal-backdrop">
+    <div class="modal">
+        <h2 id="game-over-title">game over</h2>
+        <hr>
+        <p id="game-over-message">player x wins!</p>
+        <button id="download-btn-modal" class="secondary-button" aria-label="download game" title="download game history">
+            download game history
+        </button>
+        <button id="play-again-btn" class="modal-btn">play again</button>
+    </div>
+</div>
+
+<div id="help-popover">
+    <h3>how to play continuous corner</h3>
+    <p>on your turn, select consecutive corner pieces to remove:</p>
+    <ul>
+        <li><strong>corners</strong> are the last cells of rows (following corner game rules for consecutive groups).</li>
+        <li>you can only select a <strong>consecutive range</strong> of corners from the available options.</li>
+        <li><strong>example:</strong> if corners are available at rows 1, 3, 5, 7, you can select [1], [1,3], [1,3,5], [3], [3,5], [3,5,7], [5], [5,7], or [7] - but not [1,5] or [1,7] (non-consecutive).</li>
+    </ul>
+    <p>the player who makes the last move (clears the board) wins the game.</p>
+</div>
+
+<script src="../../config.js"></script>
+<script src="../../assets/js/script.js"></script>
+<script src="../../assets/js/database-utils.js"></script>
+<script src="continuous_corner_script.js"></script>
+    <script src="../../assets/js/game-shell.js"></script>
+</body>
+</html> 
