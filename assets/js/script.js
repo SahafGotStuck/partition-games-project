@@ -85,8 +85,8 @@ function initializeThemeToggle() {
         return;
     }
 
-    // Get saved theme preference or default to light
-    const savedTheme = localStorage.getItem('theme') || 'light';
+    // Get saved theme preference or default to dark (matches the rest of the site)
+    const savedTheme = localStorage.getItem('theme') || 'dark';
     setTheme(savedTheme);
 
     // Add click event listener
