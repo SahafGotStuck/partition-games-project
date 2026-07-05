@@ -243,35 +243,6 @@
     <script src="lctr_script.js"></script>
     <script src="../../assets/data/analysis-mode/lctr_analysis.js"></script>
     <script src="lctr_multiplayer_auth.js"></script>
-    
-    <!-- Server connectivity test -->
-    <script>
-        // Test server connectivity on page load
-        window.addEventListener('load', async () => {
-            const serverUrl = window.GameConfig ? window.GameConfig.getServerUrl() : 'http://localhost:3001';
-            console.log('Testing server connectivity to:', serverUrl);
-            
-            try {
-                const response = await fetch(`${serverUrl}/health`);
-                const data = await response.json();
-                console.log('Server is running:', data);
-                
-                // Update status label
-                const statusLabel = document.getElementById('status-label');
-                if (statusLabel) {
-                    statusLabel.textContent = 'Server connected - Ready to play!';
-                }
-            } catch (error) {
-                console.error('Server connection failed:', error);
-                
-                // Update status label
-                const statusLabel = document.getElementById('status-label');
-                if (statusLabel) {
-                    statusLabel.textContent = 'Server not connected - Check if server is running';
-                }
-            }
-        });
-    </script>
     <script src="../../assets/js/game-shell.js"></script>
 </body>
 </html>

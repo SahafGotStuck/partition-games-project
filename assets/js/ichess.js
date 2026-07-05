@@ -489,7 +489,7 @@
         return '<div id="ic-over" class="modal-backdrop"><div class="modal">' +
             '<h2 id="ic-over-title">Game over</h2><p id="ic-over-msg"></p>' +
             '<button id="ic-again" class="modal-btn">play again</button>' +
-            '<a href="../../index.html#games" class="secondary-button" style="display:block;text-align:center;margin-top:10px;text-decoration:none">&larr; back to games</a>' +
+            '<a href="../../index.html#games" class="secondary-button ic-quit-link">&larr; back to games</a>' +
         '</div></div>';
     }
     function wireSetup(state, refs, begin) {

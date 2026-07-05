@@ -162,8 +162,10 @@
 }
 .ic-range { width: 100%; accent-color: var(--pg-orange); }
 .modal .modal-btn, .modal .secondary-button {
+    display: block; box-sizing: border-box;
     padding: 10px 16px; border-radius: 10px; width: 100%;
     font-family: var(--font-mono); font-size: 13px; cursor: pointer;
+    text-align: center; text-decoration: none;
 }
 
 /* ---- shape/dims boxes (mirrors unified_game_styles' .partition-dims) ---- */
