@@ -209,21 +209,7 @@ class CRIM_GUI{
     document.getElementById('generate-partition-btn').addEventListener('click',()=>{SoundManager.play('click');this.generatePartition();});
     document.getElementById('partition-type-select').addEventListener('change',()=>this.updatePartitionUI());
     this.updatePartitionUI();
-    /* theme toggle */  
-    const themeTgl=document.getElementById('theme-toggle');  
-    const saved=localStorage.getItem('cris-theme')||'light';  
-    document.documentElement.setAttribute('data-theme',saved);  
-    if(themeTgl){
-      themeTgl.addEventListener('click',()=>{  
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('cris-theme', newTheme);
-        this.updateThemeToggleButton();
-      });  
-      this.updateThemeToggleButton();
-    }
-    /* tile themes */  
+    /* tile themes */
     const cycleThemeBtn=document.getElementById('cycle-theme-btn');
     this.tileThemes = ['grass', 'stone', 'ice'];
     this.currentThemeIndex = 0;
@@ -412,13 +398,6 @@ class CRIM_GUI{
     return player === Player.RED ? 'A' : 'B';
   }  
   
-  updateThemeToggleButton() {
-    const themeToggle = document.getElementById('theme-toggle');
-    if (!themeToggle) return;
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    themeToggle.textContent = currentTheme === 'dark' ? '☀️ light' : '🌙 dark';
-  }
-
   cycleTileTheme() {
     this.currentThemeIndex = (this.currentThemeIndex + 1) % this.tileThemes.length;
     this.applyTileTheme();

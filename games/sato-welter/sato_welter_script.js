@@ -233,7 +233,7 @@ class SatoWelterGui {
         this.aiDifficulty = 'Medium';
         this.idCounter = 0;
         this.idToAddress = new Map();
-        this.gameHistory = []; // Store previous game states for undo
+        this.gameHistory = []; // Store previous game states for the game report/replay
         // Database tracking
         this.movesSequence = [];
         this.gameStartTime = null;
@@ -248,7 +248,6 @@ class SatoWelterGui {
         this.boardArea = document.getElementById('board-area');
         this.aiThinkingIndicator = document.getElementById('ai-thinking-indicator');
         this.newGameBtn = document.getElementById('new-game-btn');
-        this.undoBtn = document.getElementById('undo-btn');
         this.downloadBtn = document.getElementById('download-btn');
         this.themeToggle = document.getElementById('theme-toggle');
         this.themeSelect = document.getElementById('theme-select');
@@ -275,7 +274,6 @@ class SatoWelterGui {
     bindEventListeners() {
         this.startGameBtn.addEventListener('click', () => this.processSetup());
         this.newGameBtn.addEventListener('click', () => { SoundManager.play('click'); this.showSetupModal(); });
-        this.undoBtn.addEventListener('click', () => { SoundManager.play('click'); this.undoMove(); });
         this.downloadBtn.addEventListener('click', () => { SoundManager.play('click'); this.downloadGame(); });
         this.playAgainBtn.addEventListener('click', () => { SoundManager.play('click'); this.showSetupModal(); });
         this.themeToggle.addEventListener('change', () => { SoundManager.play('click'); this.toggleTheme(); });
@@ -335,7 +333,6 @@ class SatoWelterGui {
         this.initialPartition = [...rows]; // Store initial partition
         this.redrawBoard();
         this.updateStatus();
-        this.updateUndoButton();
         this.updateDownloadButton();
         if (this.game.isAiTurn()) { this.aiTurn(); }
     }
@@ -444,13 +441,11 @@ class SatoWelterGui {
             this.gameOverModal.classList.add('visible');
             this.storeGameInDatabase(mover);
             this.redrawBoard();
-            this.updateUndoButton();
             this.updateDownloadButton();
             return;
         }
         this.redrawBoard();
         this.updateStatus();
-        this.updateUndoButton();
         this.updateDownloadButton();
         if (this.game.isAiTurn()) { this.aiTurn(); }
     }
@@ -570,45 +565,7 @@ class SatoWelterGui {
         };
         
         this.gameHistory.push(gameState);
-        this.updateUndoButton();
         this.updateDownloadButton();
-    }
-
-    undoMove() {
-        if (!this.game || this.gameHistory.length === 0 || this.isAnimating || this.game.isAiTurn()) {
-            return;
-        }
-
-        SoundManager.play('click');
-        
-        // Restore the previous game state
-        const previousState = this.gameHistory.pop();
-        
-        // Reconstruct the board
-        this.game.getBoard().grid = previousState.board.grid.map(row => [...row]);
-        this.game.gameState.currentPlayer = previousState.currentPlayer === 'A' ? 0 : 1;
-        
-        // Remove the last move from the sequence
-        this.movesSequence.pop();
-        
-        // Redraw the board and update UI
-        this.redrawBoard();
-        this.updateStatus();
-        this.updateUndoButton();
-        this.updateDownloadButton();
-    }
-
-    updateUndoButton() {
-        if (!this.undoBtn) return;
-        
-        const canUndo = this.game && this.gameHistory.length > 0 && !this.isAnimating && !this.game.isAiTurn();
-        
-        if (this.game && this.gameHistory.length >= 0) {
-            this.undoBtn.style.display = 'flex';
-            this.undoBtn.disabled = !canUndo;
-        } else {
-            this.undoBtn.style.display = 'none';
-        }
     }
 
     updateDownloadButton() {
@@ -627,7 +584,6 @@ class SatoWelterGui {
 
     clearGameHistory() {
         this.gameHistory = [];
-        this.updateUndoButton();
         this.updateDownloadButton();
     }
     

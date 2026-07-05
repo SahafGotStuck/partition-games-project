@@ -243,7 +243,7 @@ class ProLCTRGui {
         this.aiDifficultyValue = 50;
         this.idCounter = 0;
         this.idToAddress = new Map();
-        this.gameHistory = []; // Store previous game states for undo
+        this.gameHistory = []; // Store previous game states for the game report/replay
         // Database tracking
         this.movesSequence = [];
         this.gameStartTime = null;
@@ -262,7 +262,6 @@ class ProLCTRGui {
         this.boardArea = document.getElementById('board-area');
         this.aiThinkingIndicator = document.getElementById('ai-thinking-indicator');
         this.newGameBtn = document.getElementById('new-game-btn');
-        this.undoBtn = document.getElementById('undo-btn');
         this.downloadBtn = document.getElementById('download-btn');
         this.cycleThemeBtn = document.getElementById('cycle-theme-btn');
         this.themeToggle = document.getElementById('theme-toggle');
@@ -291,7 +290,6 @@ class ProLCTRGui {
     bindEventListeners() {
         this.startGameBtn.addEventListener('click', () => this.processSetup());
         this.newGameBtn.addEventListener('click', () => { SoundManager.play('click'); this.showSetupModal(); });
-        this.undoBtn.addEventListener('click', () => { SoundManager.play('click'); this.undoMove(); });
         this.downloadBtn.addEventListener('click', () => { SoundManager.play('click'); this.downloadGame(); });
         this.playAgainBtn.addEventListener('click', () => { SoundManager.play('click'); this.showSetupModal(); });
         this.themeToggle.addEventListener('change', () => { SoundManager.play('click'); this.toggleTheme(); });
@@ -529,7 +527,7 @@ class ProLCTRGui {
     processMove(info, labelElement = null) {
         if (!info || !this.game || this.isAnimating) return;
 
-        // Save the current state before making a move (for undo functionality)
+        // Save the current state before making a move (for the game report/replay)
         this.saveGameState();
 
         SoundManager.play('click');
@@ -562,14 +560,12 @@ class ProLCTRGui {
                 }
                         this.redrawBoard();
         this.updateStatus();
-        this.updateUndoButton();
         this.updateDownloadButton();
         return;
             }
 
             this.redrawBoard();
             this.updateStatus();
-            this.updateUndoButton();
             this.updateDownloadButton();
             if (this.analysis && typeof this.analysis.onMoveMade === 'function') {
                 this.analysis.onMoveMade();
@@ -655,15 +651,13 @@ class ProLCTRGui {
         this.resetBoardDimensions();
         this.game = new Game(new Board(rows), aiSide, gameMode); 
         this.isAnimating = false; 
-        this.clearGameHistory(); // Clear undo history for new game
+        this.clearGameHistory(); // Clear move history for new game
         // Initialize database tracking
         this.movesSequence = [];
         this.gameStartTime = new Date();
         this.initialPartition = [...rows]; // Store initial partition
-        this.redrawBoard(); 
-        this.updateStatus(); 
-        this.updateUndoButton();
-        this.updateDownloadButton();
+        this.redrawBoard();
+        this.updateStatus();
         this.updateDownloadButton();
         if (this.analysis && typeof this.analysis.onGameStart === 'function') {
             this.analysis.onGameStart();
@@ -683,8 +677,7 @@ class ProLCTRGui {
     aiTurn() { 
         if (!this.game || !this.game.isAiTurn() || this.isAnimating) return; 
         
-        this.aiThinkingIndicator.classList.add('thinking'); 
-        this.updateUndoButton(); // Update undo button state during AI turn
+        this.aiThinkingIndicator.classList.add('thinking');
         this.updateDownloadButton();
         setTimeout(() => { 
             this.aiThinkingIndicator.classList.remove('thinking'); 
@@ -723,10 +716,9 @@ class ProLCTRGui {
 
     updateStatus() { 
         if (!this.game || this.game.board.isEmpty()) { 
-            this.statusLabel.textContent = 'Game Over'; 
-            this.updateUndoButton(); // Update undo button when game is over
+            this.statusLabel.textContent = 'Game Over';
         this.updateDownloadButton();
-            return; 
+            return;
         } 
         const kind = this.game.isAiTurn() ? "Computer" : "Human"; 
         const newText = `Player ${this.game.currentPlayer} (${kind}) to move`; 
@@ -734,8 +726,7 @@ class ProLCTRGui {
         this.statusLabel.classList.add('exiting'); 
         setTimeout(() => { 
             this.statusLabel.textContent = newText; 
-            this.statusLabel.classList.remove('exiting'); 
-            this.updateUndoButton(); // Update undo button after status change
+            this.statusLabel.classList.remove('exiting');
             this.updateDownloadButton();
         }, 200); 
     }
@@ -794,7 +785,7 @@ class ProLCTRGui {
         this.setupModal.classList.add('visible'); 
     }
 
-    // Game state management for undo functionality
+    // Game state management for the game report/replay
     saveGameState() {
         if (!this.game) return;
         
@@ -809,48 +800,7 @@ class ProLCTRGui {
         };
         
         this.gameHistory.push(gameState);
-        this.updateUndoButton();
         this.updateDownloadButton();
-    }
-
-    undoMove() {
-        if (!this.game || this.gameHistory.length === 0 || this.isAnimating || this.game.isAiTurn()) {
-            return;
-        }
-
-        SoundManager.play('click');
-        
-        // Restore the previous game state
-        const previousState = this.gameHistory.pop();
-        
-        // Reconstruct the board
-        this.game.board.grid = previousState.board.grid.map(row => [...row]);
-        this.game.currentIndex = previousState.currentIndex;
-        
-        // Remove the last move from the sequence
-        this.movesSequence.pop();
-        
-        // Redraw the board and update UI
-        this.redrawBoard();
-        this.updateStatus();
-        this.updateUndoButton();
-        this.updateDownloadButton();
-    }
-
-    updateUndoButton() {
-        if (!this.undoBtn) return;
-        
-        const canUndo = this.game && this.gameHistory.length > 0 && !this.isAnimating && !this.game.isAiTurn();
-        
-        if (canUndo) {
-            this.undoBtn.style.display = 'flex';
-            this.undoBtn.disabled = false;
-        } else if (this.game && this.gameHistory.length === 0) {
-            this.undoBtn.style.display = 'flex';
-            this.undoBtn.disabled = true;
-        } else {
-            this.undoBtn.style.display = 'none';
-        }
     }
 
     updateDownloadButton() {
@@ -869,7 +819,6 @@ class ProLCTRGui {
 
     clearGameHistory() {
         this.gameHistory = [];
-        this.updateUndoButton();
         this.updateDownloadButton();
     }
 
