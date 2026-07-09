@@ -394,6 +394,7 @@ const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").mat
             else sh.chunk.position.lerp(target, 0.08);             // eases in
 
             sh.chunk.quaternion.slerp(group.quaternion, booted ? 0.12 : 1); // rotate with the mass
+            sh.chunk.scale.setScalar(group.scale.x);                        // shrink together with the mass
         }
         booted = true;
         renderer.render(scene, camera);
