@@ -353,14 +353,9 @@ const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").mat
         ptr.y = (e.clientY / window.innerHeight) * 2 - 1;
     });
 
-    // ---- scroll progress ----
+    // ---- progress (kept static: the 3D partition no longer reacts to scrolling,
+    // it just holds its resting pose while the idle bob/spin/parallax keep animating) ----
     let p = 0, pCur = 0;
-    function readProgress() {
-        const max = document.documentElement.scrollHeight - window.innerHeight;
-        p = max > 0 ? THREE.MathUtils.clamp(window.scrollY / max, 0, 1) : 0;
-    }
-    window.addEventListener("scroll", readProgress, { passive: true });
-    readProgress();
 
     const ease = (t) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
     function massAt(prog, out) {
