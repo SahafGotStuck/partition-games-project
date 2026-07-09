@@ -353,9 +353,15 @@ const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").mat
         ptr.y = (e.clientY / window.innerHeight) * 2 - 1;
     });
 
-    // ---- progress (kept static: the 3D partition no longer reacts to scrolling,
-    // it just holds its resting pose while the idle bob/spin/parallax keep animating) ----
+    // ---- scroll progress: only drives the gradual shrink below; position/rotation/
+    // fade/shedding stay static and no longer react to scroll ----
     let p = 0, pCur = 0;
+    function readProgress() {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        p = max > 0 ? THREE.MathUtils.clamp(window.scrollY / max, 0, 1) : 0;
+    }
+    window.addEventListener("scroll", readProgress, { passive: true });
+    readProgress();
 
     const ease = (t) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
     function massAt(prog, out) {
@@ -371,35 +377,23 @@ const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").mat
     let booted = false;   // first frame snaps; afterwards everything eases (both scroll directions)
 
     function frame(prog, time) {
-        // main mass: travel + recede + shrink + spin + fade
-        massAt(prog, tmp);
+        // main mass: resting pose (position/rotation/fade static) + gradual shrink on scroll
+        massAt(0, tmp);
         group.position.copy(tmp);
         group.position.y += Math.sin(time * 0.7) * 0.06;
         group.scale.setScalar(1 - prog * 0.5);
-        group.rotation.y = -0.9 + prog * Math.PI * 1.25 + (prefersReduced ? 0 : time * 0.07) + ptrCur.x * 0.25;
+        group.rotation.y = -0.9 + (prefersReduced ? 0 : time * 0.07) + ptrCur.x * 0.25;
         group.rotation.x = -0.18 - ptrCur.y * 0.18;
-        const fade = 1 - prog * 0.78;
-        for (let m = 0; m < mainMats.length; m++) mainMats[m].opacity = (mainMats[m].isLineBasicMaterial ? 0.55 : 1) * fade;
+        for (let m = 0; m < mainMats.length; m++) mainMats[m].opacity = (mainMats[m].isLineBasicMaterial ? 0.55 : 1);
 
-        // travellers: ride the mass, peel off to their side anchor — and ease BACK on scroll up
+        // travellers: stay attached to the mass (no shedding on scroll)
         for (let s = 0; s < sheds.length; s++) {
             const sh = sheds[s];
-            const released = prog >= sh.at && !prefersReduced;
-            if (released) {
-                target.copy(sh.anchor);
-                target.y += Math.sin(time * 0.9 + sh.phase) * 0.18;   // gentle bob
-            } else {
-                target.copy(sh.home); group.localToWorld(target);     // attached position in the model
-            }
+            target.copy(sh.home); group.localToWorld(target);     // attached position in the model
             if (!booted) sh.chunk.position.copy(target);
-            else sh.chunk.position.lerp(target, 0.08);                 // eases in BOTH directions
+            else sh.chunk.position.lerp(target, 0.08);             // eases in
 
-            if (released) {
-                sh.chunk.rotation.y += sh.spin;
-                sh.chunk.rotation.x += sh.spin * 0.6;
-            } else {
-                sh.chunk.quaternion.slerp(group.quaternion, booted ? 0.12 : 1); // rotate back smoothly when re-attaching
-            }
+            sh.chunk.quaternion.slerp(group.quaternion, booted ? 0.12 : 1); // rotate with the mass
         }
         booted = true;
         renderer.render(scene, camera);
