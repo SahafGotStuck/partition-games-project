@@ -227,7 +227,10 @@ class CornerMultiplayerAuth {
     }
     this.multiplayerRowsInput.value = part.join(' ');
   }
-  randomPartition(n) { const parts = []; let remaining = n, maxPart = n; while (remaining > 0) { const p = Math.min(Math.floor(Math.random() * remaining) + 1, remaining); parts.push(p); remaining -= p; maxPart = p; } return parts.sort((a,b)=>b-a); }
+  // Number of partitions of i using parts each <= j (standard partition-counting DP).
+  buildPartitionCountTable(n) { const p = Array.from({ length: n + 1 }, () => new Array(n + 1).fill(0)); for (let j = 0; j <= n; j++) p[0][j] = 1; for (let i = 1; i <= n; i++) { for (let j = 0; j <= n; j++) { p[i][j] = j === 0 ? 0 : p[i][j - 1] + (i - j >= 0 ? p[i - j][j] : 0); } } return p; }
+  // Uniform random partition: each of the p(n) partitions of n has equal probability.
+  randomPartition(n) { if (n === 0) return []; const table = this.buildPartitionCountTable(n); const parts = []; let remaining = n, maxPart = n; while (remaining > 0) { const cap = Math.min(remaining, maxPart); const ticket = Math.floor(Math.random() * table[remaining][cap]) + 1; let part = 1, acc = 0; for (; part <= cap; part++) { acc += table[remaining - part][part]; if (ticket <= acc) break; } parts.push(part); remaining -= part; maxPart = part; } return parts; }
   staircase(n) { const parts = []; let t = n; while (t >= 1) { parts.push(t); t--; } return parts; }
   square(n) { const parts = []; let t = n; while (t >= 1) { parts.push(n); t--; } return parts; }
   hook(n) { const parts = [n]; let t = n; while (t >= 2) { parts.push(1); t--; } return parts; }

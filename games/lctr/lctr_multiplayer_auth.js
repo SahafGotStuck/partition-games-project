@@ -408,17 +408,39 @@ class LCTRMultiplayerAuth {
         this.multiplayerRowsInput.value = partition.join(' ');
     }
 
+    // Number of partitions of i using parts each <= j (standard partition-counting DP).
+    buildPartitionCountTable(n) {
+        const p = Array.from({ length: n + 1 }, () => new Array(n + 1).fill(0));
+        for (let j = 0; j <= n; j++) p[0][j] = 1;
+        for (let i = 1; i <= n; i++) {
+            for (let j = 0; j <= n; j++) {
+                p[i][j] = j === 0 ? 0 : p[i][j - 1] + (i - j >= 0 ? p[i - j][j] : 0);
+            }
+        }
+        return p;
+    }
+
+    // Uniform random partition: each of the p(n) partitions of n has equal probability.
     generateRandomPartition(n) {
+        if (n === 0) return [];
+        const table = this.buildPartitionCountTable(n);
         const partition = [];
-        let remaining = n;
-        
+        let remaining = n, maxPart = n;
+
         while (remaining > 0) {
-            const part = Math.min(Math.floor(Math.random() * remaining) + 1, remaining);
+            const cap = Math.min(remaining, maxPart);
+            const ticket = Math.floor(Math.random() * table[remaining][cap]) + 1;
+            let part = 1, acc = 0;
+            for (; part <= cap; part++) {
+                acc += table[remaining - part][part];
+                if (ticket <= acc) break;
+            }
             partition.push(part);
             remaining -= part;
+            maxPart = part;
         }
-        
-        return partition.sort((a, b) => b - a);
+
+        return partition;
     }
 
     generateStaircasePartition(n) {

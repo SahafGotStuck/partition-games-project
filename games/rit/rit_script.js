@@ -2,19 +2,40 @@ function randomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+// Number of partitions of i using parts each <= j (standard partition-counting DP).
+function buildPartitionCountTable(n) {
+  const p = Array.from({ length: n + 1 }, () => new Array(n + 1).fill(0));
+  for (let j = 0; j <= n; j++) p[0][j] = 1;
+  for (let i = 1; i <= n; i++) {
+    for (let j = 0; j <= n; j++) {
+      p[i][j] = j === 0 ? 0 : p[i][j - 1] + (i - j >= 0 ? p[i - j][j] : 0);
+    }
+  }
+  return p;
+}
+
+// Uniform random partition: each of the p(n) partitions of n has equal probability.
 function randomPartition(n) {
+  if (n === 0) return [];
+  const table = buildPartitionCountTable(n);
   let parts = [];
   let remaining = n;
   let maxPart = n;
-  
+
   while (remaining > 0) {
-    let part = randomInt(1, Math.min(remaining, maxPart));
+    const cap = Math.min(remaining, maxPart);
+    let ticket = randomInt(1, table[remaining][cap]);
+    let part = 1, acc = 0;
+    for (; part <= cap; part++) {
+      acc += table[remaining - part][part];
+      if (ticket <= acc) break;
+    }
     parts.push(part);
     remaining -= part;
     maxPart = part;
   }
-  
-  return parts.sort((a, b) => b - a); // Sort descending
+
+  return parts; // Already non-increasing by construction
 }
 
 function rectangle(rows, cols) {
@@ -94,44 +115,7 @@ function generatePartition() {
 }
 
 
-
-
-  
-function randomPartition(n) {
-  let parts = [];
-  let remaining = n;
-  let maxPart = n;
-  
-  while (remaining > 0) {
-    let part = randomInt(1, Math.min(remaining, maxPart));
-    parts.push(part);
-    remaining -= part;
-    maxPart = part;
-  }
-  
-  return parts.sort((a, b) => b - a); // Sort descending like other games
-}
-function randomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function randomPartition(n) {
-  let parts = [];
-  let remaining = n;
-  let maxPart = n;
-  
-  while (remaining > 0) {
-    let part = randomInt(1, Math.min(remaining, maxPart));
-    parts.push(part);
-    remaining -= part;
-    maxPart = part;
-  }
-  
-  return parts.sort((a, b) => b - a); // Sort descending like other games
-}
-
-
-// ────────────────────────────────────────────────────────────  
+// ────────────────────────────────────────────────────────────
 // 1.  Young-diagram model  (legal-move engine corrected)  
 // ────────────────────────────────────────────────────────────  
 
@@ -501,21 +485,42 @@ class RITGui {
   }
 
   // Random partition utility functions
-  randomInt(min, max) { 
-    return Math.floor(Math.random() * (max - min + 1)) + min; 
+  randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
-  randomPartition(n) { 
-    let parts = []; 
-    let remaining = n; 
-    let maxPart = n; 
-    while (remaining > 0) { 
-      let part = this.randomInt(1, Math.min(remaining, maxPart)); 
-      parts.push(part); 
-      remaining -= part; 
-      maxPart = part; 
-    } 
-    return parts.sort((a, b) => b - a); // Sort descending
+  // Number of partitions of i using parts each <= j (standard partition-counting DP).
+  buildPartitionCountTable(n) {
+    const p = Array.from({ length: n + 1 }, () => new Array(n + 1).fill(0));
+    for (let j = 0; j <= n; j++) p[0][j] = 1;
+    for (let i = 1; i <= n; i++) {
+      for (let j = 0; j <= n; j++) {
+        p[i][j] = j === 0 ? 0 : p[i][j - 1] + (i - j >= 0 ? p[i - j][j] : 0);
+      }
+    }
+    return p;
+  }
+
+  // Uniform random partition: each of the p(n) partitions of n has equal probability.
+  randomPartition(n) {
+    if (n === 0) return [];
+    const table = this.buildPartitionCountTable(n);
+    let parts = [];
+    let remaining = n;
+    let maxPart = n;
+    while (remaining > 0) {
+      const cap = Math.min(remaining, maxPart);
+      let ticket = this.randomInt(1, table[remaining][cap]);
+      let part = 1, acc = 0;
+      for (; part <= cap; part++) {
+        acc += table[remaining - part][part];
+        if (ticket <= acc) break;
+      }
+      parts.push(part);
+      remaining -= part;
+      maxPart = part;
+    }
+    return parts; // Already non-increasing by construction
   }
 
   staircase(n) {

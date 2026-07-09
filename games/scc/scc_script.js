@@ -8,19 +8,41 @@ function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+// Number of partitions of i using parts each <= j (standard partition-counting DP).
+function buildPartitionCountTable(n) {
+    const p = Array.from({ length: n + 1 }, () => new Array(n + 1).fill(0));
+    for (let j = 0; j <= n; j++) p[0][j] = 1;
+    for (let i = 1; i <= n; i++) {
+        for (let j = 0; j <= n; j++) {
+            p[i][j] = j === 0 ? 0 : p[i][j - 1] + (i - j >= 0 ? p[i - j][j] : 0);
+        }
+    }
+    return p;
+}
+
+// Uniform random partition: each of the p(n) partitions of n has equal probability.
+// Builds parts largest-first, weighting each candidate value by how many completions it has.
 function randomPartition(n) {
+    if (n === 0) return [];
+    const table = buildPartitionCountTable(n);
     let parts = [];
     let remaining = n;
     let maxPart = n;
-    
+
     while (remaining > 0) {
-        let part = randomInt(1, Math.min(remaining, maxPart));
+        const cap = Math.min(remaining, maxPart);
+        let ticket = randomInt(1, table[remaining][cap]);
+        let part = 1, acc = 0;
+        for (; part <= cap; part++) {
+            acc += table[remaining - part][part];
+            if (ticket <= acc) break;
+        }
         parts.push(part);
         remaining -= part;
         maxPart = part;
     }
-    
-    return parts.sort((a, b) => b - a);
+
+    return parts;
 }
 
 function staircase(n) {

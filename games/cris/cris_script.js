@@ -2,15 +2,33 @@
 const CELL_SIZE = 40;  
 const GAP_SIZE  = 30;  
   
-function randomInt(min,max){return Math.floor(Math.random()*(max-min+1))+min;}  
-function randomPartition(n){  
-  let parts=[],remaining=n,maxPart=n;  
-  while(remaining>0){  
-    let part=randomInt(1,Math.min(remaining,maxPart));  
-    parts.push(part);remaining-=part;maxPart=part;  
-  }  
-  return parts.sort((a,b)=>b-a);  
-}  
+function randomInt(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+function buildPartitionCountTable(n){
+  const p=Array.from({length:n+1},()=>new Array(n+1).fill(0));
+  for(let j=0;j<=n;j++)p[0][j]=1;
+  for(let i=1;i<=n;i++){
+    for(let j=0;j<=n;j++){
+      p[i][j]=j===0?0:p[i][j-1]+(i-j>=0?p[i-j][j]:0);
+    }
+  }
+  return p;
+}
+function randomPartition(n){
+  if(n===0)return[];
+  const table=buildPartitionCountTable(n);
+  let parts=[],remaining=n,maxPart=n;
+  while(remaining>0){
+    const cap=Math.min(remaining,maxPart);
+    let ticket=randomInt(1,table[remaining][cap]);
+    let part=1,acc=0;
+    for(;part<=cap;part++){
+      acc+=table[remaining-part][part];
+      if(ticket<=acc)break;
+    }
+    parts.push(part);remaining-=part;maxPart=part;
+  }
+  return parts;
+}
 function staircase(n){let p=[],t=n;while(t>=1){p.push(t);t--;}return p;}  
 function rectangle(rows,cols){let p=[],t=rows;while(t>=1){p.push(cols);t--;}return p;}
 function hook(n){let p=[n];for(let t=n;t>=2;t--)p.push(1);return p;}  

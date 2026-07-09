@@ -138,6 +138,17 @@
         r.sort((a, b) => b - a);                       // a partition is non-increasing
         return r.length ? r.slice(0, 16) : [6, 5, 4, 3, 2];
     }
+    // Number of partitions of i using parts each <= j (standard partition-counting DP).
+    function buildPartitionCountTable(n) {
+        const p = Array.from({ length: n + 1 }, () => new Array(n + 1).fill(0));
+        for (let j = 0; j <= n; j++) p[0][j] = 1;
+        for (let i = 1; i <= n; i++) {
+            for (let j = 0; j <= n; j++) {
+                p[i][j] = j === 0 ? 0 : p[i][j - 1] + (i - j >= 0 ? p[i - j][j] : 0);
+            }
+        }
+        return p;
+    }
     function genPartition(type, n, cols) {
         if (type === "rectangle") {
             const rows = Math.max(1, Math.round(n || 6));
@@ -148,12 +159,19 @@
             const k0 = Math.max(1, Math.round(n || 6));
             const r = []; for (let k = k0; k >= 1; k--) r.push(k); return r;
         }
-        // random: a genuine random partition of n total cells — unlimited rows,
-        // each row at most as wide as the one above it.
+        // random: a uniformly random partition of n total cells — each of the p(n)
+        // possible partitions is equally likely, rows non-increasing top to bottom.
         const total = Math.max(1, Math.round(n || 14));
+        const table = buildPartitionCountTable(total);
         const r = []; let remaining = total, maxPart = total;
         while (remaining > 0) {
-            const w = 1 + Math.floor(Math.random() * Math.min(remaining, maxPart));
+            const cap = Math.min(remaining, maxPart);
+            const ticket = 1 + Math.floor(Math.random() * table[remaining][cap]);
+            let w = 1, acc = 0;
+            for (; w <= cap; w++) {
+                acc += table[remaining - w][w];
+                if (ticket <= acc) break;
+            }
             r.push(w); remaining -= w; maxPart = w;
         }
         return r;
