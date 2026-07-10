@@ -359,8 +359,8 @@
         window.addEventListener("resize", hideCornerTip);
         function cornerTipText() {
             return state.mode === "misere"
-                ? "Terminal position — no legal moves remain from here. Landing on it loses the game (misère mode)."
-                : "Terminal position — no legal moves remain from here. Move your piece here to win the game.";
+                ? "Terminal position — ultimate losing position."
+                : "Terminal position — ultimate winning position.";
         }
         function showCornerTip(sq) {
             cornerTip.textContent = cornerTipText();
