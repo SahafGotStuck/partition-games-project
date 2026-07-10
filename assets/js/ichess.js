@@ -221,11 +221,11 @@
               '<div class="header-center"><div class="game-title-section"><h1>' + P.name + '</h1></div>' +
                 '<div class="status-container"><p id="status-label">your move</p></div></div>' +
               '<div class="header-right"><nav>' +
-                '<a class="nav-button" href="../../wiki.html">wiki</a>' +
-                '<button id="ic-help" class="nav-button">? help</button>' +
-                '<button id="ic-analysis" class="nav-button" title="Toggle analysis">analysis</button>' +
                 '<a id="ic-quit" class="nav-button" href="../../index.html#games" title="Leave this game and return to the games list">' +
                   ICON.left + ' quit</a>' +
+                '<button id="ic-help" class="nav-button">? help</button>' +
+                '<button id="ic-analysis" class="nav-button" title="Toggle analysis">analysis</button>' +
+                '<a class="nav-button" href="../../wiki.html">wiki</a>' +
                 '<button id="theme-toggle" class="theme-toggle nav-button"></button>' +
               '</nav></div>' +
             '</div></div>';
