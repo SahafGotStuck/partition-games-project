@@ -340,13 +340,39 @@
                     sq.dataset.c = c; sq.dataset.r = r;
                     // an "outer corner" is any cell from which this piece has no
                     // legal move left — the game-ending cells for the current piece.
-                    if (state.solver && state.solver.legal(c, r).length === 0) sq.classList.add("corner");
+                    if (state.solver && state.solver.legal(c, r).length === 0) {
+                        sq.classList.add("corner");
+                        sq.addEventListener("mouseenter", () => showCornerTip(sq));
+                        sq.addEventListener("mouseleave", hideCornerTip);
+                    }
                     sq.addEventListener("click", () => onSquare(c, r));
                     b.appendChild(sq);
                 }
             }
             placePiece();
         }
+
+        /* ---- terminal-position tooltip: hover any "corner" square for a plain-language explanation ---- */
+        const cornerTip = el("div", "ic-corner-tip");
+        document.body.appendChild(cornerTip);
+        window.addEventListener("scroll", hideCornerTip, { passive: true });
+        window.addEventListener("resize", hideCornerTip);
+        function cornerTipText() {
+            return state.mode === "misere"
+                ? "Terminal position — no legal moves remain from here. Landing on it loses the game (misère mode)."
+                : "Terminal position — no legal moves remain from here. Move your piece here to win the game.";
+        }
+        function showCornerTip(sq) {
+            cornerTip.textContent = cornerTipText();
+            const r = sq.getBoundingClientRect();
+            const above = r.top > 110;                 // flip below if too close to the sticky header
+            cornerTip.classList.remove("above", "below");
+            cornerTip.classList.add(above ? "above" : "below");
+            cornerTip.style.left = (r.left + r.width / 2) + "px";
+            cornerTip.style.top = (above ? r.top : r.bottom) + "px";
+            cornerTip.classList.add("visible");
+        }
+        function hideCornerTip() { cornerTip.classList.remove("visible"); }
         function squareAt(c, r) { return refs.board.querySelector('.ic-sq[data-c="' + c + '"][data-r="' + r + '"]'); }
         function placePiece() {
             const old = refs.board.querySelector(".ic-piece");
