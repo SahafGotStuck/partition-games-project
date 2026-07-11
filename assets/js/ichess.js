@@ -502,6 +502,11 @@
         return '<div id="ic-setup" class="modal-backdrop"><div class="modal">' +
             '<div class="modal-header"><h2>game setup</h2></div>' +
             '<p>The piece begins in the upper-left corner and moves right or down across the cells of a partition. The last legal move wins.</p>' +
+            (piece === "general" ?
+              '<div class="ic-selectmoves-row">' +
+                '<button type="button" id="ic-selectmoves-btn" class="secondary-button">select moves</button>' +
+                '<span class="ic-selectmoves-summary" id="ic-selectmoves-summary"></span>' +
+              '</div>' : '') +
             '<label>Shape</label>' +
             '<select id="ic-gentype">' +
               '<option value="staircase">staircase</option>' +
@@ -517,8 +522,6 @@
             '<button type="button" id="ic-genbtn" class="secondary-button">generate</button>' +
             '<label>Preview</label>' +
             '<div class="input-group"><input type="text" id="ic-rows" value="6 5 4 3 2" placeholder="e.g. 6 5 4 3 2" readonly></div>' +
-            (piece === "general" ?
-              '<button type="button" id="ic-selectmoves-btn" class="secondary-button">select moves</button>' : '') +
             '<label>Mode</label>' +
             '<div class="input-group"><select id="ic-mode"><option value="normal" selected>Normal (last move wins)</option>' +
               '<option value="misere">Misère (last move loses)</option></select></div>' +
@@ -583,16 +586,24 @@
         const popup = document.getElementById("ic-moves-setup");
         if (!btn || !popup) return;
         const preview = document.getElementById("ic-moves-preview");
+        const summary = document.getElementById("ic-selectmoves-summary");
         const chips = Array.prototype.slice.call(popup.querySelectorAll(".ic-piece-chip"));
 
         function syncChips() {
             chips.forEach(chip => chip.classList.toggle("active", state.pieceSet.indexOf(chip.dataset.piece) !== -1));
+        }
+        // Keeps the icons beside "select moves" in sync with the current selection.
+        function renderSummary() {
+            summary.innerHTML = state.pieceSet.map(k => PIECES[k] ?
+                '<span class="ic-selectmoves-glyph" title="' + PIECES[k].name + '">' + PIECES[k].glyph + '</span>' : ''
+            ).join('');
         }
         chips.forEach(chip => chip.addEventListener("click", () => {
             const key = chip.dataset.piece;
             const idx = state.pieceSet.indexOf(key);
             if (idx === -1) state.pieceSet.push(key); else state.pieceSet.splice(idx, 1);
             syncChips();
+            renderSummary();
             buildMovesPreview(preview, state.pieceSet);
         }));
         btn.addEventListener("click", () => {
@@ -605,6 +616,7 @@
             popup.classList.remove("visible");
             refs.setup.classList.add("visible");
         });
+        renderSummary();   // show the default (King + Knight) icons immediately
     }
     function overModalHTML() {
         return '<div id="ic-over" class="modal-backdrop"><div class="modal">' +

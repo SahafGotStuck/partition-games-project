@@ -178,6 +178,18 @@
     border: 1px solid var(--pg-stroke); font-family: var(--font-mono); font-size: 13px;
 }
 
+/* ---- "select moves" button + live selection summary (General variant only) ---- */
+.ic-selectmoves-row { display: flex; align-items: center; gap: 10px; }
+.ic-selectmoves-row .secondary-button { width: auto; flex: 1; }
+.ic-selectmoves-summary { display: flex; gap: 4px; flex: none; min-height: 28px; align-items: center; }
+.ic-selectmoves-glyph {
+    display: grid; place-items: center;
+    width: 26px; height: 26px; border-radius: 8px;
+    background: color-mix(in srgb, var(--pg-cyan) 14%, var(--pg-surface));
+    border: 1px solid color-mix(in srgb, var(--pg-cyan) 40%, var(--pg-stroke));
+    color: var(--pg-text); font-size: 15px; line-height: 1;
+}
+
 /* ---- "select moves" popup (General variant only) ---- */
 .ic-moves-modal { max-width: 460px; }
 .ic-piece-toggle { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 4px 0 2px; }
