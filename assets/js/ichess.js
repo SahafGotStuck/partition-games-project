@@ -84,6 +84,23 @@
                    win: "Move to a <strong>Grundy-0</strong> position and keep returning your opponent to one." }
     };
 
+    // Combines several pieces' move generators into one, deduplicating cells
+    // reached by more than one of them (e.g. King and Bishop both reach [1,1]).
+    function unionGen(keys) {
+        return function (c, r, rows) {
+            const out = [], seen = new Set();
+            for (const k of keys) {
+                const gen = PIECES[k] && PIECES[k].gen;
+                if (!gen) continue;
+                for (const mv of gen(c, r, rows)) {
+                    const mk = mv[0] + "," + mv[1];
+                    if (!seen.has(mk)) { seen.add(mk); out.push(mv); }
+                }
+            }
+            return out;
+        };
+    }
+
     function legalMoves(piece, c, r, rows) { return PIECES[piece].gen(c, r, rows); }
 
     /* ---------------- Sprague–Grundy over the partition's cells ---------------- */
@@ -282,7 +299,7 @@
                 '<button id="ic-new" class="modal-btn ic-new">new game</button>' +
               '</aside>' +
             '</div>' +
-            setupModalHTML() + overModalHTML();
+            setupModalHTML(piece) + overModalHTML() + movesPopupHTML(piece);
 
         const refs = {
             board: document.getElementById("ic-board"),
@@ -294,7 +311,8 @@
         };
 
         const state = { piece, rows: [6, 5, 4, 3, 2], c: 0, r: 0, mode: "normal", ai: "B", diff: 60,
-                        turn: "A", moveCount: 0, solver: null, busy: false, analysis: false, over: false };
+                        turn: "A", moveCount: 0, solver: null, busy: false, analysis: false, over: false,
+                        pieceSet: ["king", "knight"] };  // "General" move mix, editable via Select Moves
 
         /* ---- analysis toggle ---- */
         document.getElementById("ic-analysis").addEventListener("click", () => {
@@ -308,12 +326,16 @@
         refs.over.querySelector("#ic-report").addEventListener("click", () => openGameReport(state));
 
         wireSetup(state, refs, begin);
+        wireMovesPopup(state, refs);
         openSetup();
 
         function openSetup() { refs.over.classList.remove("visible"); refs.setup.classList.add("visible"); }
 
         function begin(cfg) {
             Object.assign(state, cfg);
+            if (state.piece === "general") {
+                PIECES.general.gen = unionGen(state.pieceSet.length ? state.pieceSet : ["king", "knight"]);
+            }
             state.solver = makeSolver(state.piece, state.rows);
             state.moveCount = 0; state.over = false; state.busy = false;
             state.turn = "A";
@@ -476,7 +498,7 @@
     }
 
     /* ---------------- setup / game-over modal markup + wiring ---------------- */
-    function setupModalHTML() {
+    function setupModalHTML(piece) {
         return '<div id="ic-setup" class="modal-backdrop"><div class="modal">' +
             '<div class="modal-header"><h2>game setup</h2></div>' +
             '<p>The piece begins in the upper-left corner and moves right or down across the cells of a partition. The last legal move wins.</p>' +
@@ -495,6 +517,8 @@
             '<button type="button" id="ic-genbtn" class="secondary-button">generate</button>' +
             '<label>Preview</label>' +
             '<div class="input-group"><input type="text" id="ic-rows" value="6 5 4 3 2" placeholder="e.g. 6 5 4 3 2" readonly></div>' +
+            (piece === "general" ?
+              '<button type="button" id="ic-selectmoves-btn" class="secondary-button">select moves</button>' : '') +
             '<label>Mode</label>' +
             '<div class="input-group"><select id="ic-mode"><option value="normal" selected>Normal (last move wins)</option>' +
               '<option value="misere">Misère (last move loses)</option></select></div>' +
@@ -505,6 +529,82 @@
             '<input type="range" id="ic-diff" min="1" max="100" value="60" class="ic-range">' +
             '<button id="ic-start-btn" class="modal-btn">start game</button>' +
         '</div></div>';
+    }
+    /* Only built for the "general" variant — lets the player choose which of the
+       5 pieces' moves are combined into the General's move set. */
+    function movesPopupHTML(piece) {
+        if (piece !== "general") return "";
+        const chip = (key, glyph) =>
+            '<button type="button" class="ic-piece-chip" data-piece="' + key + '">' +
+              '<span class="ic-piece-chip-glyph">' + glyph + '</span>' +
+              '<span class="ic-piece-chip-label">' + key + '</span>' +
+            '</button>';
+        return '<div id="ic-moves-setup" class="modal-backdrop"><div class="modal ic-moves-modal">' +
+            '<div class="modal-header"><h2>select moves</h2></div>' +
+            '<p>Toggle pieces on or off — the General\'s moves are the combination of every piece selected.</p>' +
+            '<div class="ic-piece-toggle" id="ic-piece-toggle">' +
+              chip("pawn", PIECES.pawn.glyph) + chip("king", PIECES.king.glyph) +
+              chip("bishop", PIECES.bishop.glyph) + chip("knight", PIECES.knight.glyph) +
+              chip("rook", PIECES.rook.glyph) +
+            '</div>' +
+            '<div class="ic-moves-preview" id="ic-moves-preview"></div>' +
+            '<button type="button" id="ic-moves-done-btn" class="modal-btn">done</button>' +
+        '</div></div>';
+    }
+    // Renders a standalone 10x10 preview board (piece fixed at 0,0) showing the
+    // union of legal moves for the given piece keys, with row/col 0-9 labels.
+    function buildMovesPreview(container, pieceSet) {
+        container.innerHTML = "";
+        const grid = el("div", "ic-moves-grid");
+        grid.appendChild(el("div", "ic-moves-label"));
+        for (let c = 0; c < 10; c++) grid.appendChild(el("div", "ic-moves-label", String(c)));
+        const rows10 = new Array(10).fill(10);
+        const moveSet = new Set();
+        pieceSet.forEach(k => {
+            const gen = PIECES[k] && PIECES[k].gen;
+            if (!gen) return;
+            gen(0, 0, rows10).forEach(mv => moveSet.add(mv[0] + "," + mv[1]));
+        });
+        for (let r = 0; r < 10; r++) {
+            grid.appendChild(el("div", "ic-moves-label", String(r)));
+            for (let c = 0; c < 10; c++) {
+                const sq = el("div", "ic-sq " + (((c + r) % 2 === 0) ? "dark" : "light"));
+                if (c === 0 && r === 0) sq.appendChild(el("div", "ic-piece", PIECES.general.glyph));
+                else if (moveSet.has(c + "," + r)) sq.classList.add("move");
+                grid.appendChild(sq);
+            }
+        }
+        container.appendChild(grid);
+    }
+    // Wires the "select moves" button, its popup's piece toggles, and "done".
+    // No-op for every variant except "general" (the popup isn't built for others).
+    function wireMovesPopup(state, refs) {
+        const btn = document.getElementById("ic-selectmoves-btn");
+        const popup = document.getElementById("ic-moves-setup");
+        if (!btn || !popup) return;
+        const preview = document.getElementById("ic-moves-preview");
+        const chips = Array.prototype.slice.call(popup.querySelectorAll(".ic-piece-chip"));
+
+        function syncChips() {
+            chips.forEach(chip => chip.classList.toggle("active", state.pieceSet.indexOf(chip.dataset.piece) !== -1));
+        }
+        chips.forEach(chip => chip.addEventListener("click", () => {
+            const key = chip.dataset.piece;
+            const idx = state.pieceSet.indexOf(key);
+            if (idx === -1) state.pieceSet.push(key); else state.pieceSet.splice(idx, 1);
+            syncChips();
+            buildMovesPreview(preview, state.pieceSet);
+        }));
+        btn.addEventListener("click", () => {
+            syncChips();
+            buildMovesPreview(preview, state.pieceSet);
+            refs.setup.classList.remove("visible");
+            popup.classList.add("visible");
+        });
+        document.getElementById("ic-moves-done-btn").addEventListener("click", () => {
+            popup.classList.remove("visible");
+            refs.setup.classList.add("visible");
+        });
     }
     function overModalHTML() {
         return '<div id="ic-over" class="modal-backdrop"><div class="modal">' +
