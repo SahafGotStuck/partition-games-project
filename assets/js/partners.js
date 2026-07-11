@@ -13,7 +13,7 @@
             id: "rhodes", kind: "partner", name: "Rhodes College", short: "Rhodes College",
             city: "Memphis, Tennessee", country: "United States",
             lat: 35.1175, lng: -89.9711, accent: "orange",
-            website: "https://www.rhodes.edu", logo: "assets/images/logo/Rhodes_College_logo.png",
+            website: "https://www.rhodes.edu", logo: "assets/images/logo/Rhodes%20logo.jfif",
             members: [
                 { name: "Prof. Eric Gottlieb", role: "Faculty · Research lead", initials: "EG", email: "gottlieb@rhodes.edu",
                   bio: "Leads the combinatorial game theory research behind GRASP and supervises the partition games and the impartial-chess (iChess) work." },
@@ -34,7 +34,7 @@
             id: "rutgers", kind: "partner", name: "Rutgers University", short: "Rutgers",
             city: "Piscataway, New Jersey", country: "United States",
             lat: 40.5204, lng: -74.4645, accent: "cyan",
-            website: "https://www.rutgers.edu", logo: null,
+            website: "https://www.rutgers.edu", logo: "assets/images/logo/Rutgers%20University%20Logo.png",
             members: [
                 { name: "Collaborating faculty", role: "Faculty", initials: "R",
                   bio: "Collaborating faculty at Rutgers University — names and details to be added." }
@@ -44,7 +44,7 @@
             id: "up", kind: "partner", name: "University of Primorska · FAMNIT", short: "UP · FAMNIT",
             city: "Koper / Capodistria", country: "Slovenia",
             lat: 45.5483, lng: 13.7294, accent: "orange",
-            website: "https://www.famnit.upr.si", logo: null,
+            website: "https://www.famnit.upr.si", logo: "assets/images/logo/UP%20famnit%20logo.jfif",
             members: [
                 { name: "Prof. Matjaž Krnc", role: "Faculty", initials: "MK",
                   bio: "Faculty partner at UP FAMNIT, University of Primorska." },
@@ -59,7 +59,7 @@
             id: "darmstadt", kind: "collaborator", name: "TU Darmstadt", short: "TU Darmstadt",
             city: "Darmstadt", country: "Germany",
             lat: 49.8728, lng: 8.6512, accent: "cyan",
-            website: "https://www.tu-darmstadt.de", logo: null,
+            website: "https://www.tu-darmstadt.de", logo: "assets/images/logo/TU%20Darmstadt%20logo.png",
             members: [
                 { name: "Ina Bašić", role: "Collaborator", initials: "IB", bio: "Collaborator at TU Darmstadt." }
             ]
@@ -118,11 +118,10 @@
                     html: logoHtml + '<span class="pt-mk-label"><b>' + p.short + '</b> · <i>' +
                           p.members.length + (p.members.length === 1 ? " member" : " members") + '</i></span>'
                 });
-                var instMarker = L.marker([p.lat, p.lng], { icon: inst, title: p.name }).addTo(map)
+                L.marker([p.lat, p.lng], { icon: inst, title: p.name }).addTo(map)
                     .on("click", function () { map.flyTo([p.lat, p.lng], 13, { duration: 1.2 }); });
 
                 var rad = 0.006 + p.members.length * 0.0013;   // wider ring for bigger teams
-                var thisInstituteMembers = [];
                 p.members.forEach(function (mem, i) {
                     var ang = (i / p.members.length) * Math.PI * 2;
                     var ll = [p.lat + Math.sin(ang) * rad, p.lng + Math.cos(ang) * rad * 1.4];
@@ -135,15 +134,8 @@
                     });
                     var memMarker = L.marker(ll, { icon: ic })
                         .on("click", function () { openMember(p, mem); });
-                    thisInstituteMembers.push(memMarker);
                     allMemberMarkers.push(memMarker);
                 });
-
-                function showThese() { thisInstituteMembers.forEach(function (m) { if (!map.hasLayer(m)) m.addTo(map); }); }
-                function hideThese() { if (map.getZoom() >= REVEAL_ZOOM) return; thisInstituteMembers.forEach(function (m) { if (map.hasLayer(m)) map.removeLayer(m); }); }
-                // Hovering the institution marker (or its label) reveals its
-                // researchers immediately, in addition to the zoom-based reveal.
-                instMarker.on("mouseover", showThese).on("mouseout", hideThese);
             });
 
             function refreshMembers() {
