@@ -117,13 +117,14 @@
     border: 1px solid var(--s-orange); border-radius: 8px; padding: 6px 14px; text-decoration: none; }
 .pt-contact-tbd { color: var(--s-dim); border-color: var(--s-stroke); }
 
-/* institution markers that have a real logo file — tiny, text-scale icon
-   sitting right beside the label, no glow (glow was what made it read "big") */
-.pt-mk-logo { width: 8px; height: 8px; border-radius: 2px; background: #fff; display: grid; place-items: center;
-    box-shadow: 0 0 0 1px var(--s-cyan);
+/* institution markers that have a real logo file — a tiny, text-scale icon
+   right beside the label. No box-shadow/glow at all (blur was inflating the
+   apparent size far beyond the actual box). */
+.pt-mk-logo { width: 4px; height: 4px; border-radius: 1px; background: #fff; display: grid; place-items: center;
+    box-sizing: border-box; border: 1px solid var(--s-cyan);
     transform: none; animation: none; }
-.pt-divicon.orange .pt-mk-logo { box-shadow: 0 0 0 1px var(--s-orange); }
-.pt-divicon.collaborator .pt-mk-logo { width: 7px; height: 7px; opacity: .85; }
+.pt-divicon.orange .pt-mk-logo { border-color: var(--s-orange); }
+.pt-divicon.collaborator .pt-mk-logo { width: 3px; height: 3px; opacity: .85; }
 .pt-mk-logo img { width: 100%; height: 100%; object-fit: contain; padding: 0; }
 
 /* equal-partners strip */
