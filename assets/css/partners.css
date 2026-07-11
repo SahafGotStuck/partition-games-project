@@ -121,7 +121,7 @@
    right beside the label. No box-shadow/glow at all (blur was inflating the
    apparent size far beyond the actual box). */
 .pt-mk-logo { width: 4px; height: 4px; border-radius: 1px; background: #fff; display: grid; place-items: center;
-    box-sizing: border-box; border: 1px solid var(--s-cyan);
+    box-sizing: border-box; border: 1px solid var(--s-cyan); box-shadow: none;
     transform: none; animation: none; }
 .pt-divicon.orange .pt-mk-logo { border-color: var(--s-orange); }
 .pt-divicon.collaborator .pt-mk-logo { width: 3px; height: 3px; opacity: .85; }
