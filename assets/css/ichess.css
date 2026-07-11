@@ -61,6 +61,25 @@
     border: 2px dashed color-mix(in srgb, var(--pg-cyan) 60%, transparent);
     border-radius: 6px;
 }
+.ic-sq.corner { cursor: help; }
+
+/* terminal-position hover tooltip */
+.ic-corner-tip {
+    position: fixed; z-index: 1002;
+    width: max-content; max-width: 230px;
+    padding: 8px 12px;
+    background: var(--pg-surface-2); border: 1px solid var(--pg-stroke);
+    border-radius: 10px;
+    box-shadow: 0 12px 30px -12px rgba(0,0,0,0.5);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    font-family: var(--font-body); font-size: 12.5px; line-height: 1.45;
+    color: var(--pg-text); text-align: center;
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity .15s ease, visibility .15s ease;
+}
+.ic-corner-tip.visible { opacity: 1; visibility: visible; }
+.ic-corner-tip.above { transform: translate(-50%, calc(-100% - 10px)); }
+.ic-corner-tip.below { transform: translate(-50%, 10px); }
 
 /* legal-move hint */
 .ic-sq.move { cursor: pointer; }

@@ -238,11 +238,11 @@
               '<div class="header-center"><div class="game-title-section"><h1>' + P.name + '</h1></div>' +
                 '<div class="status-container"><p id="status-label">your move</p></div></div>' +
               '<div class="header-right"><nav>' +
-                '<a class="nav-button" href="../../wiki.html">wiki</a>' +
-                '<button id="ic-help" class="nav-button">? help</button>' +
-                '<button id="ic-analysis" class="nav-button" title="Toggle analysis">analysis</button>' +
                 '<a id="ic-quit" class="nav-button" href="../../index.html#games" title="Leave this game and return to the games list">' +
                   ICON.left + ' quit</a>' +
+                '<button id="ic-help" class="nav-button">? help</button>' +
+                '<button id="ic-analysis" class="nav-button" title="Toggle analysis">analysis</button>' +
+                '<a class="nav-button" href="../../wiki.html">wiki</a>' +
                 '<button id="theme-toggle" class="theme-toggle nav-button"></button>' +
               '</nav></div>' +
             '</div></div>';
@@ -362,13 +362,39 @@
                     sq.dataset.c = c; sq.dataset.r = r;
                     // an "outer corner" is any cell from which this piece has no
                     // legal move left — the game-ending cells for the current piece.
-                    if (state.solver && state.solver.legal(c, r).length === 0) sq.classList.add("corner");
+                    if (state.solver && state.solver.legal(c, r).length === 0) {
+                        sq.classList.add("corner");
+                        sq.addEventListener("mouseenter", () => showCornerTip(sq));
+                        sq.addEventListener("mouseleave", hideCornerTip);
+                    }
                     sq.addEventListener("click", () => onSquare(c, r));
                     b.appendChild(sq);
                 }
             }
             placePiece();
         }
+
+        /* ---- terminal-position tooltip: hover any "corner" square for a plain-language explanation ---- */
+        const cornerTip = el("div", "ic-corner-tip");
+        document.body.appendChild(cornerTip);
+        window.addEventListener("scroll", hideCornerTip, { passive: true });
+        window.addEventListener("resize", hideCornerTip);
+        function cornerTipText() {
+            return state.mode === "misere"
+                ? "Terminal position — ultimate losing position."
+                : "Terminal position — ultimate winning position.";
+        }
+        function showCornerTip(sq) {
+            cornerTip.textContent = cornerTipText();
+            const r = sq.getBoundingClientRect();
+            const above = r.top > 110;                 // flip below if too close to the sticky header
+            cornerTip.classList.remove("above", "below");
+            cornerTip.classList.add(above ? "above" : "below");
+            cornerTip.style.left = (r.left + r.width / 2) + "px";
+            cornerTip.style.top = (above ? r.top : r.bottom) + "px";
+            cornerTip.classList.add("visible");
+        }
+        function hideCornerTip() { cornerTip.classList.remove("visible"); }
         function squareAt(c, r) { return refs.board.querySelector('.ic-sq[data-c="' + c + '"][data-r="' + r + '"]'); }
         function placePiece() {
             const old = refs.board.querySelector(".ic-piece");
