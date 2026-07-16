@@ -59,7 +59,7 @@
             id: "darmstadt", kind: "collaborator", name: "TU Darmstadt", short: "TU Darmstadt",
             city: "Darmstadt", country: "Germany",
             lat: 49.8728, lng: 8.6512, accent: "cyan",
-            website: "https://www.tu-darmstadt.de", logo: "assets/images/logo/tudam.png",
+            website: "https://www.tu-darmstadt.de", logo: "assets/images/logo/tudam.png", logoClass: "pt-mk-logo-tudam",
             members: [
                 { name: "Ina Bašić", role: "Collaborator", initials: "IB", bio: "Collaborator at TU Darmstadt." }
             ]
@@ -111,7 +111,7 @@
             var allMemberMarkers = [];   // every researcher marker, with its institution + show/hide state
             PARTNERS.forEach(function (p) {
                 var logoHtml = p.logo
-                    ? '<span class="pt-mk-pin pt-mk-logo"><img src="' + p.logo + '" alt=""></span>'
+                    ? '<span class="pt-mk-pin pt-mk-logo' + (p.logoClass ? " " + p.logoClass : "") + '"><img src="' + p.logo + '" alt=""></span>'
                     : '<span class="pt-mk-pin"></span>';
                 var inst = L.divIcon({
                     className: "pt-divicon " + p.accent + " " + (p.kind || "partner"), iconSize: [16, 16], iconAnchor: [8, 8],
