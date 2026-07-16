@@ -59,7 +59,7 @@
             id: "darmstadt", kind: "collaborator", name: "TU Darmstadt", short: "TU Darmstadt",
             city: "Darmstadt", country: "Germany",
             lat: 49.8728, lng: 8.6512, accent: "cyan",
-            website: "https://www.tu-darmstadt.de", logo: "assets/images/logo/TU%20Darmstadt%20logo.png",
+            website: "https://www.tu-darmstadt.de", logo: "assets/images/logo/tudam.png",
             members: [
                 { name: "Ina Bašić", role: "Collaborator", initials: "IB", bio: "Collaborator at TU Darmstadt." }
             ]
