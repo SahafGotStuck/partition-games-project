@@ -4,6 +4,11 @@
    people pinned at each, click a person to read what they do.
    Pairs with site-modern.css (--s-* tokens, header, bg).
    ============================================================ */
+
+/* this page only loads site-modern.css, which sets .container's max-width
+   but not its centering — landing/style.css normally provide that */
+.container { width: 100%; max-width: 1180px; margin: 0 auto; padding: 0 28px; }
+
 .pt-hero { text-align: center; max-width: 760px; margin: 0 auto 36px; }
 .pt-eyebrow {
     font-family: var(--s-mono); font-size: 12.5px; letter-spacing: .16em;
@@ -39,7 +44,7 @@
 /* institution markers */
 .pt-divicon { overflow: visible !important; }
 .pt-mk-pin {
-    display: block; width: 16px; height: 16px; transform: rotate(45deg);
+    display: block; width: 20px; height: 20px; transform: rotate(45deg);
     background: var(--s-cyan); border-radius: 4px;
     box-shadow: 0 0 0 6px color-mix(in srgb, var(--s-cyan) 22%, transparent), 0 0 22px var(--s-cyan);
     animation: ptPulse 2.6s ease-in-out infinite;
@@ -48,6 +53,18 @@
     background: var(--s-orange);
     box-shadow: 0 0 0 6px color-mix(in srgb, var(--s-orange) 22%, transparent), 0 0 22px var(--s-orange);
 }
+
+/* institutions with a real logo: small circular crest instead of the plain pin,
+   same footprint/glow as the CSS pin so the map reads consistently */
+.pt-mk-pin.pt-mk-logo {
+    transform: none; background: #0c1120; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+    box-shadow: 0 0 0 2px rgba(255,255,255,.85), 0 0 0 6px color-mix(in srgb, var(--s-cyan) 22%, transparent), 0 0 18px var(--s-cyan);
+}
+.pt-divicon.orange .pt-mk-pin.pt-mk-logo {
+    box-shadow: 0 0 0 2px rgba(255,255,255,.85), 0 0 0 6px color-mix(in srgb, var(--s-orange) 22%, transparent), 0 0 18px var(--s-orange);
+}
+.pt-mk-pin.pt-mk-logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 .pt-mk-label {
     position: absolute; left: 24px; top: -3px; white-space: nowrap;
     font-family: var(--s-mono); font-size: 12px; color: #e6edf8;
