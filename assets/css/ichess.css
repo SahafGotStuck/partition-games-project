@@ -200,36 +200,37 @@
 /* ---- "select moves" button + live selection summary (General variant only) ---- */
 .ic-selectmoves-row { display: flex; align-items: center; gap: 10px; }
 .ic-selectmoves-row .secondary-button { width: auto; flex: 1; }
-.ic-selectmoves-summary { display: flex; gap: 4px; flex: none; min-height: 28px; align-items: center; }
-.ic-selectmoves-glyph {
-    display: grid; place-items: center;
-    width: 26px; height: 26px; border-radius: 8px;
-    background: color-mix(in srgb, var(--pg-cyan) 14%, var(--pg-surface));
-    border: 1px solid color-mix(in srgb, var(--pg-cyan) 40%, var(--pg-stroke));
-    color: var(--pg-text); font-size: 15px; line-height: 1;
+.ic-selectmoves-summary {
+    display: flex; flex: none; min-height: 28px; align-items: center;
+    font-family: var(--font-mono); font-size: 11.5px; color: var(--pg-muted); white-space: nowrap;
 }
 
 /* ---- "select moves" popup (General variant only) ---- */
 .ic-moves-modal { max-width: 460px; }
-.ic-piece-toggle { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 4px 0 2px; }
-.ic-piece-chip {
-    display: flex; flex-direction: column; align-items: center; gap: 3px;
-    width: 54px; padding: 8px 4px; border-radius: 10px; cursor: pointer;
-    background: var(--pg-surface); border: 1px solid var(--pg-stroke);
-    font-family: var(--font-mono);
-    transition: background-color .15s ease, border-color .15s ease, transform .15s ease;
-}
-.ic-piece-chip:hover { transform: translateY(-1px); }
-.ic-piece-chip-glyph { font-size: 20px; line-height: 1; color: var(--pg-text); }
-.ic-piece-chip-label { font-size: 9.5px; letter-spacing: .05em; text-transform: uppercase; color: var(--pg-muted); }
-.ic-piece-chip.active {
-    background: color-mix(in srgb, var(--pg-cyan) 18%, var(--pg-surface));
-    border-color: var(--pg-cyan);
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--pg-cyan) 45%, transparent);
-}
-.ic-piece-chip.active .ic-piece-chip-label { color: var(--pg-cyan); }
 
 .ic-moves-preview { display: flex; justify-content: center; margin: 8px 0 2px; }
+/* click-to-cycle move picker: off -> single leap -> sliding -> off */
+.ic-moves-grid .ic-sq { cursor: pointer; }
+.ic-moves-grid .ic-sq.sel-single {
+    background: color-mix(in srgb, var(--pg-cyan) 55%, var(--pg-surface-2)) !important;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pg-cyan) 70%, transparent);
+}
+.ic-moves-grid .ic-sq.sel-multi {
+    background: color-mix(in srgb, var(--pg-cyan) 85%, #002) !important;
+    box-shadow: inset 0 0 0 2px var(--pg-cyan);
+}
+.ic-moves-grid .ic-sq.sel-reach {
+    background: color-mix(in srgb, var(--pg-cyan) 20%, var(--pg-surface-2)) !important;
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pg-cyan) 35%, transparent);
+}
+.ic-moves-legend { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 10px 0 4px; }
+.ic-legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--pg-muted); font-family: var(--font-mono); }
+.ic-legend-swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.ic-legend-swatch.single { background: color-mix(in srgb, var(--pg-cyan) 55%, var(--pg-surface-2)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pg-cyan) 70%, transparent); }
+.ic-legend-swatch.multi { background: color-mix(in srgb, var(--pg-cyan) 85%, #002); box-shadow: inset 0 0 0 2px var(--pg-cyan); }
+.ic-legend-swatch.reach { background: color-mix(in srgb, var(--pg-cyan) 20%, var(--pg-surface-2)); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pg-cyan) 35%, transparent); }
+.ic-moves-btnrow { display: flex; gap: 10px; margin-top: 6px; }
+.ic-moves-btnrow .secondary-button, .ic-moves-btnrow .modal-btn { width: auto; flex: 1; }
 .ic-moves-grid {
     display: grid;
     grid-template-columns: 16px repeat(10, 18px);
@@ -247,7 +248,6 @@
 }
 /* the mini board reuses .ic-sq/.ic-piece but at a fixed small size, decoupled
    from the main board's container-query-based (cqmin) sizing */
-.ic-moves-grid .ic-sq.move::before { width: 8px; height: 8px; max-width: none; max-height: none; box-shadow: none; }
 .ic-moves-grid .ic-piece { font-size: 12px; }
 
 /* ---- help popover (mirrors unified_game_styles' #help-popover, pg-tokened) ---- */

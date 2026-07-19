@@ -84,18 +84,25 @@
                    win: "Move to a <strong>Grundy-0</strong> position and keep returning your opponent to one." }
     };
 
-    // Combines several pieces' move generators into one, deduplicating cells
-    // reached by more than one of them (e.g. King and Bishop both reach [1,1]).
-    function unionGen(keys) {
+    // The General's custom move set: a list of user-picked (dc, dr) directions,
+    // each either a single fixed leap (mode 1) or a slide through every multiple
+    // of that direction (mode 2) — see buildMovesEditor for how these are picked.
+    function defaultGeneralDeltas() {
+        return KING_D.concat(KNIGHT_D).map(([dc, dr]) => ({ dc, dr, mode: 1 }));
+    }
+    function customGeneralGen(deltas) {
         return function (c, r, rows) {
             const out = [], seen = new Set();
-            for (const k of keys) {
-                const gen = PIECES[k] && PIECES[k].gen;
-                if (!gen) continue;
-                for (const mv of gen(c, r, rows)) {
-                    const mk = mv[0] + "," + mv[1];
-                    if (!seen.has(mk)) { seen.add(mk); out.push(mv); }
-                }
+            const add = (nc, nr) => {
+                if (!inBoard(nc, nr, rows)) return false;
+                const mk = nc + "," + nr;
+                if (seen.has(mk)) return true;
+                seen.add(mk); out.push([nc, nr]);
+                return true;
+            };
+            for (const d of deltas) {
+                if (d.mode === 2) { for (let k = 1; add(c + d.dc * k, r + d.dr * k); k++); }
+                else add(c + d.dc, r + d.dr);
             }
             return out;
         };
@@ -312,7 +319,7 @@
 
         const state = { piece, rows: [6, 5, 4, 3, 2], c: 0, r: 0, mode: "normal", ai: "B", diff: 60,
                         turn: "A", moveCount: 0, solver: null, busy: false, analysis: false, over: false,
-                        pieceSet: ["king", "knight"] };  // "General" move mix, editable via Select Moves
+                        generalDeltas: defaultGeneralDeltas() };  // "General" move set, editable via Select Moves
 
         /* ---- analysis toggle ---- */
         document.getElementById("ic-analysis").addEventListener("click", () => {
@@ -334,7 +341,7 @@
         function begin(cfg) {
             Object.assign(state, cfg);
             if (state.piece === "general") {
-                PIECES.general.gen = unionGen(state.pieceSet.length ? state.pieceSet : ["king", "knight"]);
+                PIECES.general.gen = customGeneralGen(state.generalDeltas.length ? state.generalDeltas : defaultGeneralDeltas());
             }
             state.solver = makeSolver(state.piece, state.rows);
             state.moveCount = 0; state.over = false; state.busy = false;
@@ -559,90 +566,120 @@
             '<button id="ic-start-btn" class="modal-btn">start game</button>' +
         '</div></div>';
     }
-    /* Only built for the "general" variant — lets the player choose which of the
-       5 pieces' moves are combined into the General's move set. */
+    /* Only built for the "general" variant — an interactive 10x10 board (the
+       General fixed at 0,0) where the player builds a custom move set by
+       clicking squares directly. Click cycles a square through three states:
+       off -> single leap (cyan) -> sliding through every multiple of that
+       direction (deep blue) -> off again. */
     function movesPopupHTML(piece) {
         if (piece !== "general") return "";
-        const chip = (key, glyph) =>
-            '<button type="button" class="ic-piece-chip" data-piece="' + key + '">' +
-              '<span class="ic-piece-chip-glyph">' + glyph + '</span>' +
-              '<span class="ic-piece-chip-label">' + key + '</span>' +
-            '</button>';
         return '<div id="ic-moves-setup" class="modal-backdrop"><div class="modal ic-moves-modal">' +
             '<div class="modal-header"><h2>select moves</h2></div>' +
-            '<p>Toggle pieces on or off — the General\'s moves are the combination of every piece selected.</p>' +
-            '<div class="ic-piece-toggle" id="ic-piece-toggle">' +
-              chip("pawn", PIECES.pawn.glyph) + chip("king", PIECES.king.glyph) +
-              chip("bishop", PIECES.bishop.glyph) + chip("knight", PIECES.knight.glyph) +
-              chip("rook", PIECES.rook.glyph) +
-            '</div>' +
+            '<p>Click a square once for a single leap there. Click it again to slide through every multiple of that direction. Click a third time to remove it.</p>' +
             '<div class="ic-moves-preview" id="ic-moves-preview"></div>' +
-            '<button type="button" id="ic-moves-done-btn" class="modal-btn">done</button>' +
+            '<div class="ic-moves-legend">' +
+              '<span class="ic-legend-item"><span class="ic-legend-swatch single"></span>single leap</span>' +
+              '<span class="ic-legend-item"><span class="ic-legend-swatch multi"></span>sliding (multiples)</span>' +
+              '<span class="ic-legend-item"><span class="ic-legend-swatch reach"></span>reachable via sliding</span>' +
+            '</div>' +
+            '<div class="ic-moves-btnrow">' +
+              '<button type="button" id="ic-moves-reset-btn" class="secondary-button">reset to default</button>' +
+              '<button type="button" id="ic-moves-done-btn" class="modal-btn">done</button>' +
+            '</div>' +
         '</div></div>';
     }
-    // Renders a standalone 10x10 preview board (piece fixed at 0,0) showing the
-    // union of legal moves for the given piece keys, with row/col 0-9 labels.
-    function buildMovesPreview(container, pieceSet) {
+    // Renders the interactive 10x10 move-picker board into `container` and wires
+    // click-to-cycle on every non-origin square, mutating state.generalDeltas in
+    // place. `onChange` is called after every click so the caller can refresh
+    // any dependent UI (the picker itself is fully rebuilt so it always reflects
+    // the current selection, including the "reachable via sliding" halo).
+    function buildMovesEditor(container, state, onChange) {
         container.innerHTML = "";
         const grid = el("div", "ic-moves-grid");
         grid.appendChild(el("div", "ic-moves-label"));
         for (let c = 0; c < 10; c++) grid.appendChild(el("div", "ic-moves-label", String(c)));
-        const rows10 = new Array(10).fill(10);
-        const moveSet = new Set();
-        pieceSet.forEach(k => {
-            const gen = PIECES[k] && PIECES[k].gen;
-            if (!gen) return;
-            gen(0, 0, rows10).forEach(mv => moveSet.add(mv[0] + "," + mv[1]));
+
+        const modeMap = new Map();
+        state.generalDeltas.forEach(d => modeMap.set(d.dc + "," + d.dr, d.mode));
+
+        // Cells only reachable because some OTHER square is set to "sliding" —
+        // shown as a lighter halo so the multiplication effect is visible.
+        const reach = new Set();
+        state.generalDeltas.forEach(d => {
+            if (d.mode !== 2) return;
+            for (let k = 1; k <= 9; k++) {
+                const cc = d.dc * k, rr = d.dr * k;
+                if (cc < 0 || cc > 9 || rr < 0 || rr > 9) break;
+                reach.add(cc + "," + rr);
+            }
         });
+
         for (let r = 0; r < 10; r++) {
             grid.appendChild(el("div", "ic-moves-label", String(r)));
             for (let c = 0; c < 10; c++) {
                 const sq = el("div", "ic-sq " + (((c + r) % 2 === 0) ? "dark" : "light"));
-                if (c === 0 && r === 0) sq.appendChild(el("div", "ic-piece", PIECES.general.glyph));
-                else if (moveSet.has(c + "," + r)) sq.classList.add("move");
+                if (c === 0 && r === 0) {
+                    sq.appendChild(el("div", "ic-piece", PIECES.general.glyph));
+                } else {
+                    const key = c + "," + r;
+                    const mode = modeMap.get(key);
+                    if (mode === 1) sq.classList.add("sel-single");
+                    else if (mode === 2) sq.classList.add("sel-multi");
+                    else if (reach.has(key)) sq.classList.add("sel-reach");
+                    sq.addEventListener("click", () => {
+                        const cur = modeMap.get(key) || 0;
+                        const next = (cur + 1) % 3;
+                        if (next === 0) {
+                            state.generalDeltas = state.generalDeltas.filter(d => !(d.dc === c && d.dr === r));
+                        } else if (cur === 0) {
+                            state.generalDeltas.push({ dc: c, dr: r, mode: next });
+                        } else {
+                            const entry = state.generalDeltas.find(d => d.dc === c && d.dr === r);
+                            if (entry) entry.mode = next;
+                        }
+                        onChange();
+                    });
+                }
                 grid.appendChild(sq);
             }
         }
         container.appendChild(grid);
     }
-    // Wires the "select moves" button, its popup's piece toggles, and "done".
-    // No-op for every variant except "general" (the popup isn't built for others).
+    // Wires the "select moves" button, the interactive picker board, reset, and
+    // "done". No-op for every variant except "general" (the popup isn't built
+    // for others).
     function wireMovesPopup(state, refs) {
         const btn = document.getElementById("ic-selectmoves-btn");
         const popup = document.getElementById("ic-moves-setup");
         if (!btn || !popup) return;
         const preview = document.getElementById("ic-moves-preview");
         const summary = document.getElementById("ic-selectmoves-summary");
-        const chips = Array.prototype.slice.call(popup.querySelectorAll(".ic-piece-chip"));
 
-        function syncChips() {
-            chips.forEach(chip => chip.classList.toggle("active", state.pieceSet.indexOf(chip.dataset.piece) !== -1));
-        }
-        // Keeps the icons beside "select moves" in sync with the current selection.
+        // Keeps the text beside "select moves" in sync with the current selection.
         function renderSummary() {
-            summary.innerHTML = state.pieceSet.map(k => PIECES[k] ?
-                '<span class="ic-selectmoves-glyph" title="' + PIECES[k].name + '">' + PIECES[k].glyph + '</span>' : ''
-            ).join('');
+            const n = state.generalDeltas.length;
+            const sliding = state.generalDeltas.filter(d => d.mode === 2).length;
+            summary.textContent = n === 0 ? "no moves selected"
+                : n + " direction" + (n === 1 ? "" : "s") + (sliding ? " (" + sliding + " sliding)" : "");
         }
-        chips.forEach(chip => chip.addEventListener("click", () => {
-            const key = chip.dataset.piece;
-            const idx = state.pieceSet.indexOf(key);
-            if (idx === -1) state.pieceSet.push(key); else state.pieceSet.splice(idx, 1);
-            syncChips();
-            renderSummary();
-            buildMovesPreview(preview, state.pieceSet);
-        }));
+        function rebuildEditor() {
+            buildMovesEditor(preview, state, () => { renderSummary(); rebuildEditor(); });
+        }
         btn.addEventListener("click", () => {
-            syncChips();
-            buildMovesPreview(preview, state.pieceSet);
+            rebuildEditor();
             refs.setup.classList.remove("visible");
             popup.classList.add("visible");
+        });
+        document.getElementById("ic-moves-reset-btn").addEventListener("click", () => {
+            state.generalDeltas = defaultGeneralDeltas();
+            renderSummary();
+            rebuildEditor();
         });
         document.getElementById("ic-moves-done-btn").addEventListener("click", () => {
             popup.classList.remove("visible");
             refs.setup.classList.add("visible");
         });
-        renderSummary();   // show the default (King + Knight) icons immediately
+        renderSummary();   // show the default (King + Knight) summary immediately
     }
     function overModalHTML() {
         return '<div id="ic-over" class="modal-backdrop"><div class="modal">' +
