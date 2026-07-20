@@ -460,9 +460,9 @@ section { position: relative; z-index: 1; }
     padding: 26px;
     border-radius: var(--radius);
     border: 1px solid var(--stroke);
-    background: linear-gradient(160deg, var(--surface-2), var(--surface));
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    /* fully opaque matte card — no glass/blur, so the fixed 3D hero canvas
+       behind the page never bleeds through and the text stays readable */
+    background: linear-gradient(160deg, color-mix(in srgb, var(--bg-2) 100%, white 5%), color-mix(in srgb, var(--bg-2) 100%, black 8%));
     transform-style: preserve-3d;
     transition: transform 0.18s var(--ease), border-color 0.3s, box-shadow 0.3s;
     will-change: transform;
