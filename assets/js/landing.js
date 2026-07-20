@@ -245,8 +245,7 @@ const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").mat
     const cOrange = new THREE.Color("#FF6B35");
     const cCyan = new THREE.Color("#2DD4BF");
 
-    // every cube is a permanent child of `group` — one shared transform means the
-    // whole stack moves/shrinks/spins perfectly in sync, with no per-cube lag.
+    const built = [];   // every cube: { mesh, edges }
     for (let i = 0; i < N; i++) {
         for (let j = 0; j < N; j++) {
             const h = N - i - j;
@@ -262,6 +261,7 @@ const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").mat
                     new THREE.LineBasicMaterial({ color: col.clone().lerp(new THREE.Color("#fff"), 0.4), transparent: true, opacity: 0.55 }));
                 edges.position.copy(mesh.position);
                 group.add(mesh); group.add(edges);
+                built.push({ mesh, edges });
             }
         }
     }
@@ -269,6 +269,36 @@ const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").mat
     const c = (N - 1) * STEP / 2;
     group.children.forEach(o => o.position.sub(new THREE.Vector3(c, c * 0.5, c)));
 
+    // ---- choose "traveller" blocks that shed into the page on scroll ----
+    // pick the 7 highest cubes (the top of the staircase) — most visible.
+    const sorted = built.slice().sort((a, b) => b.mesh.position.y - a.mesh.position.y);
+    // spaced well apart vertically so the cubes never overlap while they spin
+    const SHED_SPECS = [
+        { at: 0.10, nx: -0.78, ny: 0.46 },   // → games (left column)
+        { at: 0.15, nx: -0.84, ny: 0.02 },
+        { at: 0.20, nx: -0.76, ny: -0.42 },
+        { at: 0.40, nx: 0.78, ny: 0.46 },    // → multiplayer / head-to-head (right column)
+        { at: 0.45, nx: 0.84, ny: 0.02 },
+        { at: 0.50, nx: 0.76, ny: -0.42 },
+        { at: 0.70, nx: -0.50, ny: -0.46 },  // → research (left)
+    ];
+    const sheds = [];
+    SHED_SPECS.forEach((spec, idx) => {
+        const cubeObj = sorted[idx];
+        if (!cubeObj) return;
+        const home = cubeObj.mesh.position.clone();       // local pos in group space
+        group.remove(cubeObj.mesh); group.remove(cubeObj.edges);
+        const chunk = new THREE.Group();
+        cubeObj.mesh.position.set(0, 0, 0);
+        cubeObj.edges.position.set(0, 0, 0);
+        chunk.add(cubeObj.mesh); chunk.add(cubeObj.edges);
+        chunk.scale.setScalar(1.0);                        // same size as a model cube
+        scene.add(chunk);
+        sheds.push({ chunk, home, at: spec.at, nx: spec.nx, ny: spec.ny,
+            anchor: new THREE.Vector3(), spin: 0.004 + Math.random() * 0.005, phase: Math.random() * 6.28 });
+    });
+
+    // main-mass materials (for the opacity pass below)
     const mainMats = [];
     group.traverse(o => { if (o.material) mainMats.push(o.material); });
 
@@ -278,9 +308,18 @@ const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").mat
     const rimO = new THREE.PointLight(0xff6b35, 60, 60); rimO.position.set(-8, 2, 6); scene.add(rimO);
     const rimC = new THREE.PointLight(0x2dd4bf, 50, 60); rimC.position.set(8, -4, -6); scene.add(rimC);
 
-    // ---- keyframes for the main mass: hero pose → resting pose over "Choose your games" ----
+    // ---- screen→world helper (z=0-ish plane) for anchoring shed blocks to a fixed
+    // spot on screen (the canvas is `position: fixed`, so this stays put on scroll) ----
+    function screenToWorld(nx, ny, out) {
+        const vH = 2 * Math.tan((38 * Math.PI / 180) / 2) * camera.position.z;
+        const vW = vH * camera.aspect;
+        return out.set(nx * vW / 2, ny * vH / 2, 1.5);
+    }
+
+    // ---- keyframes for the main mass: hero pose → "Choose your games" → tucked
+    // into the upper-right corner, where it stays (still shrinking) for the rest ----
     let wide = true;
-    const KP = { hero: new THREE.Vector3(), games: new THREE.Vector3() };
+    const KP = { hero: new THREE.Vector3(), games: new THREE.Vector3(), corner: new THREE.Vector3() };
     let gamesTopY = 0;   // scrollY at which the mass should have fully arrived at KP.games
     // Guard against environments that report a bogus (0/1) viewport width.
     function cw() { var w = canvas.clientWidth || window.innerWidth || 0; return w > 2 ? w : 1280; }
@@ -291,11 +330,13 @@ const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").mat
         const f = wide ? 1 : 0.45;
         KP.hero.set(3.4 * f, 0.4, 0);
         KP.games.set(5.0 * f, 2.4, -2);
+        KP.corner.set(6.6 * f, 3.8, -4);
         camera.position.z = wide ? 17 : 22;
         camera.aspect = w / ch();
         camera.updateProjectionMatrix();
         const gamesEl = document.getElementById("games");
         gamesTopY = gamesEl ? gamesEl.offsetTop : (document.documentElement.scrollHeight - window.innerHeight) * 0.33;
+        sheds.forEach(s => screenToWorld(wide ? s.nx : s.nx * 0.7, s.ny, s.anchor));
     }
     function resize() {
         // size the drawing buffer to the canvas's actual rendered box (CSS keeps display = viewport)
@@ -317,14 +358,19 @@ const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").mat
     });
 
     // ---- scroll progress ----
-    // `p`    — fraction of the whole page scrolled; drives the continuous shrink + spin.
-    // `posP` — fraction of the way to the "Choose your games" section; drives the
-    //          hero → resting-pose move, then holds once that section is reached.
-    let p = 0, pCur = 0, posP = 0, posPCur = 0;
+    // `p`     — fraction of the whole page scrolled; drives the continuous shrink + spin,
+    //           and the release threshold for each shed block.
+    // `posP`  — fraction of the way to the "Choose your games" section; drives the
+    //           hero → games move.
+    // `restP` — fraction of the way through the *rest* of the page once "games" has
+    //           been reached; carries the mass on from `games` to its `corner` spot.
+    let p = 0, pCur = 0, posP = 0, posPCur = 0, restP = 0, restPCur = 0;
     function readProgress() {
         const max = document.documentElement.scrollHeight - window.innerHeight;
         p = max > 0 ? THREE.MathUtils.clamp(window.scrollY / max, 0, 1) : 0;
         posP = gamesTopY > 0 ? THREE.MathUtils.clamp(window.scrollY / gamesTopY, 0, 1) : 0;
+        const restSpan = max - gamesTopY;
+        restP = restSpan > 0 ? THREE.MathUtils.clamp((window.scrollY - gamesTopY) / restSpan, 0, 1) : 0;
     }
     window.addEventListener("scroll", readProgress, { passive: true });
     readProgress();
@@ -333,23 +379,50 @@ const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").mat
 
     // ---- per-frame update (also callable on demand for envs that throttle rAF) ----
     const clock = new THREE.Clock();
-    const tmp = new THREE.Vector3();
+    const tmp = new THREE.Vector3(), target = new THREE.Vector3();
+    let booted = false;   // first frame snaps sheds into place; afterwards they ease (both scroll directions)
 
-    function frame(prog, posProg, time) {
-        // position: travel from the hero pose toward the "high mid" resting spot as you
-        // approach "Choose your games", then hold there for the rest of the scroll
+    function frame(prog, posProg, restProg, time) {
+        // position: travel from the hero pose toward "Choose your games", then keep
+        // drifting on to the upper-right corner for the remainder of the page
         tmp.copy(KP.hero).lerp(KP.games, ease(posProg));
+        tmp.lerp(KP.corner, ease(restProg));
         group.position.copy(tmp);
         group.position.y += Math.sin(time * 0.7) * 0.06;
 
         // shrink further the more of the page you scroll through
-        group.scale.setScalar(Math.max(0.18, 1 - prog * 0.82));
+        const scale = Math.max(0.18, 1 - prog * 0.82);
+        group.scale.setScalar(scale);
 
         // spin forward scrolling down, unwind scrolling back up
         group.rotation.y = -0.9 + prog * Math.PI * 1.6 + (prefersReduced ? 0 : time * 0.07) + ptrCur.x * 0.25;
         group.rotation.x = -0.18 - ptrCur.y * 0.18;
 
         for (let m = 0; m < mainMats.length; m++) mainMats[m].opacity = (mainMats[m].isLineBasicMaterial ? 0.55 : 1);
+
+        // travellers: ride the mass until scroll passes their release point, then
+        // break off and settle at their side anchor — easing back if you scroll up
+        for (let s = 0; s < sheds.length; s++) {
+            const sh = sheds[s];
+            const released = prog >= sh.at && !prefersReduced;
+            if (released) {
+                target.copy(sh.anchor);
+                target.y += Math.sin(time * 0.9 + sh.phase) * 0.18;   // gentle bob
+            } else {
+                target.copy(sh.home); group.localToWorld(target);     // attached position in the model
+            }
+            if (!booted) sh.chunk.position.copy(target);
+            else sh.chunk.position.lerp(target, 0.08);                 // eases in both directions
+
+            if (released) {
+                sh.chunk.rotation.y += sh.spin;
+                sh.chunk.rotation.x += sh.spin * 0.6;
+            } else {
+                sh.chunk.quaternion.slerp(group.quaternion, booted ? 0.12 : 1); // rotate back smoothly when re-attaching
+            }
+            sh.chunk.scale.setScalar(scale);   // shrink together with the mass
+        }
+        booted = true;
         renderer.render(scene, camera);
     }
 
@@ -360,9 +433,10 @@ const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").mat
         if (!running) return;
         pCur += (p - pCur) * 0.08;
         posPCur += (posP - posPCur) * 0.08;
+        restPCur += (restP - restPCur) * 0.08;
         ptrCur.x += (ptr.x - ptrCur.x) * 0.05;
         ptrCur.y += (ptr.y - ptrCur.y) * 0.05;
-        frame(prefersReduced ? 0 : pCur, prefersReduced ? 0 : posPCur, clock.getElapsedTime());
+        frame(prefersReduced ? 0 : pCur, prefersReduced ? 0 : posPCur, prefersReduced ? 0 : restPCur, clock.getElapsedTime());
     }
     tick();
 })();
