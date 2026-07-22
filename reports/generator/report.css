@@ -112,6 +112,15 @@ button:hover { filter: brightness(1.1); }
   border: 1px solid var(--border-color);
   padding: 10px 14px;
   font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 .move-table-cell.empty { background: transparent; border-color: transparent; }
+.move-table-pos { font-family: 'JetBrains Mono', monospace; }
+
+.p-n-status { padding: 4px 8px; font-weight: bold; font-size: 12px; white-space: nowrap; }
+.p-n-status.n-position { background: var(--winning-color); color: var(--button-text-color); }
+.p-n-status.p-position { background: var(--removing-color); color: #fff; }
 
