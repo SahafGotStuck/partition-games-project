@@ -319,7 +319,7 @@
 
         const state = { piece, rows: [6, 5, 4, 3, 2], c: 0, r: 0, mode: "normal", ai: "B", diff: 60,
                         turn: "A", moveCount: 0, solver: null, busy: false, analysis: false, over: false,
-                        generalDeltas: defaultGeneralDeltas() };  // "General" move set, editable via Select Moves
+                        moveLog: [], generalDeltas: defaultGeneralDeltas() };  // "General" move set, editable via Select Moves
 
         /* ---- analysis toggle ---- */
         document.getElementById("ic-analysis").addEventListener("click", () => {
@@ -347,6 +347,7 @@
             state.moveCount = 0; state.over = false; state.busy = false;
             state.turn = "A";
             state.history = [[state.c, state.r]];
+            state.moveLog = [];
             refs.setup.classList.remove("visible");
             refs.over.classList.remove("visible");
             refs.log.innerHTML = "";
@@ -502,12 +503,29 @@
             refs.turnText.textContent = title;
         }
 
+        /* Moves strictly alternate, so a "Player" column is redundant once moves
+           are laid out two-per-row — column position already says who moved.
+           Player 1 = whoever's turn is odd-numbered (1st, 3rd, ...), Player 2 = even. */
+        function logCell(m) {
+            if (!m) return '<div class="ic-log-cell empty"></div>';
+            return '<div class="ic-log-cell ' + (m.human ? "you" : "cpu") + '">' + m.text +
+                '<span class="ic-log-n">#' + m.move + '</span></div>';
+        }
+        function renderLog() {
+            const moves = state.moveLog;
+            if (!moves.length) { refs.log.innerHTML = ""; return; }
+            const totalRounds = Math.ceil(moves.length / 2);
+            const maxRounds = 20;                    // cap displayed rounds (~40 moves)
+            const startRound = Math.max(1, totalRounds - maxRounds + 1);
+            let html = '<div class="ic-log-head"><span>Player 1</span><span>Player 2</span></div>';
+            for (let round = totalRounds; round >= startRound; round--) {
+                html += '<div class="ic-log-row">' + logCell(moves[2 * round - 2]) + logCell(moves[2 * round - 1]) + '</div>';
+            }
+            refs.log.innerHTML = html;
+        }
         function logMove(who, c, r) {
-            const item = el("div", "ic-log-item",
-                '<span class="tag ' + (who === "you" ? "you" : "cpu") + '">' + (who === "you" ? "you" : "ai") + '</span>' +
-                '<span>→ ' + sqName(c, r) + '</span><span style="margin-left:auto;color:var(--pg-dim)">#' + state.moveCount + '</span>');
-            refs.log.insertBefore(item, refs.log.firstChild);
-            while (refs.log.children.length > 30) refs.log.removeChild(refs.log.lastChild);
+            state.moveLog.push({ human: who === "you", text: "→ " + sqName(c, r), move: state.moveCount });
+            renderLog();
         }
         function sqName(c, r) { return String.fromCharCode(97 + c) + (r + 1); }
 

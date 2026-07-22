@@ -228,13 +228,17 @@ main > .container { max-width: 1280px; }
 }
 .pg-chip:hover { border-color: var(--pg-orange); color: var(--pg-orange); transform: translateY(-2px); }
 
-/* move log */
+/* move log — two columns (Player 1 / Player 2), since turns strictly
+   alternate the column position already identifies who moved */
 .pg-log { display: flex; flex-direction: column; gap: 6px; max-height: 168px; overflow-y: auto; }
 .pg-log:empty::after { content: "no moves yet — make your first move."; font-family: var(--font-mono); font-size: 11.5px; color: var(--pg-dim); }
-.pg-log-item { display: flex; align-items: center; gap: 9px; font-family: var(--font-mono); font-size: 11.5px; color: var(--pg-muted); padding: 6px 9px; border-radius: 9px; background: var(--pg-surface); border: 1px solid var(--pg-stroke); animation: pgIn .35s var(--pg-ease); }
-.pg-log-item .tag { font-size: 9px; letter-spacing: .1em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; }
-.pg-log-item .tag.you { color: var(--pg-orange); background: color-mix(in srgb, var(--pg-orange) 16%, transparent); }
-.pg-log-item .tag.cpu { color: var(--pg-cyan); background: color-mix(in srgb, var(--pg-cyan) 16%, transparent); }
+.pg-log-head { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 9px; font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--pg-dim); }
+.pg-log-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; animation: pgIn .35s var(--pg-ease); }
+.pg-log-cell { display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11.5px; color: var(--pg-muted); padding: 6px 9px; border-radius: 9px; background: var(--pg-surface); border: 1px solid var(--pg-stroke); }
+.pg-log-cell.you { border-color: color-mix(in srgb, var(--pg-orange) 35%, var(--pg-stroke)); }
+.pg-log-cell.cpu { border-color: color-mix(in srgb, var(--pg-cyan) 35%, var(--pg-stroke)); }
+.pg-log-cell.empty { background: transparent; border-color: transparent; }
+.pg-log-n { margin-left: auto; color: var(--pg-dim); font-size: 10px; }
 @keyframes pgIn { from { opacity: 0; transform: translateX(8px); } }
 
 /* ---------- buttons (match landing) ---------- */

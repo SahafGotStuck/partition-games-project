@@ -142,12 +142,17 @@
 .ic-stat .v { font-family: var(--font-display); font-weight: 700; font-size: 1.3rem; color: var(--pg-text); }
 .ic-stat .k { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--pg-dim); margin-top: 3px; }
 
+/* move log — two columns (Player 1 / Player 2), since turns strictly
+   alternate the column position already identifies who moved */
 .ic-log { display: flex; flex-direction: column; gap: 6px; max-height: 150px; overflow-y: auto; margin-top: 12px; }
 .ic-log:empty::after { content: "no moves yet."; font-family: var(--font-mono); font-size: 11.5px; color: var(--pg-dim); }
-.ic-log-item { display: flex; align-items: center; gap: 9px; font-family: var(--font-mono); font-size: 11.5px; color: var(--pg-muted); padding: 6px 9px; border-radius: 9px; background: var(--pg-surface); border: 1px solid var(--pg-stroke); animation: icIn .3s ease; }
-.ic-log-item .tag { font-size: 9px; letter-spacing: .1em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; }
-.ic-log-item .tag.you { color: var(--pg-orange); background: color-mix(in srgb, var(--pg-orange) 16%, transparent); }
-.ic-log-item .tag.cpu { color: var(--pg-cyan); background: color-mix(in srgb, var(--pg-cyan) 16%, transparent); }
+.ic-log-head { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 9px; font-family: var(--font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--pg-dim); }
+.ic-log-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; animation: icIn .3s ease; }
+.ic-log-cell { display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 11.5px; color: var(--pg-muted); padding: 6px 9px; border-radius: 9px; background: var(--pg-surface); border: 1px solid var(--pg-stroke); }
+.ic-log-cell.you { border-color: color-mix(in srgb, var(--pg-orange) 35%, var(--pg-stroke)); }
+.ic-log-cell.cpu { border-color: color-mix(in srgb, var(--pg-cyan) 35%, var(--pg-stroke)); }
+.ic-log-cell.empty { background: transparent; border-color: transparent; }
+.ic-log-n { margin-left: auto; color: var(--pg-dim); font-size: 10px; }
 @keyframes icIn { from { opacity: 0; transform: translateX(8px); } }
 
 .ic-new { width: 100%; }

@@ -141,7 +141,7 @@
     function click(id) { var b = document.getElementById(id); if (b) { b.click(); return true; } return false; }
 
     /* ---- live stats via DOM observation ---- */
-    var state = { total: 0, prev: 0, moves: 0, you: 0, cpu: 0, firstHuman: true, started: false };
+    var state = { total: 0, prev: 0, moves: 0, you: 0, cpu: 0, firstHuman: true, started: false, moveLog: [] };
 
     function countTiles() {
         var ba = document.getElementById("board-area");
@@ -173,14 +173,31 @@
         }
     }
 
-    function logMove(human, n) {
+    /* Moves strictly alternate, so a "Player" column is redundant once moves
+       are laid out two-per-row — column position already says who moved.
+       Player 1 = whoever's turn is odd-numbered (1st, 3rd, ...), Player 2 = even. */
+    function logCell(m) {
+        if (!m) return '<div class="pg-log-cell empty"></div>';
+        return '<div class="pg-log-cell ' + (m.human ? "you" : "cpu") + '">' +
+            'cleared ' + m.n + " block" + (m.n === 1 ? "" : "s") +
+            '<span class="pg-log-n">#' + m.move + '</span></div>';
+    }
+    function renderLog() {
         if (!refs.log) return;
-        var item = el("div", "pg-log-item",
-            '<span class="tag ' + (human ? "you" : "cpu") + '">' + (human ? "you" : "ai") + '</span>' +
-            '<span>cleared ' + n + " block" + (n === 1 ? "" : "s") + '</span>' +
-            '<span style="margin-left:auto;color:var(--pg-dim)">#' + state.moves + '</span>');
-        refs.log.insertBefore(item, refs.log.firstChild);
-        while (refs.log.children.length > 30) refs.log.removeChild(refs.log.lastChild);
+        var moves = state.moveLog;
+        if (!moves.length) { refs.log.innerHTML = ""; return; }
+        var totalRounds = Math.ceil(moves.length / 2);
+        var maxRounds = 20;                       // cap displayed rounds (~40 moves)
+        var startRound = Math.max(1, totalRounds - maxRounds + 1);
+        var html = '<div class="pg-log-head"><span>Player 1</span><span>Player 2</span></div>';
+        for (var round = totalRounds; round >= startRound; round--) {
+            html += '<div class="pg-log-row">' + logCell(moves[2 * round - 2]) + logCell(moves[2 * round - 1]) + '</div>';
+        }
+        refs.log.innerHTML = html;
+    }
+    function logMove(human, n) {
+        state.moveLog.push({ human: human, n: n, move: state.moves });
+        renderLog();
     }
 
     function render() {
@@ -203,6 +220,7 @@
         if (now > state.prev) {
             // board grew → a new game started
             state.total = now; state.prev = now; state.moves = 0; state.you = 0; state.cpu = 0;
+            state.moveLog = [];
             var h = statusIsHuman();
             state.firstHuman = (h === null ? true : h);
             state.started = true;
