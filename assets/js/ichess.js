@@ -717,6 +717,13 @@
         const statesStr = (state.history || []).map(([c, r]) => rowsStr + ' @ ' + c + ',' + r).join('\n');
         localStorage.setItem(state.piece + 'GameStatesForReport', statesStr);
         localStorage.setItem(state.piece + 'ReportMode', state.mode || 'normal');
+        // Only the AI (if any) has a fixed identity ("Alice" starts, "Bob" plays
+        // second) — the human side is just "You". Two-player mode uses the same
+        // A/B labels shown during the match.
+        const names = state.ai === 'A' ? ['Alice', 'You']
+            : state.ai === 'B' ? ['You', 'Bob']
+            : ['Player A', 'Player B'];
+        localStorage.setItem(state.piece + 'ReportPlayers', names.join('|'));
         window.open('../../reports/generator/report.html', '_blank');
     }
 

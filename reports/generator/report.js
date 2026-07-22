@@ -1,33 +1,36 @@
-// Final, verified version of report.js
+// report.js — renders a played game's move history as a two-column table,
+// one column per player. Moves strictly alternate, so column position alone
+// identifies who moved (no separate "Move #"/"Player" columns are needed).
 
 document.addEventListener('DOMContentLoaded', () => {
   const gameSelect = document.getElementById('game-select');
   const generateBtn = document.getElementById('generate-report-btn');
   const inputArea = document.getElementById('game-states-input');
   const reportContainer = document.getElementById('report-container');
-  
-  const chartWrapper = document.getElementById('chart-wrapper');
-  const chartCanvas = document.getElementById('g-number-chart');
-  let gNumberChart = null;
 
+  // Every non-iChess game always calls its first mover "Alice" and its second
+  // mover "Bob" (see e.g. games/lctr/lctr_script.js `Game.PLAYERS`), regardless
+  // of which side is AI-controlled — so those names are fixed. iChess has no
+  // such fixed identity (only the AI, if any, gets a name); its actual names
+  // are written to localStorage by assets/js/ichess.js at report-open time.
   const GAME_STORAGE_KEYS = [
-    { select: 'Corner', stateKey: 'cornerGameStatesForReport', modeKey: 'cornerReportMode' },
-    { select: 'LCTR', stateKey: 'lctrGameStatesForReport', modeKey: 'lctrReportMode' },
-    { select: 'CRIM', stateKey: 'crimGameStatesForReport', modeKey: 'crimReportMode' },
-    { select: 'Anticorners', stateKey: 'anticornersGameStatesForReport', modeKey: 'anticornersReportMode' },
-    { select: 'ContinuousCorner', stateKey: 'continuousCornerGameStatesForReport', modeKey: 'continuousCornerReportMode' },
-    { select: 'CRIT', stateKey: 'critGameStatesForReport', modeKey: 'critReportMode' },
-    { select: 'CRIS', stateKey: 'crisGameStatesForReport', modeKey: 'crisReportMode' },
-    { select: 'RIT', stateKey: 'ritGameStatesForReport', modeKey: 'ritReportMode' },
-    { select: 'SatoWelter', stateKey: 'satoWelterGameStatesForReport', modeKey: 'satoWelterReportMode' },
-    { select: 'SICC', stateKey: 'siccGameStatesForReport', modeKey: 'siccReportMode' },
-    { select: 'iChessRook', stateKey: 'rookGameStatesForReport', modeKey: 'rookReportMode' },
-    { select: 'iChessBishop', stateKey: 'bishopGameStatesForReport', modeKey: 'bishopReportMode' },
-    { select: 'iChessQueen', stateKey: 'queenGameStatesForReport', modeKey: 'queenReportMode' },
-    { select: 'iChessKing', stateKey: 'kingGameStatesForReport', modeKey: 'kingReportMode' },
-    { select: 'iChessKnight', stateKey: 'knightGameStatesForReport', modeKey: 'knightReportMode' },
-    { select: 'iChessPawn', stateKey: 'pawnGameStatesForReport', modeKey: 'pawnReportMode' },
-    { select: 'iChessGeneral', stateKey: 'generalGameStatesForReport', modeKey: 'generalReportMode' },
+    { select: 'Corner', stateKey: 'cornerGameStatesForReport' },
+    { select: 'LCTR', stateKey: 'lctrGameStatesForReport' },
+    { select: 'CRIM', stateKey: 'crimGameStatesForReport' },
+    { select: 'Anticorners', stateKey: 'anticornersGameStatesForReport' },
+    { select: 'ContinuousCorner', stateKey: 'continuousCornerGameStatesForReport' },
+    { select: 'CRIT', stateKey: 'critGameStatesForReport' },
+    { select: 'CRIS', stateKey: 'crisGameStatesForReport' },
+    { select: 'RIT', stateKey: 'ritGameStatesForReport' },
+    { select: 'SatoWelter', stateKey: 'satoWelterGameStatesForReport' },
+    { select: 'SICC', stateKey: 'siccGameStatesForReport' },
+    { select: 'iChessRook', stateKey: 'rookGameStatesForReport', playersKey: 'rookReportPlayers' },
+    { select: 'iChessBishop', stateKey: 'bishopGameStatesForReport', playersKey: 'bishopReportPlayers' },
+    { select: 'iChessQueen', stateKey: 'queenGameStatesForReport', playersKey: 'queenReportPlayers' },
+    { select: 'iChessKing', stateKey: 'kingGameStatesForReport', playersKey: 'kingReportPlayers' },
+    { select: 'iChessKnight', stateKey: 'knightGameStatesForReport', playersKey: 'knightReportPlayers' },
+    { select: 'iChessPawn', stateKey: 'pawnGameStatesForReport', playersKey: 'pawnReportPlayers' },
+    { select: 'iChessGeneral', stateKey: 'generalGameStatesForReport', playersKey: 'generalReportPlayers' },
   ];
 
   const ICHESS_PIECE_BY_SELECT = {
@@ -35,137 +38,97 @@ document.addEventListener('DOMContentLoaded', () => {
     iChessKing: 'king', iChessKnight: 'knight', iChessPawn: 'pawn', iChessGeneral: 'general',
   };
 
+  let storedPlayerNames = null;   // set by loadFromStorage() when opened from a live game
+
   const formatHint = document.getElementById('format-hint');
   function updateFormatHint() {
     const game = gameSelect.value;
     if (ICHESS_PIECE_BY_SELECT[game]) {
-      formatHint.textContent = 'Format: row lengths, then "@ col,row" for the piece’s cell — e.g. "6 5 4 3 2 @ 2,1".';
+      formatHint.textContent = 'Format: row lengths, then "@ col,row" for the piece’s cell — e.g. "6 5 4 3 2 @ 2,1". The first line is the starting position.';
       formatHint.style.display = 'block';
     } else if (game === 'CRIS') {
-      formatHint.textContent = 'Format: space-separated "HxW" fragments — e.g. "3x4 2x2".';
+      formatHint.textContent = 'Format: space-separated "HxW" fragments — e.g. "3x4 2x2". The first line is the starting position.';
       formatHint.style.display = 'block';
     } else {
-      formatHint.style.display = 'none';
+      formatHint.textContent = 'The first line is the starting position; each line after it is the position left after that player\'s move.';
+      formatHint.style.display = 'block';
     }
   }
   gameSelect.addEventListener('change', updateFormatHint);
   updateFormatHint();
 
   function loadFromStorage() {
-    for (const { select, stateKey, modeKey } of GAME_STORAGE_KEYS) {
+    storedPlayerNames = null;
+    for (const { select, stateKey, playersKey } of GAME_STORAGE_KEYS) {
       const states = localStorage.getItem(stateKey);
       if (!states) continue;
       gameSelect.value = select;
       inputArea.value = states;
       localStorage.removeItem(stateKey);
-      const mode = localStorage.getItem(modeKey);
-      if (mode === 'misere' || mode === 'normal') {
-        document.getElementById('game-mode-select').value = mode;
-        localStorage.removeItem(modeKey);
+      if (playersKey) {
+        const players = localStorage.getItem(playersKey);
+        if (players) {
+          storedPlayerNames = players.split('|');
+          localStorage.removeItem(playersKey);
+        }
       }
       updateFormatHint();
       return;
     }
   }
 
-  function generateGraphFromDOM() {
-    const mode = document.getElementById('game-mode-select').value;
-    
-    if (gNumberChart) { gNumberChart.destroy(); }
+  function defaultPlayerNames(game) {
+    return ICHESS_PIECE_BY_SELECT[game] ? ['Player 1', 'Player 2'] : ['Alice', 'Bob'];
+  }
 
-    if (mode !== 'normal') {
-      chartWrapper.style.display = 'none';
+  // iChess states look like "6 5 4 3 2 @ 2,1" — pull out just the piece's cell
+  // and show it in algebraic form (e.g. "c2"), reusing the exact parsing/labeling
+  // ichess_report.js already ships (loaded on this page for that purpose).
+  function formatStateLine(line) {
+    if (line.indexOf('@') !== -1 && typeof window.ichessParseState === 'function') {
+      try {
+        const { c, r } = window.ichessParseState(line);
+        return window.ichessCellLabel(c, r);
+      } catch (e) { /* fall through to raw line */ }
+    }
+    return line;
+  }
+
+  function renderMoveTable(container, inputText, game) {
+    container.innerHTML = '';
+    const lines = inputText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    if (lines.length === 0) {
+      container.innerHTML = '<p>Please enter at least one game state (the starting position, then one line per move).</p>';
+      return;
+    }
+    const moves = lines.slice(1);   // line 0 is the starting position, not a move
+    if (moves.length === 0) {
+      container.innerHTML = '<p>Only a starting position was entered — no moves to show yet.</p>';
       return;
     }
 
-    const labels = [];
-    const gNumbers = [];
+    const names = storedPlayerNames || defaultPlayerNames(game);
+    const cell = (line) => line
+      ? '<div class="move-table-cell">' + formatStateLine(line) + '</div>'
+      : '<div class="move-table-cell empty"></div>';
 
-    const cards = reportContainer.querySelectorAll('.report-card');
-    
-    cards.forEach((card) => {
-      const titleEl = card.querySelector('.report-header h3');
-      const gLabelEl = Array.from(card.querySelectorAll('.label'))
-        .find(el => /grundy/i.test(el.textContent) && !/misere/i.test(el.textContent));
-
-      if (titleEl && gLabelEl && gLabelEl.nextElementSibling) {
-        const label = titleEl.textContent.trim();
-        const gNumber = Number(gLabelEl.nextElementSibling.textContent);
-        if (!Number.isNaN(gNumber)) {
-          labels.push(label);
-          gNumbers.push(gNumber);
-        }
-      }
-    });
-
-    if (gNumbers.length > 0) {
-      chartWrapper.style.display = 'block';
-      const white = '#ffffff';
-      const gridWhite = 'rgba(255,255,255,0.2)';
-      gNumberChart = new Chart(chartCanvas, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'g-number per Game State',
-            data: gNumbers,
-            borderColor: white,
-            backgroundColor: white,
-            pointBackgroundColor: white,
-            pointBorderColor: white,
-            tension: 0.1
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            title: { display: true, text: 'G-Number Progression', color: white, font: { size: 16 } },
-            legend: { labels: { color: white } }
-          },
-          scales: {
-            y: { beginAtZero: true, ticks: { color: white, stepSize: 1 }, grid: { color: gridWhite } },
-            x: { ticks: { color: white }, grid: { color: gridWhite } }
-          }
-        }
-      });
-    } else {
-      chartWrapper.style.display = 'none';
+    const totalRounds = Math.ceil(moves.length / 2);
+    let html = '<div class="move-table"><div class="move-table-head"><span>' + names[0] + '</span><span>' + names[1] + '</span></div>';
+    for (let round = 1; round <= totalRounds; round++) {
+      html += '<div class="move-table-row">' + cell(moves[2 * round - 2]) + cell(moves[2 * round - 1]) + '</div>';
     }
+    html += '</div>';
+    container.innerHTML = html;
   }
 
   function render() {
     const game = gameSelect.value;
-    const mode = document.getElementById('game-mode-select').value;
-    
     try {
-      if (game === 'Corner') {
-        window.CornerReport.render(reportContainer, inputArea.value, mode);
-      } else if (game === 'LCTR') {
-        window.LctrReport.render(reportContainer, inputArea.value, mode);
-      } else if (game === 'CRIM') {
-        window.CrimReport.render(reportContainer, inputArea.value, mode);
-      } else if (game === 'Anticorners') {
-        window.AnticornersReport.render(reportContainer, inputArea.value, mode);
-      } else if (game === 'ContinuousCorner') {
-        window.ContinuousCornerReport.render(reportContainer, inputArea.value, mode);
-      } else if (game === 'CRIT') {
-        window.CritReport.render(reportContainer, inputArea.value, mode);
-      } else if (game === 'CRIS') {
-        window.CrisReport.render(reportContainer, inputArea.value, mode);
-      } else if (game === 'RIT') {
-        window.RitReport.render(reportContainer, inputArea.value, mode);
-      } else if (game === 'SatoWelter') {
-        window.SatoWelterReport.render(reportContainer, inputArea.value, mode);
-      } else if (game === 'SICC') {
-        window.SiccReport.render(reportContainer, inputArea.value, mode);
-      } else if (ICHESS_PIECE_BY_SELECT[game]) {
-        window.IChessReport.render(reportContainer, inputArea.value, mode, ICHESS_PIECE_BY_SELECT[game]);
-      }
+      renderMoveTable(reportContainer, inputArea.value, game);
     } catch (error) {
-      console.error("An error occurred in a game-specific render function:", error);
+      console.error("Could not render the move table:", error);
+      reportContainer.innerHTML = '<p>Could not render the move table — check the state format.</p>';
     }
-    
-    generateGraphFromDOM();
   }
 
   generateBtn.addEventListener('click', render);
