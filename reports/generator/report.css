@@ -1,5 +1,6 @@
 :root {
   --orange: #FF7A47;
+  --cyan: #2DD4BF;
   --bg-primary: #1a1a1a;
   --bg-secondary: #222222;
   --text-primary: #e5e5e5;
@@ -103,17 +104,23 @@ button:hover { filter: brightness(1.1); }
 .move-table { display: flex; flex-direction: column; gap: 8px; max-width: 900px; }
 .move-table-head {
   display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-  font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--text-secondary); padding: 0 14px;
+  font-size: 14px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 0 14px 2px;
 }
+.move-table-head span:first-child { color: var(--orange); text-align: left; }
+.move-table-head span:last-child { color: var(--cyan); text-align: right; }
+
 .move-table-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .move-table-cell {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
+  border-left: 3px solid var(--border-color);
   padding: 10px 14px;
   font-size: 14px;
 }
-.move-table-cell.empty { background: transparent; border-color: transparent; }
+.move-table-row .move-table-cell:first-child { border-left-color: var(--orange); }
+.move-table-row .move-table-cell:last-child { border-left-color: var(--cyan); }
+.move-table-row .move-table-cell.empty { background: transparent; border-color: transparent; }
 .move-table-cell-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
 .move-table-pos { font-family: 'JetBrains Mono', monospace; }
 
