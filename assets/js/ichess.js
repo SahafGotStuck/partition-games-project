@@ -227,7 +227,8 @@
 
     const ICON = {
         right: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
-        left: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:5px"><path d="M15 18l-6-6 6-6"/></svg>'
+        left: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:5px"><path d="M15 18l-6-6 6-6"/></svg>',
+        eye: '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg>'
     };
 
     function buildChrome(piece) {
@@ -572,7 +573,10 @@
             '</div>' +
             '<button type="button" id="ic-genbtn" class="secondary-button">generate</button>' +
             '<label>Preview</label>' +
-            '<div class="input-group"><input type="text" id="ic-rows" value="6 5 4 3 2" placeholder="e.g. 6 5 4 3 2" readonly></div>' +
+            '<div class="input-group ic-preview-row">' +
+              '<input type="text" id="ic-rows" value="6 5 4 3 2" placeholder="e.g. 6 5 4 3 2" readonly>' +
+              '<button type="button" id="ic-diagram-eye" class="ic-eye-btn" title="Preview the Young diagram">' + ICON.eye + '</button>' +
+            '</div>' +
             '<label>Mode</label>' +
             '<div class="input-group"><select id="ic-mode"><option value="normal" selected>Normal (last move wins)</option>' +
               '<option value="misere">Misère (last move loses)</option></select></div>' +
@@ -809,11 +813,60 @@
         document.body.removeChild(a);
         setTimeout(() => URL.revokeObjectURL(url), 1000);
     }
+    // Renders the partition as a Young diagram (piece at 0,0, terminal cells —
+    // where the piece has no legal move left — dashed), for the setup screen's
+    // hover preview. `rows` may be any partition, independent of a live game.
+    function buildDiagramPreview(container, rows, piece) {
+        container.innerHTML = "";
+        const grid = el("div", "ic-diagram-grid");
+        const H = rows.length, maxW = Math.max.apply(null, rows);
+        grid.style.setProperty("--w", maxW);
+        grid.style.setProperty("--h", H);
+        for (let r = 0; r < H; r++) {
+            for (let c = 0; c < maxW; c++) {
+                if (c >= rows[r]) { grid.appendChild(el("div", "ic-sq empty")); continue; }
+                const sq = el("div", "ic-sq " + (((c + r) % 2 === 0) ? "dark" : "light"));
+                if (legalMoves(piece, c, r, rows).length === 0) sq.classList.add("corner");
+                if (c === 0 && r === 0) sq.appendChild(el("div", "ic-piece", PIECES[piece].glyph));
+                grid.appendChild(sq);
+            }
+        }
+        container.appendChild(grid);
+    }
+    // Wires the eye icon beside the setup screen's "Preview" field: hovering
+    // (or focusing, for keyboard users) it shows the Young diagram for
+    // whatever partition is currently typed/generated there.
+    function wireDiagramPreview(state, rowsInput) {
+        const eyeBtn = document.getElementById("ic-diagram-eye");
+        if (!eyeBtn) return;
+        const tip = el("div", "ic-diagram-tip",
+            '<div class="ic-diagram-grid"></div>' +
+            '<div class="ic-diagram-legend"><span><i></i>no legal moves (terminal)</span></div>');
+        document.body.appendChild(tip);
+        function show() {
+            let rows;
+            try { rows = parsePartition(rowsInput.value); } catch (e) { return; }
+            if (!rows.length) return;
+            buildDiagramPreview(tip.querySelector(".ic-diagram-grid"), rows, state.piece);
+            tip.classList.add("visible");
+            const r = eyeBtn.getBoundingClientRect();
+            const spaceBelow = window.innerHeight - r.bottom;
+            const top = spaceBelow > tip.offsetHeight + 12 ? r.bottom + 8 : Math.max(8, r.top - tip.offsetHeight - 8);
+            tip.style.top = top + "px";
+            tip.style.left = Math.min(r.left, window.innerWidth - tip.offsetWidth - 12) + "px";
+        }
+        function hide() { tip.classList.remove("visible"); }
+        eyeBtn.addEventListener("mouseenter", show);
+        eyeBtn.addEventListener("mouseleave", hide);
+        eyeBtn.addEventListener("focus", show);
+        eyeBtn.addEventListener("blur", hide);
+    }
     function wireSetup(state, refs, begin) {
         const diff = document.getElementById("ic-diff"), lbl = document.getElementById("ic-difflabel");
         const name = v => v >= 85 ? "Perfect" : v >= 60 ? "Hard" : v >= 35 ? "Medium" : "Easy";
         diff.addEventListener("input", () => lbl.textContent = name(+diff.value) + " (" + diff.value + ")");
         const rowsInput = document.getElementById("ic-rows");
+        wireDiagramPreview(state, rowsInput);
         const genType = document.getElementById("ic-gentype");
         const genNLabel = document.getElementById("ic-genn-label"), genColsBox = document.getElementById("ic-gencols-box");
         const GEN_LABELS = { staircase: "rows", rectangle: "rows", random: "partitions" };

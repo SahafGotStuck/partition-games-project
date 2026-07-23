@@ -202,6 +202,52 @@
     border: 1px solid var(--pg-stroke); font-family: var(--font-mono); font-size: 13px;
 }
 
+/* ---- "preview" row + Young-diagram hover popover (every iChess variant) ---- */
+.ic-preview-row input { flex: 1; min-width: 0; }
+.ic-eye-btn {
+    display: grid; place-items: center; flex: none;
+    width: 34px; height: 34px; border-radius: 10px; cursor: pointer;
+    background: var(--pg-surface); color: var(--pg-muted);
+    border: 1px solid var(--pg-stroke);
+    transition: color .15s ease, border-color .15s ease, background-color .15s ease;
+}
+.ic-eye-btn:hover, .ic-eye-btn:focus-visible {
+    color: var(--pg-text); border-color: var(--pg-stroke-2);
+    background: color-mix(in srgb, var(--pg-cyan) 14%, var(--pg-surface));
+}
+.ic-diagram-tip {
+    position: fixed; z-index: 1002;
+    padding: 10px;
+    background: var(--pg-surface-2); border: 1px solid var(--pg-stroke);
+    border-radius: 12px;
+    box-shadow: 0 20px 40px -16px rgba(0,0,0,.55);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity .15s ease, visibility .15s ease;
+}
+.ic-diagram-tip.visible { opacity: 1; visibility: visible; }
+.ic-diagram-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--w), 15px);
+    grid-template-rows: repeat(var(--h), 15px);
+    gap: 1px;
+    background: var(--pg-stroke-2);
+    border: 1px solid var(--pg-stroke-2);
+    border-radius: 6px;
+    overflow: hidden;
+}
+.ic-diagram-grid .ic-piece { font-size: 10px; }
+.ic-diagram-grid .ic-sq.corner::after { inset: 15%; border-width: 1.5px; }
+.ic-diagram-legend {
+    margin-top: 8px; display: flex; flex-wrap: wrap; gap: 10px;
+    font-family: var(--font-mono); font-size: 10px; color: var(--pg-dim);
+}
+.ic-diagram-legend span { display: flex; align-items: center; gap: 5px; }
+.ic-diagram-legend i {
+    width: 10px; height: 10px; border-radius: 3px; display: inline-block;
+    border: 1.5px dashed color-mix(in srgb, var(--pg-cyan) 60%, transparent);
+}
+
 /* ---- "select moves" button + live selection summary (General variant only) ---- */
 .ic-selectmoves-row { display: flex; align-items: center; gap: 10px; }
 .ic-selectmoves-row .secondary-button { width: auto; flex: 1; }

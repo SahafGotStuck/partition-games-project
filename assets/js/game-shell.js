@@ -318,6 +318,67 @@
         }
     }
 
+    var EYE_SVG = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+
+    function parseRows(str) {
+        var r = (str || "").trim().split(/\s+/).map(Number).filter(function (n) { return Number.isFinite(n) && n >= 1; });
+        r.sort(function (a, b) { return b - a; });
+        return r;
+    }
+
+    // Renders the partition as a Young diagram for the setup screen's hover
+    // preview. No piece/terminal marking here — that's an iChess-only concept
+    // (assets/js/ichess.js has its own version with the piece + terminal cells).
+    function buildDiagramPreview(container, rows) {
+        container.innerHTML = "";
+        var grid = el("div", "pg-diagram-grid");
+        var H = rows.length, maxW = Math.max.apply(null, rows);
+        grid.style.setProperty("--w", maxW);
+        grid.style.setProperty("--h", H);
+        for (var r = 0; r < H; r++) {
+            for (var c = 0; c < maxW; c++) {
+                grid.appendChild(el("div", "pg-diagram-cell" + (c >= rows[r] ? " empty" : "")));
+            }
+        }
+        container.appendChild(grid);
+    }
+
+    // Wires the eye icon beside the setup screen's "preview" field (id=
+    // "rows-input", the same id across every non-iChess game's setup markup):
+    // hovering (or focusing, for keyboard users) shows the Young diagram for
+    // whatever partition is currently typed/generated there.
+    function wireDiagramPreview() {
+        var input = document.getElementById("rows-input");
+        if (!input || document.getElementById("pg-diagram-eye")) return;
+        var wrap = el("div", "pg-preview-row");
+        input.parentNode.insertBefore(wrap, input);
+        wrap.appendChild(input);
+        var btn = el("button", "pg-eye-btn", EYE_SVG);
+        btn.type = "button";
+        btn.id = "pg-diagram-eye";
+        btn.title = "Preview the Young diagram";
+        wrap.appendChild(btn);
+
+        var tip = el("div", "pg-diagram-tip", '<div class="pg-diagram-grid"></div>');
+        document.body.appendChild(tip);
+        function show() {
+            var rows = parseRows(input.value);
+            if (!rows.length) return;
+            buildDiagramPreview(tip.querySelector(".pg-diagram-grid"), rows);
+            tip.classList.add("visible");
+            var r = btn.getBoundingClientRect();
+            var spaceBelow = window.innerHeight - r.bottom;
+            var top = spaceBelow > tip.offsetHeight + 12 ? r.bottom + 8 : Math.max(8, r.top - tip.offsetHeight - 8);
+            tip.style.top = top + "px";
+            tip.style.left = Math.min(r.left, window.innerWidth - tip.offsetWidth - 12) + "px";
+        }
+        function hide() { tip.classList.remove("visible"); }
+        btn.addEventListener("mouseenter", show);
+        btn.addEventListener("mouseleave", hide);
+        btn.addEventListener("focus", show);
+        btn.addEventListener("blur", hide);
+    }
+
     function init() {
         try {
             alignTheme();
@@ -325,6 +386,7 @@
             var code = gameCode();
             if (buildPanel(code)) watchBoard();
             injectQuitNav();
+            wireDiagramPreview();
         } catch (e) { /* never break the game */ if (window.console) console.warn("pg-shell:", e); }
     }
 

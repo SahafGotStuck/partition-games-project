@@ -228,6 +228,49 @@ main > .container { max-width: 1280px; }
 }
 .pg-chip:hover { border-color: var(--pg-orange); color: var(--pg-orange); transform: translateY(-2px); }
 
+/* ---- "preview" row + Young-diagram hover popover (setup screen, every
+   non-iChess game) ---- */
+.pg-preview-row { display: flex; align-items: center; gap: 8px; }
+.pg-preview-row input { flex: 1; min-width: 0; }
+.pg-eye-btn {
+    display: grid; place-items: center; flex: none;
+    width: 34px; height: 34px; border-radius: 10px; cursor: pointer;
+    background: var(--pg-surface); color: var(--pg-muted);
+    border: 1px solid var(--pg-stroke);
+    transition: color .15s ease, border-color .15s ease, background-color .15s ease;
+}
+.pg-eye-btn:hover, .pg-eye-btn:focus-visible {
+    color: var(--pg-text); border-color: var(--pg-stroke-2);
+    background: color-mix(in srgb, var(--pg-cyan) 14%, var(--pg-surface));
+}
+.pg-diagram-tip {
+    position: fixed; z-index: 1002;
+    padding: 10px;
+    background: var(--pg-surface-2); border: 1px solid var(--pg-stroke);
+    border-radius: 12px;
+    box-shadow: 0 20px 40px -16px rgba(0,0,0,.55);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity .15s ease, visibility .15s ease;
+}
+.pg-diagram-tip.visible { opacity: 1; visibility: visible; }
+.pg-diagram-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--w), 15px);
+    grid-template-rows: repeat(var(--h), 15px);
+    gap: 1px;
+    background: var(--pg-stroke-2);
+    border: 1px solid var(--pg-stroke-2);
+    border-radius: 6px;
+    overflow: hidden;
+}
+.pg-diagram-cell {
+    background: color-mix(in srgb, var(--pg-orange) 7%, var(--pg-surface-2));
+    box-shadow: inset 0 0 0 1px var(--pg-stroke-2);
+}
+[data-theme="dark"] .pg-diagram-cell { background: rgba(255,255,255,0.04); }
+.pg-diagram-cell.empty { background: transparent !important; box-shadow: none; }
+
 /* move log — two columns (Player 1 / Player 2), since turns strictly
    alternate the column position already identifies who moved */
 .pg-log { display: flex; flex-direction: column; gap: 6px; max-height: 168px; overflow-y: auto; }
