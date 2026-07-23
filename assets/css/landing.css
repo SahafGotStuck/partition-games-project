@@ -306,7 +306,7 @@ a { color: inherit; }
     font-size: clamp(3.4rem, 11vw, 8.5rem);
     line-height: 0.92;
     letter-spacing: -0.04em;
-    margin-bottom: 26px;
+    margin-bottom: 10px;
 }
 .hero-title span { display: block; }
 .hero-title-accent {
@@ -315,6 +315,15 @@ a { color: inherit; }
     -webkit-background-clip: text;
     background-clip: text;
     position: relative;
+}
+
+.hero-fullname {
+    font-family: var(--font-mono);
+    font-size: clamp(0.9rem, 1.6vw, 1.1rem);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 24px;
 }
 
 .hero-lede {

@@ -240,7 +240,7 @@
         header.innerHTML =
             '<div class="container"><div class="header-content">' +
               '<div class="header-left"><div class="logo-section">' +
-                '<a href="../../index.html" class="logo">partition-games</a>' +
+                '<a href="../../index.html" class="logo">grasp</a>' +
                 '<span class="game-title"> /' + P.name + '</span>' +
               '</div></div>' +
               '<div class="header-center"><div class="game-title-section"><h1>' + P.name + '</h1></div>' +

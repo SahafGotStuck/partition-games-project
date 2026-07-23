@@ -32,7 +32,7 @@
             .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
             .then(function (text) {
                 var parsed = parseFrontMatter(text);
-                if (parsed.meta.title) document.title = parsed.meta.title + " | Partition Games · GRASP";
+                if (parsed.meta.title) document.title = parsed.meta.title + " | GRASP";
                 var html = (window.marked ? window.marked.parse(parsed.body) : ("<pre>" + parsed.body + "</pre>"));
                 root.innerHTML = '<article class="md-article">' + html + "</article>";
             })
