@@ -113,10 +113,25 @@
                 var logoHtml = p.logo
                     ? '<span class="pt-mk-pin pt-mk-logo' + (p.logoClass ? " " + p.logoClass : "") + '"><img src="' + p.logo + '" alt=""></span>'
                     : '<span class="pt-mk-pin"></span>';
+                // Hover reveal: a much bigger crest + full name, centered on the pin.
+                // It's its own link (stopPropagation so it doesn't also trigger the
+                // marker's fly-to-zoom click below) that opens the institution's site.
+                var hoverHtml = p.logo
+                    ? '<a class="pt-mk-hover" href="' + p.website + '" target="_blank" rel="noopener" ' +
+                      'aria-label="Visit ' + p.name + '" onclick="event.stopPropagation()">' +
+                        '<img class="pt-mk-hover-logo" src="' + p.logo + '" alt="">' +
+                        '<span class="pt-mk-hover-name">' + p.name + '</span>' +
+                      '</a>'
+                    : '';
                 var inst = L.divIcon({
-                    className: "pt-divicon " + p.accent + " " + (p.kind || "partner"), iconSize: [16, 16], iconAnchor: [8, 8],
-                    html: logoHtml + '<span class="pt-mk-label"><b>' + p.short + '</b> · <i>' +
-                          p.members.length + (p.members.length === 1 ? " member" : " members") + '</i></span>'
+                    className: "pt-divicon " + p.accent + " " + (p.kind || "partner"), iconSize: [180, 180], iconAnchor: [90, 90],
+                    // the anchor box is much bigger than the visible pin so the hover
+                    // crest has room to render (and stay hovered) without the mouse
+                    // leaving the marker's hit area the moment it grows
+                    html: '<span class="pt-mk-anchor">' + logoHtml +
+                          '<span class="pt-mk-label"><b>' + p.short + '</b> · <i>' +
+                          p.members.length + (p.members.length === 1 ? " member" : " members") + '</i></span>' +
+                          hoverHtml + '</span>'
                 });
                 L.marker([p.lat, p.lng], { icon: inst, title: p.name }).addTo(map)
                     .on("click", function () { map.flyTo([p.lat, p.lng], 13, { duration: 1.2 }); });

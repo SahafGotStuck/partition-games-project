@@ -43,8 +43,13 @@
 
 /* institution markers */
 .pt-divicon { overflow: visible !important; }
+/* the anchor sits at the marker's geo point (dead center of the oversized
+   iconAnchor box) — the visible pin, label, and hover crest all position
+   themselves relative to this one origin */
+.pt-mk-anchor { position: absolute; left: 50%; top: 50%; }
 .pt-mk-pin {
-    display: block; width: 20px; height: 20px; transform: rotate(45deg);
+    position: absolute; left: 0; top: 0;
+    display: block; width: 30px; height: 30px; transform: translate(-50%, -50%) rotate(45deg);
     background: var(--s-cyan); border-radius: 4px;
     box-shadow: 0 0 0 6px color-mix(in srgb, var(--s-cyan) 22%, transparent), 0 0 22px var(--s-cyan);
     animation: ptPulse 2.6s ease-in-out infinite;
@@ -55,9 +60,10 @@
 }
 
 /* institutions with a real logo: small circular crest instead of the plain pin,
-   same footprint/glow as the CSS pin so the map reads consistently */
+   same footprint/glow as the CSS pin so the map reads consistently
+   (1.5x the original 20px resting size, per request) */
 .pt-mk-pin.pt-mk-logo {
-    transform: none; background: #0c1120; border-radius: 50%;
+    transform: translate(-50%, -50%); background: #0c1120; border-radius: 50%;
     display: flex; align-items: center; justify-content: center; overflow: hidden;
     box-shadow: 0 0 0 2px rgba(255,255,255,.85), 0 0 0 6px color-mix(in srgb, var(--s-cyan) 22%, transparent), 0 0 18px var(--s-cyan);
 }
@@ -68,10 +74,10 @@
 
 /* TU Darmstadt crest: slightly larger frame, logo zoomed to fill it (the
    source image has a lot of built-in padding around the mark) */
-.pt-divicon.collaborator .pt-mk-pin.pt-mk-logo-tudam { width: 20px !important; height: 20px !important; }
+.pt-divicon.collaborator .pt-mk-pin.pt-mk-logo-tudam { width: 30px !important; height: 30px !important; }
 .pt-mk-pin.pt-mk-logo-tudam img { transform: scale(1.6); }
 .pt-mk-label {
-    position: absolute; left: 24px; top: -3px; white-space: nowrap;
+    position: absolute; left: 26px; top: -9px; white-space: nowrap;
     font-family: var(--s-mono); font-size: 12px; color: #e6edf8;
     background: rgba(8,12,22,.82); border: 1px solid rgba(120,160,220,.22);
     padding: 5px 11px; border-radius: 8px; backdrop-filter: blur(6px); cursor: pointer;
@@ -81,11 +87,39 @@
 .pt-divicon.orange .pt-mk-label i { color: var(--s-orange); }
 @keyframes ptPulse { 50% { box-shadow: 0 0 0 12px color-mix(in srgb, var(--s-cyan) 6%, transparent), 0 0 28px var(--s-cyan); } }
 
-/* collaborator institutions read quieter than the three partners */
-.pt-divicon.collaborator .pt-mk-pin { width: 11px; height: 11px; animation: none; opacity: .85;
+/* collaborator institutions read quieter than the three partners — but a
+   logo pin (e.g. TU Darmstadt) is still sized by .pt-mk-pin.pt-mk-logo-tudam
+   above, so this smaller footprint only affects the plain (no-logo) pin */
+.pt-divicon.collaborator .pt-mk-pin:not(.pt-mk-logo) { width: 16px; height: 16px; animation: none; opacity: .85;
     box-shadow: 0 0 0 4px color-mix(in srgb, var(--s-cyan) 16%, transparent), 0 0 14px var(--s-cyan); }
-.pt-divicon.collaborator.orange .pt-mk-pin { box-shadow: 0 0 0 4px color-mix(in srgb, var(--s-orange) 16%, transparent), 0 0 14px var(--s-orange); }
+.pt-divicon.collaborator.orange .pt-mk-pin:not(.pt-mk-logo) { box-shadow: 0 0 0 4px color-mix(in srgb, var(--s-orange) 16%, transparent), 0 0 14px var(--s-orange); }
 .pt-divicon.collaborator .pt-mk-label { font-size: 11px; opacity: .9; }
+
+/* ---- hover reveal: big crest + full name, click to visit the site ---- */
+.pt-mk-hover {
+    position: absolute; left: 0; top: 0;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    transform: translate(-50%, -50%) scale(0.25);
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: transform .22s cubic-bezier(.22,1,.36,1), opacity .18s ease, visibility .22s;
+    text-decoration: none; z-index: 700;
+}
+.pt-divicon:hover .pt-mk-hover {
+    transform: translate(-50%, -50%) scale(1); opacity: 1; visibility: visible; pointer-events: auto;
+}
+.pt-mk-hover-logo {
+    width: 150px; height: 150px; border-radius: 50%; object-fit: cover;
+    background: #0c1120; border: 4px solid #fff;
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--s-cyan) 30%, transparent), 0 24px 60px -12px rgba(0,0,0,.8);
+    transition: transform .2s var(--s-ease);
+}
+.pt-divicon.orange .pt-mk-hover-logo { box-shadow: 0 0 0 6px color-mix(in srgb, var(--s-orange) 30%, transparent), 0 24px 60px -12px rgba(0,0,0,.8); }
+.pt-mk-hover:hover .pt-mk-hover-logo { transform: scale(1.05); }
+.pt-mk-hover-name {
+    font-family: var(--s-mono); font-weight: 700; font-size: 14px; color: #fff;
+    background: rgba(8,12,22,.92); border: 1px solid rgba(120,160,220,.3);
+    padding: 7px 16px; border-radius: 999px; white-space: nowrap;
+}
 
 /* member markers (revealed when zoomed in, or on hover over an institution) —
    one consistent style for every researcher: black fill, orange outline. */
