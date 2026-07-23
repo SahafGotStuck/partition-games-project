@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Glossary — Partition Games</title>
+<style>
+body          { font-family: "Arial", Times, serif;
+                margin: 2em 8%; line-height: 1.5; max-width: 760px; }
+h1            { margin-bottom: 0.2em; }
+.intro        { color: #444; margin-bottom: 1.6em; }
+.term         { border: 3px solid #6a37a8; border-radius: 10px;
+                padding: 1.0em 1.3em; position: relative;
+                background: #f9f6ff; margin: 1.7em 0 1.5em 0;
+                scroll-margin-top: 1.5em; }
+.term:before  { content: attr(data-label);
+                position:absolute; top:-0.9em; left:1em;
+                background:#f9f6ff; padding:0 0.4em;
+                color:#6a37a8; font-weight:bold; }
+.back-link    { margin-bottom: 1.5em; font-size: 0.9em; }
+.back-link a  { color: #6a37a8; }
+</style>
+</head>
+<body>
+
+<div class="back-link"><a href="../wiki.html">&larr; back to all games</a></div>
+
+<h1>Glossary</h1>
+<p class="intro">Short, plain-language explanations of the terms used across these games' rules pages.</p>
+
+<div class="term" id="young-diagram" data-label="Young diagram">
+A way of drawing a partition (a whole number split into a sum of smaller whole numbers, largest first) as rows of stacked boxes: the first row has as many boxes as the largest number in the split, the next row has as many as the next number, and so on, so every row is no longer than the one above it.
+</div>
+
+<div class="term" id="impartial-game" data-label="Impartial game">
+A game where both players are allowed to make exactly the same moves at any given point — the only thing that changes turn to turn is whose turn it is. Most games on this site are impartial.
+</div>
+
+<div class="term" id="partizan-game" data-label="Partizan game">
+A game where the two players are allowed different moves from each other — for example, one player may only remove rows while the other may only remove columns.
+</div>
+
+<div class="term" id="normal-play" data-label="Normal play">
+The standard win condition: whoever makes the last possible move wins the game.
+</div>
+
+<div class="term" id="misere-play" data-label="Misère play">
+The opposite win condition: whoever makes the last possible move <strong>loses</strong> the game instead. ("Misère" is French for "misery" — it's pronounced "mi-ZAIR".)
+</div>
+
+<div class="term" id="corner-cell" data-label="Corner">
+The rightmost cell of a row in a Young diagram, but only if no other row directly below it has the exact same length — if several rows in a row share the same length, only the bottom one of that group counts as a corner.
+</div>
+
+<div class="term" id="hook" data-label="Hook">
+For a chosen cell, all of the cells to its right in the same row plus all of the cells below it in the same column (including the cell itself). Removing a hook can leave the diagram in one piece or split it into two.
+</div>
+
+</body>
+</html>

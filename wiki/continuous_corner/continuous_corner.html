@@ -50,7 +50,8 @@ span.label    { font-weight: bold;}
 <h2 style="text-align: center;"> Integer Parition Combinatorial Game </h2>
   
 <div class="gamebox">
-  Let $[r_1, r_2, r_3, \ldots, r_i]$ be an integer partition of a positive integer $n$ in descending order, where $\forall x \in \left(1, 2, \ldots, i\right), r_x \geq 1$. <b>Continuous Corner</b> is a variant of the Corner game designed to be played between two players, where the game board will be a <a href=https://en.wikipedia.org/wiki/Young_tableau>Young diagram</a>, representing a partition with previously documented properties.           When it's their turn, the player will select a <i>consecutive subset</i> of corner pieces to remove from the board. Like in Corner, corner pieces are the last cells of rows (following the consecutive grouping rule), but unlike Corner, players cannot select arbitrary subsets - they must choose consecutive corners only.      The player who makes the last move wins.     </div>  
+  Continuous Corner is played on a <a href="../glossary.html#young-diagram">Young diagram</a>. On your turn, pick a run of neighboring <a href="../glossary.html#corner-cell">corners</a> and remove them all at once. This is an <a href="../glossary.html#impartial-game">impartial game</a> — the player who makes the last move wins.
+</div>  
   
   
 <h2 id="moves">Moves</h2>  

@@ -49,10 +49,8 @@ span.label    { font-weight: bold;}
 <h1>Impartial Row Terminus (RIT)</h1>
 <h2 style="text-align: center;"> Integer Parition Combinatorial Game </h2>
   
-<div class="gamebox">  
-  Let $n$ be a positive integer; and $(a^{a'}, b^{b'}, c^{c'}, \ldots, i^{i'})$ be an ordered partition for $n$. 
-  In RIT, only a certain type of vertical move is allowed: some cells from a row $r_i$ may be deleted, if the length of changed $r_i \geq$ length of $r_{i + 1}$. However, if $i + 1$ deems to be the last row of the young diagram, this condition would require to be ignored.
-  The JavaScript program backing the interactive web-version aids from memoised Sprague-Grundy value and several data structure algorithms.  
+<div class="gamebox">
+  RIT (Impartial Row Terminus) is played on a <a href="../glossary.html#young-diagram">Young diagram</a>. On your turn, trim one or more cells off the end of a row, as long as that row stays at least as long as the row directly below it — except the very last row, which can be trimmed to any length, including removing it completely. This is an <a href="../glossary.html#impartial-game">impartial game</a> — the player who makes the last move wins.
 </div>  
   
   

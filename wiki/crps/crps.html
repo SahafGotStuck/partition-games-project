@@ -49,17 +49,15 @@ span.label    { font-weight: bold;}
 <h1>Column Row Partizan Split (CRPS)</h1>
 <h2 style="text-align: center;"> Partizan Integer Partition Combinatorial Game </h2>  
   
-<div class="gamebox">  
-    Let $[r_1, r_2, r_3, \ldots, r_i]$ be an integer partition of a positive integer $n$ in descending order, where $\forall x \in \left(1, 2, \ldots, i\right), r_x \geq 1$. <b>CRPS</b> (Columnar-Row Partition Moves) is a partizan variant of the CRIM game designed to be played between two players with <strong>asymmetric move sets</strong>.
-    
-    <ul>
-        <li><strong>Player A (Rows):</strong> Can only remove entire rows from the partition.</li>
-        <li><strong>Player B (Columns):</strong> Can only remove entire columns from the partition.</li>
-    </ul>
-    
-    Like CRIS, there is no merge that happens after each move. However, unlike CRIS's impartial nature, CRPS creates strategic asymmetry where each player must consider their opponent's limited but potentially powerful move options.
+<div class="gamebox">
+    CRPS (Column Row Partizan Split) is played on a <a href="../glossary.html#young-diagram">Young diagram</a>. This is a <a href="../glossary.html#partizan-game">partizan game</a> — the two players are given different moves:
 
-    The player who cannot make a legal move loses the game.     
+    <ul>
+        <li><strong>Player A (Rows):</strong> can only remove entire rows.</li>
+        <li><strong>Player B (Columns):</strong> can only remove entire columns.</li>
+    </ul>
+
+    If a move splits the diagram into separate pieces, each piece keeps being played as its own independent board. A player who has no legal move on their turn loses.
 </div>  
   
   

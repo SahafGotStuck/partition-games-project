@@ -50,7 +50,7 @@ span.label    { font-weight: bold;}
 <h2 style="text-align: center;"> Integer Parition Combinatorial Game </h2>
   
 <div class="gamebox">
-    Let $n$ be a positive integer, and $ \left( a^{a'}, b^{b'}, \ldots, i^{i'} \right)$ be an integer partiton of $n$ where $a > b > \cdots > i$. CRIS is an impartial game --- where the partition is visually presented with an <a href=https://en.wikipedia.org/wiki/Young_tableau>Young Diagram</a> --- and users may delete any row or column remaining in the board. <i>Fragment parts</i> might appear in the board; in such cases, each fragment will be "independent," meaning a move in one wouldn't impact others. The player who makes the last move wins. The program demonstrating this game was algorithmically bases on JavaScript where Breadth First Search and fractioned Grundy values were used to induce perfect play.   
+    CRIS (Column Row Impartial Split) is played on one or more <a href="../glossary.html#young-diagram">Young diagrams</a>. On your turn, remove any whole row or whole column from one of the diagrams in play. If this splits a diagram into separate pieces, each piece becomes its own independent board — moves on one no longer affect the others. This is an <a href="../glossary.html#impartial-game">impartial game</a> — the player who makes the last move (across every board) wins.
 </div>  
   
   

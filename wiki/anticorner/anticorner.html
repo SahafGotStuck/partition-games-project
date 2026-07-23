@@ -49,16 +49,8 @@ span.label    { font-weight: bold;}
 <h1>Anti-corner</h1>
 <h2 style="text-align: center;"> Integer Parition Combinatorial Game </h2>
   
-<div class="gamebox">  
-    Let $\left( \lambda_1, \lambda_2, \lambda_3, \ldots, \lambda_n \right)$ be a parition of $n$, where $\lambda_1 \geq \lambda_2 \geq \cdots \lambda_n > 0$. The game centers around "Anti-corners": in each move, an Anti-corner $(i, j)$ needs to be selected, and upon selection the hook associated to that cell would get deleted. 
-
-    An <i>Anti-corner</i> belongs to one of the followings: 
-
-    <ol>
-      <li> <i>Degenerate Anti-corners:</i> Only two specific cell consists this set &mdash; the most top-right cell and the most bottom-left cell.</li>
-      <li> <i>Proper Anti-corners</i>: An proper anticorner is a square in the Young diagram that sticks out at a “dip’’ in the outline: it has no square directly to its right and no square directly below it, so you can delete that square together with everything to its right in the same row and everything below it in the same column and still be left with a valid partition shape.</li>
-    </ol> 
-    Alike previous games, Anti-corner is played between two players; each gets one move at a time; and the one who makes the last move wins.  
+<div class="gamebox">
+Anticorner is played on a <a href="../glossary.html#young-diagram">Young diagram</a>. An "anti-corner" is a cell where the shape dips inward — it has no cell to its right and no cell below it (the topmost-right cell and the bottommost-left cell of the whole shape always count as anti-corners too). On your turn, pick an anti-corner and remove it together with every cell to its right in its row and every cell below it in its column. This is an <a href="../glossary.html#impartial-game">impartial game</a> — the player who makes the last move wins.
 </div>  
   
   
