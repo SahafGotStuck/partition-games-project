@@ -238,6 +238,15 @@
 }
 .ic-diagram-grid .ic-piece { font-size: 10px; }
 .ic-diagram-grid .ic-sq.corner::after { inset: 15%; border-width: 1.5px; }
+/* darker fill than the real board's squares — a 15px cell reads as washed-out
+   at the real board's subtle tint, so this popover gets its own bolder one.
+   Specificity must beat the real board's [data-theme="dark"] .ic-sq rule. */
+.ic-diagram-grid .ic-sq.light,
+.ic-diagram-grid .ic-sq.dark,
+[data-theme="dark"] .ic-diagram-grid .ic-sq.light,
+[data-theme="dark"] .ic-diagram-grid .ic-sq.dark {
+    background: color-mix(in srgb, var(--pg-orange) 32%, var(--pg-surface-2));
+}
 .ic-diagram-legend {
     margin-top: 8px; display: flex; flex-wrap: wrap; gap: 10px;
     font-family: var(--font-mono); font-size: 10px; color: var(--pg-dim);
