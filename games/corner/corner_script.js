@@ -1029,31 +1029,32 @@ class ProCornerGui {
       return;
     }
 
-    if (this.isInSelectionMode) {
-      // In multiplayer, ensure it's my turn; otherwise block selection
-      if (this.isMultiplayer) {
-        const isMyTurn = (this.playerNumber === 0 && this.game.currentIndex === 0) || (this.playerNumber === 1 && this.game.currentIndex === 1);
-        if (!isMyTurn) { this.showTurnMessage('Not your turn!'); return; }
-      }
-      const rect = this.boardArea.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
+    // Verify it's my turn (multiplayer) before doing anything below — either
+    // entering selection mode or selecting a tile.
+    if (this.isMultiplayer) {
+      const isMyTurn = (this.playerNumber === 0 && this.game.currentIndex === 0) || (this.playerNumber === 1 && this.game.currentIndex === 1);
+      if (!isMyTurn) { this.showTurnMessage('Not your turn!'); return; }
+    }
 
-      const centerOffset = this.getBoardCenterOffset();
-      const col = Math.floor((x - centerOffset.x) / (this.CELL + this.GAP));
-      const row = Math.floor((y - centerOffset.y) / (this.CELL + this.GAP));
-
-      if (row >= 0 && row < this.game.board.height() && 
-          col >= 0 && col < this.game.board.rows[row]) {
-        this.handleTileClick(row, col);
-      }
-    } else {
-      // Before entering selection mode in multiplayer, verify it's my turn
-      if (this.isMultiplayer) {
-        const isMyTurn = (this.playerNumber === 0 && this.game.currentIndex === 0) || (this.playerNumber === 1 && this.game.currentIndex === 1);
-        if (!isMyTurn) { this.showTurnMessage('Not your turn!'); return; }
-      }
+    // The very first click both enters selection mode AND selects whichever
+    // corner was clicked, in one motion — previously entering selection mode
+    // consumed that first click entirely, so nothing got selected until a
+    // second click.
+    if (!this.isInSelectionMode) {
       this.enterSelectionMode();
+    }
+
+    const rect = this.boardArea.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    const centerOffset = this.getBoardCenterOffset();
+    const col = Math.floor((x - centerOffset.x) / (this.CELL + this.GAP));
+    const row = Math.floor((y - centerOffset.y) / (this.CELL + this.GAP));
+
+    if (row >= 0 && row < this.game.board.height() &&
+        col >= 0 && col < this.game.board.rows[row]) {
+      this.handleTileClick(row, col);
     }
   }
 
@@ -1299,7 +1300,7 @@ class ProCornerGui {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `Corner-Game-${new Date()
+    link.download = `Corners-Game-${new Date()
       .toISOString()
       .slice(0, 19)
       .replace(/:/g, "-")}.html`;
@@ -1310,7 +1311,7 @@ class ProCornerGui {
   }
 
   generateGameReplayHTML_Corner(gameStates, initialPartition) {
-    const title = `Corner Game Replay - ${new Date().toLocaleDateString()}`;
+    const title = `Corners Game Replay - ${new Date().toLocaleDateString()}`;
     return `<!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
@@ -1349,7 +1350,7 @@ class ProCornerGui {
  <div class="instructions">
   <strong>Navigation:</strong> Use ←/→ keys or the buttons above.<br>
   <strong>Autoplay:</strong> Press Play to advance automatically.<br>
-  <strong>Corner Rules:</strong> Remove the last cell of each row, except when consecutive rows have the same length - only the last row in each consecutive block loses a cell.
+  <strong>Corners Rules:</strong> Remove the last cell of each row, except when consecutive rows have the same length - only the last row in each consecutive block loses a cell.
  </div>
 </div>
 <script>
