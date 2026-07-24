@@ -96,8 +96,9 @@
 .pt-divicon.collaborator .pt-mk-label { font-size: 11px; opacity: .9; }
 
 /* ---- hover reveal: big crest + full name, click to visit the site ----
-   Inert until the marker has been clicked once (map flies in, marker gets
-   .pt-activated) — not available "from the start". */
+   Inert until the map is zoomed in past REVEAL_ZOOM (marker gets
+   .pt-activated in refreshMembers()) — not available "from the start",
+   and turns back off if you zoom back out. */
 .pt-mk-hover {
     position: absolute; left: 0; top: 0;
     display: flex; flex-direction: column; align-items: center; gap: 10px;
@@ -123,19 +124,47 @@
     padding: 7px 16px; border-radius: 999px; white-space: nowrap;
 }
 
-/* member markers (revealed when zoomed in, or on hover over an institution) —
-   one consistent style for every researcher: black fill, orange outline. */
-.pt-memicon { overflow: visible !important; }
-.pt-mem { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; transform: translate(-50%, -50%); }
-.pt-mem .blk {
-    width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center;
-    font-family: var(--s-mono); font-weight: 700; font-size: 12px; color: var(--s-orange);
+/* ---- member list: one orange (or cyan) trunk line under the institution's
+   name, a small horizontal tick branching off it per member, listed in
+   order (faculty/professors first). Every row is a fixed CSS pixel height,
+   not a lat/lng offset, so spacing never compresses or overlaps at any
+   zoom level. Hidden until .pt-activated (same zoom-gated reveal as the
+   hover crest above). ---- */
+.pt-mk-members {
+    display: none;
+    position: absolute; left: 20px; top: 20px;
+    padding-left: 18px;
+}
+.pt-divicon.pt-activated .pt-mk-members { display: block; }
+.pt-mk-members::before {
+    content: ""; position: absolute; left: 8px; top: 2px; bottom: 2px; width: 2px;
+    background: var(--s-orange);
+}
+.pt-divicon.cyan .pt-mk-members::before { background: var(--s-cyan); }
+
+.pt-mk-mrow {
+    position: relative; display: flex; align-items: center; gap: 8px;
+    height: 30px; cursor: pointer;
+}
+.pt-mk-mrow::before {
+    content: ""; position: absolute; left: -14px; top: 50%; width: 12px; height: 2px;
+    background: var(--s-orange); transform: translateY(-50%);
+}
+.pt-divicon.cyan .pt-mk-mrow::before { background: var(--s-cyan); }
+.pt-mk-mdot {
+    flex: none; width: 24px; height: 24px; border-radius: 7px; display: grid; place-items: center;
+    font-family: var(--s-mono); font-weight: 700; font-size: 10px; color: var(--s-orange);
     background: #0a0a0a; border: 2px solid var(--s-orange);
-    box-shadow: 0 0 14px color-mix(in srgb, var(--s-orange) 45%, transparent);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--s-orange) 40%, transparent);
     transition: transform .2s var(--s-ease);
 }
-.pt-mem:hover .blk { transform: scale(1.15); }
-.pt-mem .nm { font-family: var(--s-mono); font-size: 10.5px; color: #dfe7f5; background: rgba(8,12,22,.8); padding: 2px 7px; border-radius: 6px; white-space: nowrap; }
+.pt-divicon.cyan .pt-mk-mdot { color: var(--s-cyan); border-color: var(--s-cyan);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--s-cyan) 40%, transparent); }
+.pt-mk-mrow:hover .pt-mk-mdot { transform: scale(1.15); }
+.pt-mk-mname {
+    font-family: var(--s-mono); font-size: 11px; color: #dfe7f5;
+    background: rgba(8,12,22,.85); padding: 3px 9px; border-radius: 6px; white-space: nowrap;
+}
 
 /* hint + reset */
 .pt-hint { position: absolute; left: 16px; bottom: 14px; z-index: 500; font-family: var(--s-mono);

@@ -68,7 +68,11 @@
         // collaboration formally begins. (id: "minnesota", contact: Sheila Sundaram)
     ];
 
-    var REVEAL_ZOOM = 7;   // members appear at/after this zoom level
+    // Members only reveal very close in — deliberately much higher than the old
+    // threshold, so casually scrolling in rarely reaches it; clicking a campus
+    // (which flies to FLY_ZOOM below) is the practical way to see the list.
+    var REVEAL_ZOOM = 13;
+    var FLY_ZOOM = 14;
 
     function build() {
         var root = document.getElementById("partners-root");
@@ -108,8 +112,7 @@
             function worldView() { map.fitBounds(bounds, { padding: [70, 70] }); }
             worldView();
 
-            var allMemberMarkers = [];   // every researcher marker, with its institution + show/hide state
-            var allInstMarkers = [];     // every institution marker — hover-to-enlarge only turns on at reveal zoom
+            var allInstMarkers = [];     // every institution marker — reveal/hover-crest turn on together at REVEAL_ZOOM
             PARTNERS.forEach(function (p) {
                 var logoHtml = p.logo
                     ? '<span class="pt-mk-pin pt-mk-logo' + (p.logoClass ? " " + p.logoClass : "") + '"><img src="' + p.logo + '" alt=""></span>'
@@ -124,52 +127,53 @@
                         '<span class="pt-mk-hover-name">' + p.name + '</span>' +
                       '</a>'
                     : '';
+                // Members list: a single orange (or cyan) trunk line right under the
+                // institution's name, with one small horizontal tick per member
+                // branching off it — in PARTNERS order, so faculty/professors are
+                // always first, developers/collaborators after. Every row is a fixed
+                // CSS pixel height, so — unlike lat/lng-positioned markers — spacing
+                // never compresses or stacks at any zoom level.
+                var membersHtml = '<div class="pt-mk-members">' +
+                    p.members.map(function (mem, i) {
+                        return '<div class="pt-mk-mrow" data-idx="' + i + '">' +
+                                 '<span class="pt-mk-mdot">' + mem.initials + '</span>' +
+                                 '<span class="pt-mk-mname">' + mem.name.replace(/^Prof\.\s*/, "") + '</span>' +
+                               '</div>';
+                    }).join('') +
+                  '</div>';
                 var inst = L.divIcon({
                     className: "pt-divicon " + p.accent + " " + (p.kind || "partner"), iconSize: [180, 180], iconAnchor: [90, 90],
                     // the anchor box is much bigger than the visible pin so the hover
-                    // crest has room to render (and stay hovered) without the mouse
-                    // leaving the marker's hit area the moment it grows
+                    // crest / member list have room to render (and stay interactive)
+                    // without the mouse leaving the marker's hit area as they grow
                     html: '<span class="pt-mk-anchor">' + logoHtml +
                           '<span class="pt-mk-label"><b>' + p.short + '</b> · <i>' +
                           p.members.length + (p.members.length === 1 ? " member" : " members") + '</i></span>' +
-                          hoverHtml + '</span>'
+                          membersHtml + hoverHtml + '</span>'
                 });
-                // The hover-to-enlarge/click-to-visit behavior only turns on once the
-                // map is zoomed in enough that member names are also visible — kept
-                // in sync with that in refreshMembers() below, not a one-time flag.
+                // Both the hover-to-enlarge crest and the member list only turn on
+                // once the map is zoomed in past REVEAL_ZOOM — kept in sync in
+                // refreshMembers() below, not a one-time click flag.
                 var instMarker = L.marker([p.lat, p.lng], { icon: inst, title: p.name }).addTo(map);
-                instMarker.on("click", function () { map.flyTo([p.lat, p.lng], 13, { duration: 1.2 }); });
+                instMarker.on("click", function () { map.flyTo([p.lat, p.lng], FLY_ZOOM, { duration: 1.2 }); });
                 allInstMarkers.push(instMarker);
 
-                // Members list one below another in a vertical line (not a circle —
-                // that read as an odd ring shape for bigger teams) directly under the
-                // institution pin, in the order given in PARTNERS: faculty/professors
-                // first, then developers/collaborators.
-                var stepLat = 0.0023;    // vertical spacing between rows
-                var offsetLng = 0.014;   // nudge right so the line clears the institution logo + its label
-                p.members.forEach(function (mem, i) {
-                    var ll = [p.lat - stepLat * (i + 2), p.lng + offsetLng];
-                    // One consistent researcher-marker style for everyone (black, orange outline)
-                    // rather than varying it by institution accent color.
-                    var ic = L.divIcon({
-                        className: "pt-memicon", iconSize: [0, 0],
-                        html: '<div class="pt-mem"><span class="blk">' + mem.initials + '</span>' +
-                              '<span class="nm">' + mem.name.replace(/^Prof\.\s*/, "") + '</span></div>'
-                    });
-                    var memMarker = L.marker(ll, { icon: ic })
-                        .on("click", function () { openMember(p, mem); });
-                    allMemberMarkers.push(memMarker);
-                });
+                var el = instMarker.getElement();
+                if (el) {
+                    var rows = el.querySelectorAll(".pt-mk-mrow");
+                    for (var i = 0; i < rows.length; i++) {
+                        (function (row) {
+                            row.addEventListener("click", function (e) {
+                                e.stopPropagation();   // don't also trigger the marker's fly-to-zoom
+                                openMember(p, p.members[+row.dataset.idx]);
+                            });
+                        })(rows[i]);
+                    }
+                }
             });
 
             function refreshMembers() {
                 var show = map.getZoom() >= REVEAL_ZOOM;
-                allMemberMarkers.forEach(function (m) {
-                    if (show && !map.hasLayer(m)) m.addTo(map);
-                    else if (!show && map.hasLayer(m)) map.removeLayer(m);
-                });
-                // hover-to-enlarge/click-to-visit only while member names are visible too —
-                // zoom back out and it turns back off, exactly like the names do
                 allInstMarkers.forEach(function (m) {
                     var el = m.getElement();
                     if (el) el.classList.toggle("pt-activated", show);
