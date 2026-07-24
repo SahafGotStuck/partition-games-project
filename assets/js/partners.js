@@ -109,6 +109,7 @@
             worldView();
 
             var allMemberMarkers = [];   // every researcher marker, with its institution + show/hide state
+            var allInstMarkers = [];     // every institution marker — hover-to-enlarge only turns on at reveal zoom
             PARTNERS.forEach(function (p) {
                 var logoHtml = p.logo
                     ? '<span class="pt-mk-pin pt-mk-logo' + (p.logoClass ? " " + p.logoClass : "") + '"><img src="' + p.logo + '" alt=""></span>'
@@ -133,20 +134,21 @@
                           p.members.length + (p.members.length === 1 ? " member" : " members") + '</i></span>' +
                           hoverHtml + '</span>'
                 });
-                // The hover-to-enlarge/click-to-visit behavior only turns on after the
-                // marker's first click (which flies the map in, as before) — not "from
-                // the start". CSS gates it behind the .pt-activated class added here.
+                // The hover-to-enlarge/click-to-visit behavior only turns on once the
+                // map is zoomed in enough that member names are also visible — kept
+                // in sync with that in refreshMembers() below, not a one-time flag.
                 var instMarker = L.marker([p.lat, p.lng], { icon: inst, title: p.name }).addTo(map);
-                instMarker.on("click", function () {
-                    var el = instMarker.getElement();
-                    if (el) el.classList.add("pt-activated");
-                    map.flyTo([p.lat, p.lng], 13, { duration: 1.2 });
-                });
+                instMarker.on("click", function () { map.flyTo([p.lat, p.lng], 13, { duration: 1.2 }); });
+                allInstMarkers.push(instMarker);
 
-                var rad = 0.006 + p.members.length * 0.0013;   // wider ring for bigger teams
+                // Members list one below another in a vertical line (not a circle —
+                // that read as an odd ring shape for bigger teams) directly under the
+                // institution pin, in the order given in PARTNERS: faculty/professors
+                // first, then developers/collaborators.
+                var stepLat = 0.0023;    // vertical spacing between rows
+                var offsetLng = 0.014;   // nudge right so the line clears the institution logo + its label
                 p.members.forEach(function (mem, i) {
-                    var ang = (i / p.members.length) * Math.PI * 2;
-                    var ll = [p.lat + Math.sin(ang) * rad, p.lng + Math.cos(ang) * rad * 1.4];
+                    var ll = [p.lat - stepLat * (i + 2), p.lng + offsetLng];
                     // One consistent researcher-marker style for everyone (black, orange outline)
                     // rather than varying it by institution accent color.
                     var ic = L.divIcon({
@@ -165,6 +167,12 @@
                 allMemberMarkers.forEach(function (m) {
                     if (show && !map.hasLayer(m)) m.addTo(map);
                     else if (!show && map.hasLayer(m)) map.removeLayer(m);
+                });
+                // hover-to-enlarge/click-to-visit only while member names are visible too —
+                // zoom back out and it turns back off, exactly like the names do
+                allInstMarkers.forEach(function (m) {
+                    var el = m.getElement();
+                    if (el) el.classList.toggle("pt-activated", show);
                 });
             }
             map.on("zoomend", refreshMembers); refreshMembers();
