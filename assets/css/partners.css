@@ -95,33 +95,34 @@
 .pt-divicon.collaborator.orange .pt-mk-pin:not(.pt-mk-logo) { box-shadow: 0 0 0 4px color-mix(in srgb, var(--s-orange) 16%, transparent), 0 0 14px var(--s-orange); }
 .pt-divicon.collaborator .pt-mk-label { font-size: 11px; opacity: .9; }
 
-/* ---- hover reveal: big crest + full name, click to visit the site ----
+/* ---- hover reveal: logo grows 1.5x (same ratio as the base resize) + full
+   name, click to visit the site ----
    Inert until the map is zoomed in past REVEAL_ZOOM (marker gets
    .pt-activated in refreshMembers()) — not available "from the start",
    and turns back off if you zoom back out. */
 .pt-mk-hover {
     position: absolute; left: 0; top: 0;
-    display: flex; flex-direction: column; align-items: center; gap: 10px;
-    transform: translate(-50%, -50%) scale(0.25);
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    transform: translate(-50%, -50%) scale(0.6);
     opacity: 0; visibility: hidden; pointer-events: none;
-    transition: transform .22s cubic-bezier(.22,1,.36,1), opacity .18s ease, visibility .22s;
+    transition: transform .18s cubic-bezier(.22,1,.36,1), opacity .15s ease, visibility .18s;
     text-decoration: none; z-index: 700;
 }
 .pt-divicon.pt-activated:hover .pt-mk-hover {
     transform: translate(-50%, -50%) scale(1); opacity: 1; visibility: visible; pointer-events: auto;
 }
 .pt-mk-hover-logo {
-    width: 150px; height: 150px; border-radius: 50%; object-fit: cover;
-    background: #0c1120; border: 4px solid #fff;
-    box-shadow: 0 0 0 6px color-mix(in srgb, var(--s-cyan) 30%, transparent), 0 24px 60px -12px rgba(0,0,0,.8);
+    width: 45px; height: 45px; border-radius: 50%; object-fit: cover;
+    background: #0c1120; border: 2px solid #fff;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--s-cyan) 30%, transparent), 0 8px 20px -6px rgba(0,0,0,.7);
     transition: transform .2s var(--s-ease);
 }
-.pt-divicon.orange .pt-mk-hover-logo { box-shadow: 0 0 0 6px color-mix(in srgb, var(--s-orange) 30%, transparent), 0 24px 60px -12px rgba(0,0,0,.8); }
+.pt-divicon.orange .pt-mk-hover-logo { box-shadow: 0 0 0 3px color-mix(in srgb, var(--s-orange) 30%, transparent), 0 8px 20px -6px rgba(0,0,0,.7); }
 .pt-mk-hover:hover .pt-mk-hover-logo { transform: scale(1.05); }
 .pt-mk-hover-name {
-    font-family: var(--s-mono); font-weight: 700; font-size: 14px; color: #fff;
+    font-family: var(--s-mono); font-weight: 700; font-size: 11px; color: #fff;
     background: rgba(8,12,22,.92); border: 1px solid rgba(120,160,220,.3);
-    padding: 7px 16px; border-radius: 999px; white-space: nowrap;
+    padding: 4px 10px; border-radius: 999px; white-space: nowrap;
 }
 
 /* ---- member list: one orange (or cyan) trunk line under the institution's
@@ -132,7 +133,7 @@
    hover crest above). ---- */
 .pt-mk-members {
     display: none;
-    position: absolute; left: 20px; top: 20px;
+    position: absolute; left: 88px; top: 20px;   /* under "· N members", not the institution name */
     padding-left: 18px;
 }
 .pt-divicon.pt-activated .pt-mk-members { display: block; }
