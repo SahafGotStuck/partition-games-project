@@ -295,7 +295,7 @@ const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").mat
         chunk.scale.setScalar(1.0);                        // same size as a model cube
         scene.add(chunk);
         sheds.push({ chunk, home, at: spec.at, nx: spec.nx, ny: spec.ny,
-            anchor: new THREE.Vector3(), spin: 0.004 + Math.random() * 0.005, phase: Math.random() * 6.28 });
+            anchor: new THREE.Vector3(), spin: 0.004 + Math.random() * 0.005, phase: Math.random() * 6.28, blend: 0 });
     });
 
     // main-mass materials (for the opacity pass below)
@@ -408,17 +408,27 @@ const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").mat
             if (released) {
                 target.copy(sh.anchor);
                 target.y += Math.sin(time * 0.9 + sh.phase) * 0.18;   // gentle bob
-            } else {
-                target.copy(sh.home); group.localToWorld(target);     // attached position in the model
-            }
-            if (!booted) sh.chunk.position.copy(target);
-            else sh.chunk.position.lerp(target, 0.08);                 // eases in both directions
-
-            if (released) {
+                if (!booted) sh.chunk.position.copy(target);
+                else sh.chunk.position.lerp(target, 0.08);             // slow, floaty fly-out
                 sh.chunk.rotation.y += sh.spin;
                 sh.chunk.rotation.x += sh.spin * 0.6;
+                sh.blend = 1;                                          // prime a catch-up ease for whenever it re-attaches
             } else {
-                sh.chunk.quaternion.slerp(group.quaternion, booted ? 0.12 : 1); // rotate back smoothly when re-attaching
+                target.copy(sh.home); group.localToWorld(target);     // attached position in the model
+                if (!booted) {
+                    sh.chunk.position.copy(target);
+                    sh.chunk.quaternion.copy(group.quaternion);
+                    sh.blend = 0;
+                } else if (sh.blend > 0.02) {
+                    // just re-attached: ease back in quickly so it doesn't pop
+                    sh.chunk.position.lerp(target, 0.25);
+                    sh.chunk.quaternion.slerp(group.quaternion, 0.25);
+                    sh.blend -= 0.12;
+                } else {
+                    // steady-state attached: pin rigidly to the mass — no lag, no looseness
+                    sh.chunk.position.copy(target);
+                    sh.chunk.quaternion.copy(group.quaternion);
+                }
             }
             sh.chunk.scale.setScalar(scale);   // shrink together with the mass
         }
