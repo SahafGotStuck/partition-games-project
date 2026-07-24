@@ -95,7 +95,9 @@
 .pt-divicon.collaborator.orange .pt-mk-pin:not(.pt-mk-logo) { box-shadow: 0 0 0 4px color-mix(in srgb, var(--s-orange) 16%, transparent), 0 0 14px var(--s-orange); }
 .pt-divicon.collaborator .pt-mk-label { font-size: 11px; opacity: .9; }
 
-/* ---- hover reveal: big crest + full name, click to visit the site ---- */
+/* ---- hover reveal: big crest + full name, click to visit the site ----
+   Inert until the marker has been clicked once (map flies in, marker gets
+   .pt-activated) — not available "from the start". */
 .pt-mk-hover {
     position: absolute; left: 0; top: 0;
     display: flex; flex-direction: column; align-items: center; gap: 10px;
@@ -104,7 +106,7 @@
     transition: transform .22s cubic-bezier(.22,1,.36,1), opacity .18s ease, visibility .22s;
     text-decoration: none; z-index: 700;
 }
-.pt-divicon:hover .pt-mk-hover {
+.pt-divicon.pt-activated:hover .pt-mk-hover {
     transform: translate(-50%, -50%) scale(1); opacity: 1; visibility: visible; pointer-events: auto;
 }
 .pt-mk-hover-logo {

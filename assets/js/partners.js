@@ -133,8 +133,15 @@
                           p.members.length + (p.members.length === 1 ? " member" : " members") + '</i></span>' +
                           hoverHtml + '</span>'
                 });
-                L.marker([p.lat, p.lng], { icon: inst, title: p.name }).addTo(map)
-                    .on("click", function () { map.flyTo([p.lat, p.lng], 13, { duration: 1.2 }); });
+                // The hover-to-enlarge/click-to-visit behavior only turns on after the
+                // marker's first click (which flies the map in, as before) — not "from
+                // the start". CSS gates it behind the .pt-activated class added here.
+                var instMarker = L.marker([p.lat, p.lng], { icon: inst, title: p.name }).addTo(map);
+                instMarker.on("click", function () {
+                    var el = instMarker.getElement();
+                    if (el) el.classList.add("pt-activated");
+                    map.flyTo([p.lat, p.lng], 13, { duration: 1.2 });
+                });
 
                 var rad = 0.006 + p.members.length * 0.0013;   // wider ring for bigger teams
                 p.members.forEach(function (mem, i) {
